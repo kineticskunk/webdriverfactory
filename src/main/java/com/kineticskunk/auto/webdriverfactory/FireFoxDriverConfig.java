@@ -6,9 +6,9 @@ import java.util.Hashtable;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
 import com.kineticskunk.auto.logging.TestServiceLogging;
 
 /**
@@ -46,33 +46,23 @@ public class FireFoxDriverConfig {
 	 * @throws IOException
 	 */
 	protected FireFoxDriverConfig(boolean loadFireBug)  throws IOException{
-		this.loadDesiredCapabilities();
 		
-		
+		this.loadFireFoxCustomProfile();
 		if (this.loadExtension("FireBug", this.firefoxConfig.get("FIREBUG_EXTENSION_NAME"))) {
-			
-			
+			this.loadFireBugPreferences();
 		}
 	}
 	
-	private void loadDesiredCapabilities() {
+	/**
+	 * Load FireFox custom profile configuration
+	 */
+	private void loadFireFoxCustomProfile() {
 		try {
-			tsl.enterLogger("Loading FireFox Desired Capabilities");
-			this.setPlatform(PlatformOperatingSystem.getOS());
-			this.setBrowserName(this.firefoxConfig.get("BROWSER_NAME"));
+			this.tsl.enterLogger("Loading FireFox profile preferences");
 			this.setAcceptUntrustedCertificates(this.firefoxConfig.get("ACCEPT_UNTRUSTED_CERTIFICATES"));
 			this.setEnableNativeEvents(this.firefoxConfig.get("ENABLE_NATIVE_EVENTS"));
 			this.setFireBrowserDownLoad(this.firefoxConfig.get("BROWSER_DOWNLOAD_DIRECTORY"));
-			tsl.exitLogger(SUCCESS_MESSAGE);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger("Failed to load FireFox Desired Capabilities");
-		}
-	}
-	
-	private void loadFireFoxCustomProfile() {
-		try {
-			this.setBrowserDownloadFolderListPreference(this.firefoxConfig.get("BROWSER_DOWNLOAD_FOLDERLIST"), 2);
+			this.setFireFoxProfileIntegerPreference("browser.download.folderList", this.firefoxConfig.get("BROWSER_DOWNLOAD_FOLDERLIST"), 2);
 			this.setFireFoxProfileBooleanPreference("browser.cache.disk.enable", this.firefoxConfig.get("BROWSER_CACHE_DISK_ENABLE"), true);
 			this.setFireFoxProfileBooleanPreference("browser.download.manager.showWhenStarting", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_SHOWWHENSTARTING"), false);
 			this.setFireFoxProfileBooleanPreference("browser.download.manager.alertOnEXEOpen", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_ALERTONEXEOPEN"), false);
@@ -82,52 +72,65 @@ public class FireFoxDriverConfig {
 			this.setFireFoxProfileBooleanPreference("browser.download.manager.closeWhenDone", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_CLOSEWHENDONE"), false);
 			this.setFireFoxProfileBooleanPreference("browser.helperApps.alwaysAsk.force", this.firefoxConfig.get("BROWSER_HELPER_APPS_ALWAYSASKFORCE"), false);
 			this.setFireFoxProfileStringPreference("browser.helperApps.neverAsk.saveToDisk", this.firefoxConfig.get("BROWSER_HELPER_APPS_NEVERASK_SAVETODISK"), DEFAULT_BROWSER_HELPER_APPS_NEVERASK_SAVETODISK);
+			this.tsl.exitLogger(SUCCESS_MESSAGE);
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger("Failed to load FireFox custom profile settings");
 		}
-		
-		this.tsl.logMessage(Level.INFO, "Done loading FireFox custom preferences");
 	}
-	
+
+	/**
+	 * Load FireFox extension
+	 * @param extensionName
+	 * @param extensionValue
+	 * @return
+	 */
+	private boolean loadExtension(String extensionName, String extensionValue) {
+		this.tsl.enterLogger("In method loadExtension", "Extenstion = '" + extensionName + ", with value = '" + extensionValue + "'");
+		File extensionPath = null;
+		try {
+			extensionPath = new File(this.getClass().getClassLoader().getResource(extensionValue).getPath());
+			if (extensionPath.isFile()) {
+				this.tsl.logMessage(Level.INFO, "Setting '" + extensionName + "' path to '" + extensionPath.getAbsolutePath() + "'");
+				this.profile.addExtension(extensionPath);
+				this.tsl.exitLogger("Successfully loaded the '" + extensionValue + "'");
+				return true;
+			} else {
+				this.tsl.logMessage(Level.WARN, "Failed to load the extension '" + extensionName + "' using location '" +  extensionPath.getPath() + "' as it is an invalid file");
+				this.tsl.exitLogger("Failed to load the firebug extentsion");
+				return false;
+			}
+		} catch (IOException ioe) {
+			this.tsl.catchException(ioe);
+			this.tsl.logMessage(Level.WARN, "Unable to load '" + extensionName + "' with absolute path '" + extensionPath.getAbsolutePath() + "'");
+			this.tsl.exitLogger("Failed to load the firebug extentsion");
+			return false;
+		}
+	}
+
+	/**
+	 * Load FireBug preferences
+	 */
 	private void loadFireBugPreferences() {
-		this.tsl.logMessage(Level.INFO, "Loading firebug custom preferences");
-		this.setFireBugExtensionPreferenceStringValue("extensions.firebug.currentVersion", this.firefoxConfig.get("FIREBUG_EXTENSION_VERSION"), "2.0.10b1");
-		this.setFireFoxProfileBooleanPreference("extensions.firebug.console.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_CONSOLE_ENABLESITES"), true);
-		this.setFireFoxProfileBooleanPreference("extensions.firebug.script.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_SCRIPT_ENABLESITES"), true);
-		this.setFireBugExtensionPreferenceStringValue("extensions.firebug.defaultPanelName", this.firefoxConfig.get("FIREBUG_EXTENSION_DEFAULTPANELNAME"), "net");
-		this.setFireFoxProfileBooleanPreference("extensions.firebug.net.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_NET_ENABLESITES"), true);
-		this.setFireBugExtensionPreferenceStringValue("extensions.firebug.allPagesActivation", this.firefoxConfig.get("FIREBUG_EXTENSION_ALL_PAGES_ACTIVATION"), "on");
-		this.setFireFoxProfileBooleanPreference("extensions.firebug.cookies.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_COOKIES_ENABLESITES"), true);
-		this.tsl.logMessage(Level.INFO, "Done loading firebug custom preferences");
+		try {
+			this.tsl.logMessage(Level.INFO, "Loading firebug custom preferences");
+			this.setFireBugExtensionPreferenceStringValue("extensions.firebug.currentVersion", this.firefoxConfig.get("FIREBUG_EXTENSION_VERSION"), "2.0.10b1");
+			this.setFireFoxProfileBooleanPreference("extensions.firebug.console.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_CONSOLE_ENABLESITES"), true);
+			this.setFireFoxProfileBooleanPreference("extensions.firebug.script.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_SCRIPT_ENABLESITES"), true);
+			this.setFireBugExtensionPreferenceStringValue("extensions.firebug.defaultPanelName", this.firefoxConfig.get("FIREBUG_EXTENSION_DEFAULTPANELNAME"), "net");
+			this.setFireFoxProfileBooleanPreference("extensions.firebug.net.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_NET_ENABLESITES"), true);
+			this.setFireBugExtensionPreferenceStringValue("extensions.firebug.allPagesActivation", this.firefoxConfig.get("FIREBUG_EXTENSION_ALL_PAGES_ACTIVATION"), "on");
+			this.setFireFoxProfileBooleanPreference("extensions.firebug.cookies.enableSites", this.firefoxConfig.get("FIREBUG_EXTENSION_COOKIES_ENABLESITES"), true);
+			this.tsl.logMessage(Level.INFO, "Done loading firebug custom preferences");
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger("Failed to load FireBug preferences");
+		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "FireFoxDriverProfile [ Driver name = " + this.dc.getBrowserName() + ", acceptUntrustedCertificates = " + this.profile.getBooleanPreference("AcceptUntrustedCertificates", true) + "]";
-	}
-
-	/**
-	 * Set the desired capabilities platform to local OS
-	 */
-	private void setPlatform(String os) {
-		tsl.enterLogger("In method setPlatform", "Operating system = '" + os + "'");
-		try {
-			this.dc.setPlatform(PlatformOperatingSystem.getPlatform());
-			this.tsl.exitLogger("Successfully set latform has been set '" + this.dc.getPlatform() + "'");
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger("Failed to set the platform desired capability");
-		}
-	}
-	
-	
-
-	/**
-	 * 
-	 * @param browserName
-	 */
-	public void setBrowserName(String browserName) {
-		tsl.enterLogger("In method In method setBrowserName", "Browser name = '" + browserName + "'");
-		tsl.logMessage(Level.INFO, "Setting desired capabilties browser name to '" + browserName + "'");
-		this.dc.setBrowserName(browserName);
 	}
 
 	/**
@@ -139,7 +142,7 @@ public class FireFoxDriverConfig {
 	public void setAcceptUntrustedCertificates(String acceptUntrustedCertificates) {
 		tsl.enterLogger("In method setAcceptUntrustedCertificates", NO_PARAMETERS);
 		if (acceptUntrustedCertificates.equalsIgnoreCase("true") || acceptUntrustedCertificates.equalsIgnoreCase("false")) {
-			tsl.logMessage(Level.INFO, "Setting FireFox profile 'acceptUntrustedCertificates to '" + acceptUntrustedCertificates.toUpperCase() + "'");
+			this.tsl.logMessage(Level.INFO, "Setting FireFox profile 'acceptUntrustedCertificates to '" + acceptUntrustedCertificates.toUpperCase() + "'");
 			this.profile.setAcceptUntrustedCertificates(Boolean.valueOf(acceptUntrustedCertificates));
 		} else {
 			tsl.logMessage(Level.INFO, "Non boolean value detected. Setting 'acceptUntrustedCertificates' to it's default value of '" + acceptUntrustedCertificates + "'");
@@ -183,7 +186,7 @@ public class FireFoxDriverConfig {
 				this.tsl.exitLogger(SUCCESS_MESSAGE);
 			} else {
 				this.tsl.logMessage(Level.WARN, "Non boolean value detected. Setting 'browserCacheDiskEnable' to it's default value of '" + String.valueOf(preferenceDefaultValue).toUpperCase() + "'");
-				this.profile.setPreference("browser.cache.disk.enable", preferenceDefaultValue);
+				this.profile.setPreference(preferenceName, Boolean.valueOf(preferenceValue));
 				this.tsl.exitLogger(SUCCESS_MESSAGE);
 			}
 		} catch (Exception ex) {
@@ -224,18 +227,19 @@ public class FireFoxDriverConfig {
 	 * @param preferenceValue
 	 * @param preferenceDefaultValue
 	 */
-	private void setBrowserDownloadFolderListPreference(String preferenceValue, int preferenceDefaultValue) {
-		tsl.enterLogger("In method setBrowserDownloadFolderListPreference", String.valueOf(preferenceDefaultValue));
-		int folderlist = 0;
+	private void setFireFoxProfileIntegerPreference(String preferenceName, String preferenceValue, int preferenceDefaultValue) {
+		tsl.enterLogger("In method setFireFoxProfileStringPreference", "Preference name = '" + preferenceName + "'; Preferance value = '" + preferenceValue + "'; Preference Default Value = '" + preferenceDefaultValue + "'");
 		try {
-			folderlist = Integer.valueOf(preferenceValue);
+			if (preferenceName instanceof String) {
+				this.tsl.logMessage(Level.INFO, "Setting FireFox profile '" + preferenceName + "' to '" + preferenceValue + "'");
+				this.profile.setPreference(preferenceName, Integer.valueOf(preferenceValue));
+			} else {
+				this.tsl.logMessage(Level.WARN, "Non string value detected. Setting '" + preferenceName + "' to it's default value of '" + preferenceDefaultValue + "'");
+				this.profile.setPreference(preferenceName, preferenceDefaultValue);
+			}
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
-			this.tsl.logMessage(Level.WARN, "Non integer value detected. Setting '" + "browser.download.folderList" + "' to it's default value of '" + String.valueOf(preferenceDefaultValue) + "'");
-			folderlist = preferenceDefaultValue;
-		} finally {
-			tsl.logMessage(Level.INFO, "Setting FireFox profile '" + "browser.download.folderList" + "' to '" + String.valueOf(folderlist) + "'");
-			this.profile.setPreference("browser.download.folderList", folderlist);
+			this.tsl.exitLogger(FAILURE_MESSAGE);
 		}
 	}
 
@@ -253,38 +257,11 @@ public class FireFoxDriverConfig {
 				this.profile.setPreference(preferenceName, Boolean.valueOf(preferenceValue));
 			} else {
 				this.tsl.logMessage(Level.WARN, "Non string value detected. Setting '" + preferenceName + "' to it's default value of '" + String.valueOf(preferenceDefaultValue).toUpperCase() + "'");
-				this.profile.setPreference("browser.cache.disk.enable", preferenceDefaultValue);
+				this.profile.setPreference(preferenceName, preferenceDefaultValue);
 			}
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(FAILURE_MESSAGE);
-		}
-	}
-
-	/**
-	 * 
-	 * @param fireBugExtensionName
-	 */
-	private boolean loadExtension(String extensionName, String extensionValue) {
-		this.tsl.enterLogger("In method loadExtension", "Extenstion = '" + extensionName + ", with value = '" + extensionValue + "'");
-		File extensionPath = null;
-		try {
-			extensionPath = new File(this.getClass().getClassLoader().getResource(extensionValue).getPath());
-			if (extensionPath.isFile()) {
-				this.tsl.logMessage(Level.INFO, "Setting '" + extensionName + "' path to '" + extensionPath.getAbsolutePath() + "'");
-				this.profile.addExtension(extensionPath);
-				this.tsl.exitLogger("Successfully loaded the '" + extensionValue + "'");
-				return true;
-			} else {
-				this.tsl.logMessage(Level.WARN, "Failed to load the extension '" + extensionName + "' using location '" +  extensionPath.getPath() + "' as it is an invalid file");
-				this.tsl.exitLogger("Failed to load the firebug extentsion");
-				return false;
-			}
-		} catch (IOException ioe) {
-			this.tsl.catchException(ioe);
-			this.tsl.logMessage(Level.WARN, "Unable to load '" + extensionName + "' with absolute path '" + extensionPath.getAbsolutePath() + "'");
-			this.tsl.exitLogger("Failed to load the firebug extentsion");
-			return false;
 		}
 	}
 
@@ -310,5 +287,5 @@ public class FireFoxDriverConfig {
 			this.tsl.exitLogger(FAILURE_MESSAGE);
 		}
 	}
-	
+
 }
