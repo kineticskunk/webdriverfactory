@@ -1,14 +1,11 @@
 package com.kineticskunk.auto.webdriverfactory;
 
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.core.Logger;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -16,27 +13,39 @@ import com.kineticskunk.auto.logging.TestServiceLogging;
 
 public class FireFoxDesiredCapabilities {
 
-	private static final String SUCCESS_MESSAGE = "Success";
-	private static final String FAILURE_MESSAGE = "Fail";
-
-	private Hashtable<String, String> dcConfiguration;
-	private DesiredCapabilities dc; 
+	private DesiredCapabilities dc;
+	private Hashtable<String, String> dcCondfig;
 	private TestServiceLogging tsl;
 
-	public FireFoxDesiredCapabilities(Marker marker, Hashtable<String, String> dcConfiguration) {
-		this.dcConfiguration = dcConfiguration;
+	public FireFoxDesiredCapabilities() {
 		this.dc = new DesiredCapabilities();
-		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxDesiredCapabilities.class.getName()), marker);
+		this.tsl = null;
 	}
-	
+
+	public FireFoxDesiredCapabilities(Hashtable<String, String> dcCondfig) {
+		this();
+		this.dcCondfig = dcCondfig;
+		this.tsl = null;
+	}
+
+	/**
+	 * Construct FireFoxDesiredCapabilities with logging enabled
+	 * @param marker
+	 * @param dcCondfig
+	 */
+	public FireFoxDesiredCapabilities(Marker marker, Hashtable<String, String> dcCondfig) {
+		this(dcCondfig);
+		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxDesiredCapabilities.class.getName()), marker, true);
+	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public DesiredCapabilities loadDesiredCapabilities() {
-		Set<String> keys = dcConfiguration.keySet();
+	public DesiredCapabilities getDesiredCapabilities() {
+		Set<String> keys = this.dcCondfig.keySet();
 		for (String key : keys) {
-			this.setCapability(key, dcConfiguration.get(key), "");
+			this.setCapability(key, dcCondfig.get(key), "");
 		}
 		return this.dc;
 	}
@@ -52,23 +61,16 @@ public class FireFoxDesiredCapabilities {
 		if ((!ct.equals(null)) && (!ct.isEmpty())) {
 			try {
 				this.dc.setCapability(ct, capabilityValue);
-				this.tsl.logMessage(Level.INFO, "Successfully set platform to '" + ct + "'");
+				this.tsl.logMessage(Level.INFO, "Successfully set capability type to '" + capabilityType + "' to '" + capabilityValue + "'");
 			} catch (Exception ex0) {
 				this.tsl.catchException(ex0);
-				try {
-					this.tsl.logMessage(Level.WARN, "Failed to set capability type '" + ct + "' to '" + capabilityValue + "'. It will now be set to it's default value of '" + defaultCapabilityValue + "'");
-				} catch (Exception ex1) {
-					this.tsl.catchException(ex0);
-					this.tsl.logMessage(Level.WARN, "Failed to set capability type '" + ct + "' to '" + defaultCapabilityValue + "'");
-					this.tsl.exitLogger(FAILURE_MESSAGE);
-				}
+
 			}
-			this.tsl.exitLogger(SUCCESS_MESSAGE);	
-		} else {
 			this.tsl.logMessage(Level.WARN, "Capability type '" + capabilityType + "' is not supported" );
-			this.tsl.exitLogger(FAILURE_MESSAGE);
+			this.tsl.exitLogger(false);
+		} else {
+
 		}
-		
 	}
 
 	/**
@@ -135,7 +137,8 @@ public class FireFoxDesiredCapabilities {
 		case "PROXYING_EVERYTHING":
 			return CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING;
 		default:
-			this.tsl.exitLogger(FAILURE_MESSAGE);
+			this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType.toUpperCase() + "' is NOT SUPPORTED");
+			this.tsl.exitLogger(false);
 		}
 		return null;
 	}
@@ -148,14 +151,13 @@ public class FireFoxDesiredCapabilities {
 		tsl.enterLogger("In method setEnableJavaScript", "javascriptEnabled = '" + javascriptEnabled + "'");
 		try {
 			this.dc.setJavascriptEnabled(Boolean.valueOf(javascriptEnabled));
-			this.tsl.exitLogger("Successfully set 'javascriptEnabled' has been set '" + this.dc.getCapability("javascriptEnabled") + "'");
-			this.tsl.exitLogger(SUCCESS_MESSAGE);
+			this.tsl.logMessage(Level.INFO, "Successfully set 'javascriptEnabled' has been set '" + this.dc.getCapability("javascriptEnabled") + "'");
+			this.tsl.exitLogger(true);
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
-			this.tsl.exitLogger("Failed to set the 'javascriptEnabled' desired capability to '" + javascriptEnabled.toUpperCase() + "'");
-			this.tsl.exitLogger(FAILURE_MESSAGE);
+			this.tsl.logMessage(Level.ERROR, "Failed to set the 'javascriptEnabled' desired capability to '" + javascriptEnabled.toUpperCase() + "'");
+			this.tsl.exitLogger(false);
 		}
-		this.tsl.exitLogger(SUCCESS_MESSAGE);
 	}
 
 
