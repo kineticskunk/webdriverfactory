@@ -1,5 +1,6 @@
 package com.kineticskunk.auto.webdriverfactory;
 
+import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
@@ -55,19 +56,19 @@ public class FireFoxDesiredCapabilities {
 	 */
 	private void setCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
 		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
-		String ct = this.getCapabilityType(capabilityType);
-		if ((!ct.equals(null)) && (!ct.isEmpty())) {
-			try {
-				this.dc.setCapability(ct, capabilityValue);
+		try {
+			if (EnumSet.allOf(dc.class).contains(capabilityType)) {
+				this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
 				this.tsl.logMessage(Level.INFO, "Successfully set capability type to '" + capabilityType + "' to '" + capabilityValue + "'");
-			} catch (Exception ex0) {
-				this.tsl.catchException(ex0);
-
-			}
-			this.tsl.logMessage(Level.WARN, "Capability type '" + capabilityType + "' is not supported" );
+			} else {
+				this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType + "' is NOT SUPPORTED.");
+				this.tsl.exitLogger(false);
+			}	
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
-		} else {
-
+		} finally {
+			this.tsl.exitLogger(true);
 		}
 	}
 
@@ -134,11 +135,39 @@ public class FireFoxDesiredCapabilities {
 			return CapabilityType.ForSeleniumServer.PROXY_PAC;
 		case "PROXYING_EVERYTHING":
 			return CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING;
-		default:
-			this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType.toUpperCase() + "' is NOT SUPPORTED");
-			this.tsl.exitLogger(false);
 		}
 		return null;
+	}
+
+	private enum dc {
+		ACCEPT_SSL_CERTS,
+		BROWSER_NAME,
+		ELEMENT_SCROLL_BEHAVIOR,
+		ENABLE_PROFILING_CAPABILITY,
+		HAS_NATIVE_EVENTS,
+		HAS_TOUCHSCREEN,
+		LOGGING_PREFS,
+		OVERLAPPING_CHECK_DISABLED,
+		PAGE_LOAD_STRATEGY,
+		PLATFORM,
+		PROXY,
+		ROTATABLE,
+		SUPPORTS_ALERTS,
+		SUPPORTS_APPLICATION_CACHE,
+		SUPPORTS_FINDING_BY_CSS,
+		SUPPORTS_JAVASCRIPT,
+		SUPPORTS_LOCATION_CONTEXT,
+		SUPPORTS_NETWORK_CONNECTION,
+		SUPPORTS_SQL_DATABASE,
+		SUPPORTS_WEB_STORAGE,
+		TAKES_SCREENSHOT,
+		UNEXPECTED_ALERT_BEHAVIOUR,
+		VERSION,
+		AVOIDING_PROXY,
+		ENSURING_CLEAN_SESSION,
+		ONLY_PROXYING_SELENIUM_TRAFFIC,
+		PROXY_PAC,
+		PROXYING_EVERYTHING;
 	}
 
 	/**
@@ -157,7 +186,5 @@ public class FireFoxDesiredCapabilities {
 			this.tsl.exitLogger(false);
 		}
 	}
-
-
-
+	
 }
