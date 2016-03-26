@@ -2,13 +2,11 @@ package com.kineticskunk.auto.webdriverfactory;
 
 import java.util.Hashtable;
 import java.util.Set;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-
 import com.kineticskunk.auto.logging.TestServiceLogging;
 
 public class FireFoxDesiredCapabilities {

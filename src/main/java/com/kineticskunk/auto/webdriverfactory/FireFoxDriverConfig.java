@@ -44,13 +44,38 @@ public class FireFoxDriverConfig {
 	 * @throws IOException
 	 */
 	protected FireFoxDriverConfig(boolean loadFireBug)  throws IOException{
-		//this.loadFireFoxCustomProfile();
+		this.loadFireFoxCustomProfile();
 		if (this.loadExtension("FireBug", this.firefoxConfig.get("FIREBUG_EXTENSION_NAME"))) {
 			this.loadFireBugPreferences();
 		}
 	}
 	
-	
+	/**
+	 * Load FireFox custom profile configuration
+	 */
+	private void loadFireFoxCustomProfile() {
+		try {
+			this.tsl.enterLogger("Loading FireFox profile preferences");
+			this.setAcceptUntrustedCertificates(this.firefoxConfig.get("ACCEPT_UNTRUSTED_CERTIFICATES"));
+			this.setEnableNativeEvents(this.firefoxConfig.get("ENABLE_NATIVE_EVENTS"));
+			this.setFireBrowserDownLoad(this.firefoxConfig.get("BROWSER_DOWNLOAD_DIRECTORY"));
+			this.setFireFoxProfileIntegerPreference("browser.download.folderList", this.firefoxConfig.get("BROWSER_DOWNLOAD_FOLDERLIST"), 2);
+			this.setFireFoxProfileBooleanPreference("browser.cache.disk.enable", this.firefoxConfig.get("BROWSER_CACHE_DISK_ENABLE"), true);
+			this.setFireFoxProfileBooleanPreference("browser.download.manager.showWhenStarting", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_SHOWWHENSTARTING"), false);
+			this.setFireFoxProfileBooleanPreference("browser.download.manager.alertOnEXEOpen", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_ALERTONEXEOPEN"), false);
+			this.setFireFoxProfileBooleanPreference("browser.download.manager.focusWhenStarting", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_FOCUSWHENTARTING"), false);
+			this.setFireFoxProfileBooleanPreference("browser.download.manager.useWindow", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_USEWINDOW"), false);
+			this.setFireFoxProfileBooleanPreference("browser.download.manager.showAlertOnComplete", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_SHOWALERTSONCOMPLETE"), false);
+			this.setFireFoxProfileBooleanPreference("browser.download.manager.closeWhenDone", this.firefoxConfig.get("BROWSER_DOWNLOAD_MANAGER_CLOSEWHENDONE"), false);
+			this.setFireFoxProfileBooleanPreference("browser.helperApps.alwaysAsk.force", this.firefoxConfig.get("BROWSER_HELPER_APPS_ALWAYSASKFORCE"), false);
+			this.setFireFoxProfileStringPreference("browser.helperApps.neverAsk.saveToDisk", this.firefoxConfig.get("BROWSER_HELPER_APPS_NEVERASK_SAVETODISK"), DEFAULT_BROWSER_HELPER_APPS_NEVERASK_SAVETODISK);
+			this.tsl.exitLogger(true);
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.logMessage(Level.FATAL, "Failed to load FireFox custom profile settings");
+			this.tsl.exitLogger(false);
+		}
+	}
 
 	/**
 	 * Load FireFox extension
@@ -104,6 +129,146 @@ public class FireFoxDriverConfig {
 	@Override
 	public String toString() {
 		return "FireFoxDriverProfile [ Driver name = " + this.dc.getBrowserName() + ", acceptUntrustedCertificates = " + this.profile.getBooleanPreference("AcceptUntrustedCertificates", true) + "]";
+	}
+
+	/**
+	 * Set firefoxprofile.accept-untrusted-certificates to a boolean value
+	 * @author yodaqua
+	 * @category configuration
+	 * @param acceptUntrustedCertificates
+	 */
+	public void setAcceptUntrustedCertificates(String acceptUntrustedCertificates) {
+		tsl.enterLogger("In method setAcceptUntrustedCertificates", NO_PARAMETERS);
+		if (acceptUntrustedCertificates.equalsIgnoreCase("true") || acceptUntrustedCertificates.equalsIgnoreCase("false")) {
+			this.tsl.logMessage(Level.INFO, "Setting FireFox profile 'acceptUntrustedCertificates to '" + acceptUntrustedCertificates.toUpperCase() + "'");
+			this.profile.setAcceptUntrustedCertificates(Boolean.valueOf(acceptUntrustedCertificates));
+		} else {
+			tsl.logMessage(Level.INFO, "Non boolean value detected. Setting 'acceptUntrustedCertificates' to it's default value of '" + acceptUntrustedCertificates + "'");
+			this.profile.setAcceptUntrustedCertificates(Boolean.valueOf(true));
+		}
+	}
+
+	/**
+	 * Set firefoxprofile.enable-native-events to a boolean value
+	 * @author yodaqua
+	 * @category configuration
+	 * @param enableNativeEvents
+	 */
+	private void setEnableNativeEvents(String enableNativeEvents) {
+		tsl.enterLogger("In method setEnableNativeEvents", NO_PARAMETERS);
+		try {
+			if (enableNativeEvents.equalsIgnoreCase("true") || enableNativeEvents.equalsIgnoreCase("false")) {
+				this.tsl.logMessage(Level.INFO, "Setting FireFox profile 'enableNativeEvents to '" + enableNativeEvents.toUpperCase() + "'");
+				this.profile.setEnableNativeEvents(Boolean.valueOf(enableNativeEvents));
+				this.tsl.exitLogger(true);
+			} else {
+				this.tsl.logMessage(Level.WARN, "Non boolean value detected. Setting 'enableNativeEvents' to it's default value of '" + enableNativeEvents + "'");
+				this.profile.setEnableNativeEvents(Boolean.valueOf(true));
+				this.tsl.exitLogger(true);
+			}
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
+		
+	}
+
+	/**
+	 * Set FireFox profile boolean value preferences
+	 * @author yodaqua
+	 * @category configuration
+	 * @param preferenceName
+	 * @param preferenceValue
+	 * @param preferenceDefaultValue
+	 */
+	private void setFireFoxProfileBooleanPreference(String preferenceName, String preferenceValue, boolean preferenceDefaultValue) {
+		tsl.enterLogger("In method setFireFoxProfileBooleanPreference", "Preference name = '" + preferenceName + "'; Preferance value = '" + preferenceValue + "; Preference Default Value = '" + preferenceDefaultValue);
+		try {
+			if (preferenceValue.equalsIgnoreCase("true") || preferenceValue.equalsIgnoreCase("false")) {
+				this.tsl.logMessage(Level.INFO, "Setting FireFox profile '" + preferenceName + "' to '" + preferenceValue.toUpperCase() + "'");
+				this.profile.setPreference(preferenceName, Boolean.valueOf(preferenceValue));
+				this.tsl.exitLogger(true);
+			} else {
+				this.tsl.logMessage(Level.WARN, "Non boolean value detected. Setting 'browserCacheDiskEnable' to it's default value of '" + String.valueOf(preferenceDefaultValue).toUpperCase() + "'");
+				this.profile.setPreference(preferenceName, Boolean.valueOf(preferenceValue));
+				this.tsl.exitLogger(true);
+			}
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
+	}
+
+	/**
+	 * Set the FireFox profile download directory
+	 * @param downloodLocation
+	 */
+	private void setFireBrowserDownLoad(String downloodLocation) {
+		tsl.enterLogger("In method setFireBrowserDownLoad", downloodLocation);
+		try {
+			File downloadlocation = new File(downloodLocation);
+			if (downloadlocation.isDirectory()) {
+				this.tsl.logMessage(Level.INFO, "Setting FireFox profile 'browser.download.dir' to '" + downloodLocation + "'");
+				this.profile.setPreference("browser.download.dir", downloodLocation);
+				this.tsl.exitLogger(true);
+			} else {
+				if (PlatformOperatingSystem.isWindows()) {
+					this.tsl.logMessage(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
+					this.profile.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
+				} else if (PlatformOperatingSystem.isMac() || PlatformOperatingSystem.isSolaris() || PlatformOperatingSystem.isUnix()) {
+					this.tsl.logMessage(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
+					this.profile.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
+				}
+				this.tsl.exitLogger(true);
+			}
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
+	}
+
+	/**
+	 * 
+	 * @param preferenceName
+	 * @param preferenceValue
+	 * @param preferenceDefaultValue
+	 */
+	private void setFireFoxProfileIntegerPreference(String preferenceName, String preferenceValue, int preferenceDefaultValue) {
+		tsl.enterLogger("In method setFireFoxProfileStringPreference", "Preference name = '" + preferenceName + "'; Preferance value = '" + preferenceValue + "'; Preference Default Value = '" + preferenceDefaultValue + "'");
+		try {
+			if (preferenceName instanceof String) {
+				this.tsl.logMessage(Level.INFO, "Setting FireFox profile '" + preferenceName + "' to '" + preferenceValue + "'");
+				this.profile.setPreference(preferenceName, Integer.valueOf(preferenceValue));
+			} else {
+				this.tsl.logMessage(Level.WARN, "Non string value detected. Setting '" + preferenceName + "' to it's default value of '" + preferenceDefaultValue + "'");
+				this.profile.setPreference(preferenceName, preferenceDefaultValue);
+			}
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
+	}
+
+	/**
+	 * 
+	 * @param preferenceName
+	 * @param preferenceValue
+	 * @param preferenceDefaultValue
+	 */
+	private void setFireFoxProfileStringPreference(String preferenceName, String preferenceValue, String preferenceDefaultValue) {
+		tsl.enterLogger("In method setFireFoxProfileStringPreference", "Preference name = '" + preferenceName + "'; Preferance value = '" + preferenceValue + "'; Preference Default Value = '" + preferenceDefaultValue + "'");
+		try {
+			if (preferenceName instanceof String) {
+				this.tsl.logMessage(Level.INFO, "Setting FireFox profile '" + preferenceName + "' to '" + preferenceValue.toUpperCase() + "'");
+				this.profile.setPreference(preferenceName, Boolean.valueOf(preferenceValue));
+			} else {
+				this.tsl.logMessage(Level.WARN, "Non string value detected. Setting '" + preferenceName + "' to it's default value of '" + String.valueOf(preferenceDefaultValue).toUpperCase() + "'");
+				this.profile.setPreference(preferenceName, preferenceDefaultValue);
+			}
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
 	}
 
 	/**
