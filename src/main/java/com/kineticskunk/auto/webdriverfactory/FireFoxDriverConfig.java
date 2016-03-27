@@ -26,6 +26,7 @@ public class FireFoxDriverConfig {
 	private Hashtable<String, String> firefoxConfig;
 	private TestServiceLogging tsl;
 	private FirefoxProfile profile;
+	private PlatformOperatingSystem pos;
 	private DesiredCapabilities dc;
 
 	/**
@@ -33,9 +34,10 @@ public class FireFoxDriverConfig {
 	 */
 	protected FireFoxDriverConfig(Logger logger, Marker marker, Hashtable <String, String> firefoxConfig) {
 		this.firefoxConfig = firefoxConfig;
-		tsl = new TestServiceLogging(logger, marker, true);
+		tsl = new TestServiceLogging(logger, true);
 		profile = new FirefoxProfile();
 		dc = new DesiredCapabilities();
+		pos = new PlatformOperatingSystem();
 	}
 
 	/**
@@ -212,10 +214,10 @@ public class FireFoxDriverConfig {
 				this.profile.setPreference("browser.download.dir", downloodLocation);
 				this.tsl.exitLogger(true);
 			} else {
-				if (PlatformOperatingSystem.isWindows()) {
+				if (pos.isWindows()) {
 					this.tsl.logMessage(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
 					this.profile.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
-				} else if (PlatformOperatingSystem.isMac() || PlatformOperatingSystem.isSolaris() || PlatformOperatingSystem.isUnix()) {
+				} else if (pos.isMac() || pos.isSolaris() || pos.isUnix()) {
 					this.tsl.logMessage(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
 					this.profile.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
 				}

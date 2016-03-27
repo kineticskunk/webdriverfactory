@@ -1,13 +1,14 @@
 package com.kineticskunk.auto.webdriverfactory;
 
 import java.io.File;
-import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.Set;
+
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Marker;
 import org.openqa.selenium.firefox.FirefoxProfile;
+
 import com.kineticskunk.auto.logging.TestServiceLogging;
 
 public class FireFoxProfile {
@@ -16,13 +17,15 @@ public class FireFoxProfile {
 	private static final String DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY = System.getProperty("user.home") + "/downloads/";
 	
 	private Hashtable<String, String> ffpConfig;
-	private Utilties utils;
 	private FirefoxProfile ffp;
+	private Utilties utils;
+	private PlatformOperatingSystem pos;
 	private TestServiceLogging tsl;
 
 	public FireFoxProfile() {
 		ffp = new FirefoxProfile();
 		utils = new Utilties();
+		pos = new PlatformOperatingSystem();
 	}
 
 	public FireFoxProfile(Hashtable<String, String> ffpConfig) {
@@ -30,9 +33,9 @@ public class FireFoxProfile {
 		this.ffpConfig = ffpConfig;
 	}
 
-	public FireFoxProfile(Marker marker, Hashtable<String, String> dcCondfig) {
+	public FireFoxProfile(Hashtable<String, String> dcCondfig, boolean enableLogging) {
 		this(dcCondfig);
-		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxProfile.class.getName()), marker, true);
+		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxProfile.class.getName()) , enableLogging);
 	}
 	
 	/**
@@ -56,7 +59,7 @@ public class FireFoxProfile {
 		try {
 			Set<String> keys = this.ffpConfig.keySet();
 			for (String key : keys) {
-				if (EnumSet.allOf(standardProfilePreferenceNames.class).contains(key.replaceAll(".", ""))) {
+				if (EnumUtils.isValidEnum(standardProfilePreferenceNames.class, key.replaceAll(".", ""))) {
 					this.setStandardProfilePreference(key, this.ffpConfig.get(key));
 				} else if (key.contains("browser.download.dir")) {
 					this.setFireBrowserDownLoad(this.ffpConfig.get(key));
@@ -128,10 +131,10 @@ public class FireFoxProfile {
 				this.ffp.setPreference("browser.download.dir", downloodLocation);
 				this.tsl.exitLogger(true);
 			} else {
-				if (PlatformOperatingSystem.isWindows()) {
+				if (pos.isWindows()) {
 					this.tsl.logMessage(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
 					this.ffp.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
-				} else if (PlatformOperatingSystem.isMac() || PlatformOperatingSystem.isSolaris() || PlatformOperatingSystem.isUnix()) {
+				} else if (pos.isMac() || pos.isSolaris() || pos.isUnix()) {
 					this.tsl.logMessage(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
 					this.ffp.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
 				}

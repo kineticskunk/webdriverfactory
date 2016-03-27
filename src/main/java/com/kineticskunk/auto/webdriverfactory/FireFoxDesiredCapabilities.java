@@ -1,30 +1,32 @@
 package com.kineticskunk.auto.webdriverfactory;
 
-import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.Set;
+
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Marker;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
 import com.kineticskunk.auto.logging.TestServiceLogging;
 
 public class FireFoxDesiredCapabilities {
 
 	private DesiredCapabilities dc;
 	private Hashtable<String, String> dcCondfig;
+	private PlatformOperatingSystem pos;
 	private TestServiceLogging tsl;
 
 	public FireFoxDesiredCapabilities() {
 		this.dc = new DesiredCapabilities();
+		this.pos = new PlatformOperatingSystem();
 		this.tsl = null;
 	}
 
 	public FireFoxDesiredCapabilities(Hashtable<String, String> dcCondfig) {
 		this();
 		this.dcCondfig = dcCondfig;
-		this.tsl = null;
 	}
 
 	/**
@@ -32,9 +34,9 @@ public class FireFoxDesiredCapabilities {
 	 * @param marker
 	 * @param dcCondfig
 	 */
-	public FireFoxDesiredCapabilities(Marker marker, Hashtable<String, String> dcCondfig) {
+	public FireFoxDesiredCapabilities(Hashtable<String, String> dcCondfig, boolean enableLogging) {
 		this(dcCondfig);
-		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxDesiredCapabilities.class.getName()), marker, true);
+		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxDesiredCapabilities.class.getName()), enableLogging);
 	}
 
 	/**
@@ -57,18 +59,23 @@ public class FireFoxDesiredCapabilities {
 	private void setCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
 		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
 		try {
-			if (EnumSet.allOf(dc.class).contains(capabilityType)) {
-				this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
-				this.tsl.logMessage(Level.INFO, "Successfully set capability type to '" + capabilityType + "' to '" + capabilityValue + "'");
+			if (EnumUtils.isValidEnum(desiredCapabilitiesEnum.class, capabilityType)) {
+				if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
+					this.dc.setCapability(this.getCapabilityType(capabilityType), pos.getPlatform());
+				} else {
+					this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
+				}
+				this.tsl.exitLogger(true);
+				return;
 			} else {
 				this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType + "' is NOT SUPPORTED.");
 				this.tsl.exitLogger(false);
+				return;
 			}	
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
-		} finally {
-			this.tsl.exitLogger(true);
+			return;
 		}
 	}
 
@@ -78,7 +85,7 @@ public class FireFoxDesiredCapabilities {
 	 * @return
 	 */
 	private String getCapabilityType(String capabilityType) {
-		switch (capabilityType.toLowerCase()) {
+		switch (capabilityType.toUpperCase()) {
 		case "ACCEPT_SSL_CERTS":
 			return CapabilityType.ACCEPT_SSL_CERTS;
 		case "BROWSER_NAME":
@@ -138,8 +145,8 @@ public class FireFoxDesiredCapabilities {
 		}
 		return null;
 	}
-
-	private enum dc {
+	
+	private enum desiredCapabilitiesEnum {
 		ACCEPT_SSL_CERTS,
 		BROWSER_NAME,
 		ELEMENT_SCROLL_BEHAVIOR,
@@ -162,7 +169,49 @@ public class FireFoxDesiredCapabilities {
 		SUPPORTS_WEB_STORAGE,
 		TAKES_SCREENSHOT,
 		UNEXPECTED_ALERT_BEHAVIOUR,
-		VERSION,
+		VERSION;
+	}
+	
+	private void setSeleniumServerCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
+		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
+		try {
+			if (EnumUtils.isValidEnum(forSeleniumServerDesiredCapabiltiesEnum.class, capabilityType)) {
+				if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
+					this.dc.setCapability(this.getCapabilityType(capabilityType), pos.getPlatform());
+				} else {
+					this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
+				}
+				this.tsl.exitLogger(true);
+				return;
+			} else {
+				this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType + "' is NOT SUPPORTED.");
+				this.tsl.exitLogger(false);
+				return;
+			}	
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+			return;
+		}
+	}
+	
+	private String getCapabilityTypeForSeleniumServer(String capabilityType) {
+		switch (capabilityType.toUpperCase()) {
+		case "AVOIDING_PROXY":
+			return CapabilityType.ForSeleniumServer.AVOIDING_PROXY;
+		case "ENSURING_CLEAN_SESSION":
+			return CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION;
+		case "ONLY_PROXYING_SELENIUM_TRAFFIC":
+			return CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC;
+		case "PROXY_PAC":
+			return CapabilityType.ForSeleniumServer.PROXY_PAC;
+		case "PROXYING_EVERYTHING":
+			return CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING;
+		}
+		return null;
+	}
+	
+	private enum forSeleniumServerDesiredCapabiltiesEnum {
 		AVOIDING_PROXY,
 		ENSURING_CLEAN_SESSION,
 		ONLY_PROXYING_SELENIUM_TRAFFIC,

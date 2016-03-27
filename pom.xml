@@ -14,6 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.12</junit.version>
 		<firefox.driver.version>2.53.0</firefox.driver.version>
+		<commons.lang3.version>3.4</commons.lang3.version>
 	</properties>
 
 	<build>
@@ -172,6 +173,11 @@
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-firefox-driver</artifactId>
 			<version>${firefox.driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons.lang3.version}</version>
 		</dependency>
 	</dependencies>
 </project>
