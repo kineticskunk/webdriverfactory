@@ -2,10 +2,11 @@ package com.kineticskunk.auto.webdriverfactory;
 
 import java.util.Hashtable;
 import java.util.Set;
-
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -46,7 +47,17 @@ public class FireFoxDesiredCapabilities {
 	public DesiredCapabilities getDesiredCapabilities() {
 		Set<String> keys = this.dcCondfig.keySet();
 		for (String key : keys) {
-			this.setCapability(key, dcCondfig.get(key), "");
+			if (EnumUtils.isValidEnum(desiredCapabilitiesEnum.class, key))  {
+				if (key.equalsIgnoreCase("LOGGING_PREFS")) {
+					WebDriverLogginPreferences logs = new WebDriverLogginPreferences(dcCondfig.get(key));
+					
+				}
+				this.setCapability(key, dcCondfig.get(key), "");
+			} else if (EnumUtils.isValidEnum(forSeleniumServerDesiredCapabiltiesEnum.class, key)) {
+				this.setSeleniumServerCapability(key, dcCondfig.get(key), "");
+			} else {
+				this.tsl.logMessage(Level.ERROR, "Capability type '" + key + "' is NOT SUPPORTED.");
+			}
 		}
 		return this.dc;
 	}
@@ -59,19 +70,13 @@ public class FireFoxDesiredCapabilities {
 	private void setCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
 		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
 		try {
-			if (EnumUtils.isValidEnum(desiredCapabilitiesEnum.class, capabilityType)) {
-				if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
-					this.dc.setCapability(this.getCapabilityType(capabilityType), pos.getPlatform());
-				} else {
-					this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
-				}
-				this.tsl.exitLogger(true);
-				return;
+			if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
+				this.dc.setCapability(this.getCapabilityType(capabilityType), pos.getPlatform());
 			} else {
-				this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType + "' is NOT SUPPORTED.");
-				this.tsl.exitLogger(false);
-				return;
-			}	
+				this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
+			}
+			this.tsl.exitLogger(true);
+			return;
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
@@ -145,7 +150,7 @@ public class FireFoxDesiredCapabilities {
 		}
 		return null;
 	}
-	
+
 	private enum desiredCapabilitiesEnum {
 		ACCEPT_SSL_CERTS,
 		BROWSER_NAME,
@@ -171,69 +176,42 @@ public class FireFoxDesiredCapabilities {
 		UNEXPECTED_ALERT_BEHAVIOUR,
 		VERSION;
 	}
-	
+
 	private void setSeleniumServerCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
 		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
 		try {
-			if (EnumUtils.isValidEnum(forSeleniumServerDesiredCapabiltiesEnum.class, capabilityType)) {
-				if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
-					this.dc.setCapability(this.getCapabilityType(capabilityType), pos.getPlatform());
-				} else {
-					this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
-				}
-				this.tsl.exitLogger(true);
-				return;
-			} else {
-				this.tsl.logMessage(Level.ERROR, "Capability type '" + capabilityType + "' is NOT SUPPORTED.");
-				this.tsl.exitLogger(false);
-				return;
-			}	
+			switch (capabilityType.toUpperCase()) {
+			case "AVOIDING_PROXY":
+				this.dc.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, capabilityValue);
+				break;
+			case "ENSURING_CLEAN_SESSION":
+				this.dc.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, capabilityValue);
+				break;
+			case "ONLY_PROXYING_SELENIUM_TRAFFIC":
+				this.dc.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, capabilityValue);
+				break;
+			case "PROXY_PAC":
+				this.dc.setCapability(CapabilityType.ForSeleniumServer.PROXY_PAC, capabilityValue);
+				break;
+			case "PROXYING_EVERYTHING":
+				this.dc.setCapability(CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING, capabilityValue);
+				break;
+			}
+			this.tsl.exitLogger(true);
+			return;
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
 			return;
 		}
 	}
-	
-	private String getCapabilityTypeForSeleniumServer(String capabilityType) {
-		switch (capabilityType.toUpperCase()) {
-		case "AVOIDING_PROXY":
-			return CapabilityType.ForSeleniumServer.AVOIDING_PROXY;
-		case "ENSURING_CLEAN_SESSION":
-			return CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION;
-		case "ONLY_PROXYING_SELENIUM_TRAFFIC":
-			return CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC;
-		case "PROXY_PAC":
-			return CapabilityType.ForSeleniumServer.PROXY_PAC;
-		case "PROXYING_EVERYTHING":
-			return CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING;
-		}
-		return null;
-	}
-	
+
 	private enum forSeleniumServerDesiredCapabiltiesEnum {
 		AVOIDING_PROXY,
 		ENSURING_CLEAN_SESSION,
 		ONLY_PROXYING_SELENIUM_TRAFFIC,
 		PROXY_PAC,
 		PROXYING_EVERYTHING;
-	}
-
-	/**
-	 * 
-	 * @param javascriptEnabled
-	 */
-	private void setEnableJavaScript(String javascriptEnabled) {
-		tsl.enterLogger("In method setEnableJavaScript", "javascriptEnabled = '" + javascriptEnabled + "'");
-		try {
-			this.dc.setJavascriptEnabled(Boolean.valueOf(javascriptEnabled));
-			this.tsl.logMessage(Level.INFO, "Successfully set 'javascriptEnabled' has been set '" + this.dc.getCapability("javascriptEnabled") + "'");
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.logMessage(Level.ERROR, "Failed to set the 'javascriptEnabled' desired capability to '" + javascriptEnabled.toUpperCase() + "'");
-			this.tsl.exitLogger(false);
-		}
 	}
 	
 }
