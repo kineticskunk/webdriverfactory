@@ -5,8 +5,6 @@ import java.util.Set;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -49,8 +47,8 @@ public class FireFoxDesiredCapabilities {
 		for (String key : keys) {
 			if (EnumUtils.isValidEnum(desiredCapabilitiesEnum.class, key))  {
 				if (key.equalsIgnoreCase("LOGGING_PREFS")) {
-					WebDriverLogginPreferences logs = new WebDriverLogginPreferences(dcCondfig.get(key));
-					
+					WebDriverLoggingPreferences logs = new WebDriverLoggingPreferences(dcCondfig.get(key));
+					this.setCapability(key, logs.getLoggingPreferences(), "");
 				}
 				this.setCapability(key, dcCondfig.get(key), "");
 			} else if (EnumUtils.isValidEnum(forSeleniumServerDesiredCapabiltiesEnum.class, key)) {
@@ -67,7 +65,7 @@ public class FireFoxDesiredCapabilities {
 	 * @param capabilityName
 	 * @param capabilityValue
 	 */
-	private void setCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
+	private void setCapability(String capabilityType, Object capabilityValue, String defaultCapabilityValue) {
 		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
 		try {
 			if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
@@ -215,3 +213,4 @@ public class FireFoxDesiredCapabilities {
 	}
 	
 }
+ 
