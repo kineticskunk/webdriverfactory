@@ -27,7 +27,7 @@ public class WebDriverProxy {
 		this.proxy = new Proxy();
 	}
 
-	public void setHTTPProoxy(String httpProxy) {
+	public void setHTTPProxy(String httpProxy) {
 		this.proxy.setHttpProxy(httpProxy);
 	}
 

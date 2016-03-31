@@ -62,7 +62,7 @@ public class PlatformOperatingSystem {
 		}
 	}
 
-	protected Platform getPlatform() {
+	protected Platform getHostPlatform() {
 		String os = getOS();
 		if (os.contains("linux")) {
 			return Platform.LINUX;
@@ -89,4 +89,32 @@ public class PlatformOperatingSystem {
 			return Platform.ANY;
 		}
 	}
+	
+	protected Platform getPlatform(String os) {
+		if (os.contains("linux")) {
+			return Platform.LINUX;
+		}
+		else if (os.contains("mac") || (os.contains("osx"))) {
+			return Platform.MAC;
+		}
+		else if (os.contains("xp")) {
+			return Platform.XP;
+		}
+		else if (os.contains("win7")) {
+			return Platform.VISTA;
+		}
+		else if (os.contains("win8")) {
+			return Platform.WIN8;
+		}
+		else if (os.contains("win")) {
+			return Platform.WINDOWS;
+		}
+		else if (os.contains("android")) {
+			return Platform.ANDROID;
+		}
+		else {
+			return Platform.ANY;
+		}
+	}
+
 }
