@@ -3,12 +3,10 @@ package com.kineticskunk.auto.webdriverfactory;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Set;
-
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.firefox.FirefoxProfile;
-
 import com.kineticskunk.auto.logging.TestServiceLogging;
 
 public class FireFoxProfile {
@@ -27,13 +25,17 @@ public class FireFoxProfile {
 		utils = new Utilties();
 		pos = new PlatformOperatingSystem();
 	}
-
+	
 	public FireFoxProfile(Hashtable<String, String> ffpConfig) {
 		this();
 		this.ffpConfig = ffpConfig;
 	}
+	
+	public FireFoxProfile(boolean enableLogging) {
+		this();
+	}
 
-	public FireFoxProfile(Hashtable<String, String> dcCondfig, boolean enableLogging) {
+	public FireFoxProfile(boolean enableLogging, Hashtable<String, String> dcCondfig) {
 		this(dcCondfig);
 		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxProfile.class.getName()) , enableLogging);
 	}
@@ -54,7 +56,7 @@ public class FireFoxProfile {
 	 * 
 	 * @return
 	 */
-	public FirefoxProfile setFirefoxProfile() {
+	public FirefoxProfile getFirefoxProfile() {
 		this.tsl.enterLogger("Configuring firefox profile");
 		try {
 			Set<String> keys = this.ffpConfig.keySet();

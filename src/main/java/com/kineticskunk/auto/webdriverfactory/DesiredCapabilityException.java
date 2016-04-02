@@ -24,6 +24,12 @@ public class DesiredCapabilityException extends Exception {
 	public DesiredCapabilityException(String message, Throwable cause) {
 		super(message, cause);
 	}
+	
+	public DesiredCapabilityException(String capabilityName, String capabilityValue) throws DesiredCapabilityException {
+		if (capabilityValue == null) {
+			throw new DesiredCapabilityException("DesiredCapability '" + capabilityName + "' is NULL" );
+		}
+	}
 
 	@Override
 	public String toString() {

@@ -185,5 +185,10 @@
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.kineticskunk.auto</groupId>
+			<artifactId>converter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
