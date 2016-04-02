@@ -1,5 +1,6 @@
 package com.kineticskunk.auto.webdriverfactory;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -13,10 +14,11 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kineticskunk.auto.logging.TestServiceLogging;
+import com.kineticskunk.auto.webdriverfactory.FireFoxProfile.standardProfilePreferenceNames;
 
 public class FireFoxDesiredCapabilities {
-	
-	private static final String AUTODETECT = "autodetect";
+
+	private static final String AUTODETECT = "AUTODETECT";
 	private static final String USE_HOST_PLATFORM = "use_host_platform";
 	private static final String USE_HOST_OS_VERSION = "use_host_os_version";
 
@@ -35,7 +37,7 @@ public class FireFoxDesiredCapabilities {
 		this(enableLogging);
 		this.dcConfig = dcConfig;
 	}
-	
+
 	/*
 
 	private void setCapability(String capabilityType, Object capabilityValue) {
@@ -54,96 +56,110 @@ public class FireFoxDesiredCapabilities {
 			return;
 		}
 	}
-*/
-	protected void setFireFoxDesiredCapabilities() {
-		Set<String> keys = this.dcConfig.keySet();
-		for (String key : keys) {
-			String value = dcConfig.get(key);
-			if (!value.isEmpty() || !value.equals(null) || !value.equals("") || value.equals(Keys.SPACE)) {
-				switch (key.toUpperCase()) {
-				case "ACCEPT_SSL_CERTS":			
-					this.setAcceptSslCerts(value);
-					break;
-				case "BROWSER_NAME":
-					this.setBrowserName(value);
-					break;
-				case "ELEMENT_SCROLL_BEHAVIOR":
-					this.setEnrollmentBehaviour(value);
-					break;
-				case "ENABLE_PROFILING_CAPABILITY":
-					this.setEnableProfilingCapability(value);
-					break;
-				case "HAS_NATIVE_EVENTS":
-					this.setHasNativeEvents(value);
-					break;
-				case "HAS_TOUCHSCREEN":
-					this.setHasTouchScreen(value);
-					break;
-				case "LOGGING_PREFS":
-					this.setLoggingPrefs(value);
-					break;
-				case "OVERLAPPING_CHECK_DISABLED":
-					this.setOverlappingCheckDisabled(value);
-					break;
-				case "PAGE_LOAD_STRATEGY":
-					this.setPageLoadStrategy(value);
-					break;
-				case "PLATFORM":
-					this.setPlatform(value);
-					break;
-				case "PROXY":
-					this.setProxy(value);
-					break;
-				case "ROTATABLE":
-					this.setRotable(value);
-					break;
-				case "SUPPORTS_ALERTS":
-					this.setSupportAlerts(value);
-					break;
-				case "SUPPORTS_APPLICATION_CACHE":
-					this.setSupportsApplicationCache(value);
-					break;
-				case "SUPPORTS_FINDING_BY_CSS":
-					this.setSupportsFindingByCSS(value);
-					break;
-				case "SUPPORTS_JAVASCRIPT":
-					this.setSupportsJavaScript(value);
-					break;
-				case "SUPPORTS_LOCATION_CONTEXT":
-					this.setSupportsLocationContext(value);
-					break;
-				case "SUPPORTS_NETWORK_CONNECTION":
-					this.setSupportsNetworkConnection(value);
-					break;
-				case "SUPPORTS_SQL_DATABASE":
-					this.setSupportsSQLDatabase(value);
-					break;
-				case "SUPPORTS_WEB_STORAGE":
-					this.setSupportsWebStorage(value);
-					break;
-				case "TAKES_SCREENSHOT":
-					this.setTakesScreenShot(value);
-					break;
-				case "UNEXPECTED_ALERT_BEHAVIOUR":
-					this.setUnexpectedAlertBehaviour(value);
-					break;
-				case "VERSION":
-					this.setVersion(value);
-					break;
-				}
-			} else {
-				this.tsl.logMessage(Level.INFO, "Capability type '" + key + "' has not being set.");
+	 */
+	protected <E extends Enum<E>> boolean isKeyInEnum(Class<E> enumData, String key) {
+		for (Enum<E> enumVal : enumData.getEnumConstants()) {
+			if (enumVal.toString() == key) {
+				return true;
 			}
 		}
+		return false;
 	}
-	
+
+	protected void setFireFoxDesiredCapabilities() throws DesiredCapabilityException {
+		Set<String> keys = this.dcConfig.keySet();
+		for (String key : keys) {
+			if (EnumUtils.isValidEnum(desiredCapabilitiesKeysEnum.class, key)) {
+				String value = dcConfig.get(key);
+				if (!value.isEmpty() || !value.equals(null) || !value.equals("") || value.equals(Keys.SPACE)) {
+					switch (key.toUpperCase()) {
+					case "ACCEPT_SSL_CERTS":			
+						this.setAcceptSslCerts(value);
+						break;
+					case "BROWSER_NAME":
+						this.setBrowserName(value);
+						break;
+					case "ELEMENT_SCROLL_BEHAVIOR":
+						this.setEnrollmentBehaviour(value);
+						break;
+					case "ENABLE_PROFILING_CAPABILITY":
+						this.setEnableProfilingCapability(value);
+						break;
+					case "HAS_NATIVE_EVENTS":
+						this.setHasNativeEvents(value);
+						break;
+					case "HAS_TOUCHSCREEN":
+						this.setHasTouchScreen(value);
+						break;
+					case "LOGGING_PREFS":
+						this.setLoggingPrefs(value);
+						break;
+					case "OVERLAPPING_CHECK_DISABLED":
+						this.setOverlappingCheckDisabled(value);
+						break;
+					case "PAGE_LOAD_STRATEGY":
+						this.setPageLoadStrategy(value);
+						break;
+					case "PLATFORM":
+						this.setPlatform(value);
+						break;
+					case "PROXY":
+						this.setProxy(value);
+						break;
+					case "ROTATABLE":
+						this.setRotable(value);
+						break;
+					case "SUPPORTS_ALERTS":
+						this.setSupportAlerts(value);
+						break;
+					case "SUPPORTS_APPLICATION_CACHE":
+						this.setSupportsApplicationCache(value);
+						break;
+					case "SUPPORTS_FINDING_BY_CSS":
+						this.setSupportsFindingByCSS(value);
+						break;
+					case "SUPPORTS_JAVASCRIPT":
+						this.setSupportsJavaScript(value);
+						break;
+					case "SUPPORTS_LOCATION_CONTEXT":
+						this.setSupportsLocationContext(value);
+						break;
+					case "SUPPORTS_NETWORK_CONNECTION":
+						this.setSupportsNetworkConnection(value);
+						break;
+					case "SUPPORTS_SQL_DATABASE":
+						this.setSupportsSQLDatabase(value);
+						break;
+					case "SUPPORTS_WEB_STORAGE":
+						this.setSupportsWebStorage(value);
+						break;
+					case "TAKES_SCREENSHOT":
+						this.setTakesScreenShot(value);
+						break;
+					case "UNEXPECTED_ALERT_BEHAVIOUR":
+						this.setUnexpectedAlertBehaviour(value);
+						break;
+					case "VERSION":
+						this.setVersion(value);
+						break;
+					}
+				} else {
+					this.tsl.logMessage(Level.INFO, "Capability type '" + key + "' has not being set.");
+				}
+			} else {
+				this.tsl.catchException(new DesiredCapabilityException("Capability type '" + key + "' is not supported"));
+			}
+		}
+
+	}
+
 	protected DesiredCapabilities getFireFoxDesiredCapabilities() {
 		return dc;
 	}
 
 	protected void setAcceptSslCerts(String value) {
 		try {
-			this.dc.setCapability(CapabilityType.ACCEPT_SSL_CERTS, value);
+			this.dc.setCapability(CapabilityType.ACCEPT_SSL_CERTS, Boolean.valueOf(value));
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
@@ -159,23 +175,38 @@ public class FireFoxDesiredCapabilities {
 	}
 
 	protected void setEnableProfilingCapability(String value) {
-		this.dc.setCapability(CapabilityType.ENABLE_PROFILING_CAPABILITY, value);
+		this.dc.setCapability(CapabilityType.ENABLE_PROFILING_CAPABILITY, Boolean.valueOf(value));
 	}
 
 	protected void setHasNativeEvents(String value) {
-		this.dc.setCapability(CapabilityType.HAS_NATIVE_EVENTS, value);
+		this.dc.setCapability(CapabilityType.HAS_NATIVE_EVENTS, Boolean.valueOf(value));
 	}
 
 	protected void setHasTouchScreen(String value) {
-		this.dc.setCapability(CapabilityType.HAS_TOUCHSCREEN, value);
+		try {
+			this.dc.setCapability(CapabilityType.HAS_TOUCHSCREEN, Boolean.valueOf(value));
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
+
 	}
 
 	protected void setLoggingPrefs(String value) {
-		this.dc.setCapability(CapabilityType.LOGGING_PREFS, value);
+		try {
+			tsl.enterLogger("Setting capability type 'Logging Preferences' to '" +  value + "'" );
+			WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences(value);
+			this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
+			this.tsl.exitLogger(true);
+		} catch (Exception ex) {
+			this.tsl.catchException(ex);
+			this.tsl.exitLogger(false);
+		}
+
 	}
 
 	protected void setOverlappingCheckDisabled(String value) {
-		this.dc.setCapability(CapabilityType.OVERLAPPING_CHECK_DISABLED, value);
+		this.dc.setCapability(CapabilityType.OVERLAPPING_CHECK_DISABLED, Boolean.valueOf(value));
 	}
 
 	protected void setPageLoadStrategy(String value) {
@@ -186,6 +217,7 @@ public class FireFoxDesiredCapabilities {
 	protected void setPlatform(String value) {
 		try {
 			tsl.enterLogger("Setting capability type 'Platform' to '" +  value + "'" );
+			DesiredCapabilityException("Platform", value);
 			if (value.equalsIgnoreCase(USE_HOST_PLATFORM)) {
 				this.dc.setCapability(CapabilityType.PLATFORM, pos.getHostPlatform());
 			} else {
@@ -196,62 +228,69 @@ public class FireFoxDesiredCapabilities {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
 		}
-		
+
+	}
+
+	protected void DesiredCapabilityException(String capabilityName, String capabilityValue) throws DesiredCapabilityException {
+		if (capabilityValue == null) {
+			throw new DesiredCapabilityException("DesiredCapability '" + capabilityName + "' is NULL" );
+		}
 	}
 
 	protected void setProxy(String value) {
 		try {
 			//TODO write proper proxy class!!!!
+			WebDriverProxy wdp = new WebDriverProxy();
 			if (!value.equalsIgnoreCase(AUTODETECT)) {
-				WebDriverProxy wdp = new WebDriverProxy();
+
 				wdp.setHTTPProxy(value);
 				wdp.setFTPProxy(value);
 				wdp.setSSLProxy(value);
 			} else {
-				this.setProxy(AUTODETECT);
+				this.dc.setCapability(CapabilityType.PROXY, AUTODETECT);
 			}
 		} catch (Exception ex) {
 			this.tsl.catchException(ex);
 			this.tsl.exitLogger(false);
 		}
-		
+
 		this.dc.setCapability(CapabilityType.PROXY, value);
 	}
 
 	protected void setRotable(String value) {
-		this.dc.setCapability(CapabilityType.ROTATABLE, value);
+		this.dc.setCapability(CapabilityType.ROTATABLE, Boolean.valueOf(value));
 	}
 
 	protected void setSupportAlerts(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_ALERTS, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_ALERTS, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsApplicationCache(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsFindingByCSS(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsJavaScript(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsLocationContext(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_LOCATION_CONTEXT, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_LOCATION_CONTEXT, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsNetworkConnection(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsSQLDatabase(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_SQL_DATABASE, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_SQL_DATABASE, Boolean.valueOf(value));
 	}
 
 	protected void setSupportsWebStorage(String value) {
-		this.dc.setCapability(CapabilityType.SUPPORTS_WEB_STORAGE, value);
+		this.dc.setCapability(CapabilityType.SUPPORTS_WEB_STORAGE, Boolean.valueOf(value));
 	}
 
 	protected void setTakesScreenShot(String value) {
@@ -295,7 +334,7 @@ public class FireFoxDesiredCapabilities {
 	 * @author yodaqua
 	 * @since
 	 */
-	private enum desiredCapabilitiesEnum {
+	private enum desiredCapabilitiesKeysEnum {
 		ACCEPT_SSL_CERTS,
 		BROWSER_NAME,
 		ELEMENT_SCROLL_BEHAVIOR,

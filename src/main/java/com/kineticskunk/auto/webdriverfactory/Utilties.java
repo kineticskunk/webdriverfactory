@@ -8,6 +8,19 @@ import java.util.Properties;
 import java.util.Set;
 
 public class Utilties {
+	
+	private static Utilties instance = new Utilties();
+	
+	public static Utilties getInstance(){
+        if(instance == null){
+            synchronized (Utilties.class) {
+                if(instance == null){
+                    instance = new Utilties();
+                }
+            }
+        }
+        return instance;
+    }
 
 	/**
 	 * 
@@ -40,7 +53,7 @@ public class Utilties {
 	 * @throws IOException
 	 */
 	private InputStream getResourceInputStream(String configFileName) throws IOException {
-		return this.getClass().getClassLoader().getResourceAsStream(configFileName);
+		return instance.getClass().getClassLoader().getResourceAsStream(configFileName);
 	}
 	
 	/**
@@ -52,7 +65,7 @@ public class Utilties {
 	 */
 	public Hashtable<String, String> readPropertyFileIntoHashtable(Hashtable<String, String> testData, String propertiesFile)  throws IOException {
 		Properties prop = new Properties();
-		InputStream inputStream = getResourceInputStream(propertiesFile);
+		InputStream inputStream = instance.getResourceInputStream(propertiesFile);
 		Hashtable<String, String> propvals = new Hashtable<String, String>();
 		try {
 			prop.load(inputStream);
@@ -73,9 +86,7 @@ public class Utilties {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (!testData.isEmpty()) {
-			propvals.putAll(testData);
-		}
+
 		return propvals;
 	}
 }
