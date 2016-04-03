@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Suite" parallel="false">
-  <test name="Test">
-    <classes>
-      <!-- <class name="com.kineticskunk.auto.webdriverfactory.FireFoxIndividualDesiredCapabilitiesTestNG"/> -->
-      <class name="com.kineticskunk.auto.webdriverfactory.FireFoxAllDesiredCapabilitiesTestNG" />
-    </classes>
-  </test> <!-- Test -->
+    <parameter name="url" value="http://www.kineticskunk.com" />
+	<parameter name="desiredCapabilitiesConfigurationFile" value="webdriver-firefox-desired-capabilities.properties" />
+	<parameter name="profileConfigurationFile" value="webdriver-firefox-profile.properties" />
+	<parameter name="fireBugConfigurationFile" value="webdriver-firebug.properties" />
+	<parameter name="loadFireBug" value="true" />
+	<test name="Test">
+		<classes>
+			<!-- <class name="com.kineticskunk.auto.webdriverfactory.FireFoxIndividualDesiredCapabilitiesTestNG"/> -->
+			<class
+				name="com.kineticskunk.auto.webdriverfactory.FireFoxAllDesiredCapabilitiesTestNG" />
+		</classes>
+	</test> <!-- Test -->
 </suite> <!-- Suite -->

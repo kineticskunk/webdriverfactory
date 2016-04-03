@@ -7,6 +7,8 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -17,7 +19,8 @@ import com.kineticskunk.auto.logging.TestServiceLogging;
 public class FireFoxDesiredCapabilities {
 	
 	private Logger logger = LogManager.getLogger(FireFoxDesiredCapabilities.class.getName());
-
+	private static final Marker FIREFOX_DESIREDCAPABILITIES_MARKER = MarkerManager.getMarker("FIREFOX_DESIREDCAPABILITIES");
+	
 	private static final String AUTODETECT = "AUTODETECT";
 	private static final String USE_HOST_PLATFORM = "use_host_platform";
 	private static final String USE_HOST_OS_VERSION = "use_host_os_version";
@@ -26,46 +29,19 @@ public class FireFoxDesiredCapabilities {
 	private Hashtable<String, String> dcConfig;
 	private WebDriverLoggingPreferences wdlp;
 	private PlatformOperatingSystem pos;
-	private TestServiceLogging tsl;
-
-	public FireFoxDesiredCapabilities(boolean enableLogging) {
+	
+	public FireFoxDesiredCapabilities() {
 		this.dc = new DesiredCapabilities();
 		this.pos = new PlatformOperatingSystem();
-		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxDesiredCapabilities.class.getName()), enableLogging);
 	}
 
-	public FireFoxDesiredCapabilities(boolean enableLogging, Hashtable<String, String> dcConfig) {
-		this(enableLogging);
+	public FireFoxDesiredCapabilities(Hashtable<String, String> dcConfig) {
+		this();
 		this.dcConfig = dcConfig;
 	}
-
-	/*
-
-	private void setCapability(String capabilityType, Object capabilityValue) {
-		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'");
-		try {
-			if (this.getCapabilityType(capabilityType).equalsIgnoreCase(CapabilityType.PLATFORM)) {
-				this.dc.setCapability(this.getCapabilityType(capabilityType), pos.getPlatform());
-			} else {
-				this.dc.setCapability(this.getCapabilityType(capabilityType), capabilityValue);
-			}
-			this.tsl.exitLogger(true);
-			return;
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-			return;
-		}
-	}
-	 */
 	
-	protected <E extends Enum<E>> boolean isKeyInEnum(Class<E> enumData, String key) {
-		for (Enum<E> enumVal : enumData.getEnumConstants()) {
-			if (enumVal.toString() == key) {
-				return true;
-			}
-		}
-		return false;
+	private void logEnteryMessage(String key, String value) {
+		this.logger.log(Level.INFO, "Setting capability type '" + key.toUpperCase() + "' to '" +  value.toUpperCase() + "'" );
 	}
 
 	protected void setFireFoxDesiredCapabilities() throws DesiredCapabilityException {
@@ -146,305 +122,23 @@ public class FireFoxDesiredCapabilities {
 						break;
 					}
 				} else {
-					this.tsl.logMessage(Level.INFO, "Capability type '" + key + "' has not being set.");
+					this.logger.log(Level.INFO, "Capability type '" + key + "' has not being set.");
 				}
 			} else {
-				this.tsl.catchException(new DesiredCapabilityException("Capability type '" + key + "' is not supported"));
+				this.logger.catching(Level.DEBUG, new DesiredCapabilityException("Capability type '" + key.toUpperCase() + "' IS NOT SUPPORTED."));
 			}
 		}
 
 	}
-
+	
+	/**
+	 * Return firefox desired capabilities
+	 * @return
+	 */
 	protected DesiredCapabilities getFireFoxDesiredCapabilities() {
 		return dc;
 	}
-
-	protected void setAcceptSslCerts(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ACCEPT_SSL_CERTS.toString(), value);
-			this.dc.setCapability(CapabilityType.ACCEPT_SSL_CERTS, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setBrowserName(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.BROWSER_NAME.toString(), value);
-			this.dc.setCapability(CapabilityType.BROWSER_NAME, value);
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setEnrollmentBehaviour(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ELEMENT_SCROLL_BEHAVIOR.toString(), value);
-			this.dc.setCapability(CapabilityType.ELEMENT_SCROLL_BEHAVIOR, Converter.toInteger(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setEnableProfilingCapability(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ENABLE_PROFILING_CAPABILITY.toString(), value);
-			this.dc.setCapability(CapabilityType.ENABLE_PROFILING_CAPABILITY, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setHasNativeEvents(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.HAS_NATIVE_EVENTS.toString(), value);
-			this.dc.setCapability(CapabilityType.HAS_NATIVE_EVENTS, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setHasTouchScreen(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.HAS_TOUCHSCREEN.toString(), value);
-			this.dc.setCapability(CapabilityType.HAS_TOUCHSCREEN, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
 	
-	protected void setLoggingPrefs(String value) {
-		try {
-			this.tsl.enterLogger("Setting capability type 'Logging Preferences' to '" +  value + "'" );
-			wdlp = new WebDriverLoggingPreferences(value);
-			this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-	
-	protected String getLoggingPreferences(String enabled) {
-		return wdlp.getLoggingPreferences().getLevel(enabled).toString();
-	}
-
-	protected void setOverlappingCheckDisabled(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.OVERLAPPING_CHECK_DISABLED.toString(), value);
-			this.dc.setCapability(CapabilityType.OVERLAPPING_CHECK_DISABLED, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setPageLoadStrategy(String value) {
-		//TODO get page load strategy
-		this.dc.setCapability(CapabilityType.PAGE_LOAD_STRATEGY, value);
-	}
-
-	protected void setPlatform(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.PLATFORM.toString(), value);
-			if (value.equalsIgnoreCase(USE_HOST_PLATFORM)) {
-				this.dc.setCapability(CapabilityType.PLATFORM, pos.getHostPlatform());
-			} else {
-				this.dc.setCapability(CapabilityType.PLATFORM, pos.getPlatform(value));
-			}
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setProxy(String value) {
-		try {
-			//TODO write proper proxy class!!!!
-			WebDriverProxy wdp = new WebDriverProxy();
-			if (!value.equalsIgnoreCase(AUTODETECT)) {
-
-				wdp.setHTTPProxy(value);
-				wdp.setFTPProxy(value);
-				wdp.setSSLProxy(value);
-			} else {
-				this.dc.setCapability(CapabilityType.PROXY, AUTODETECT);
-			}
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-
-		this.dc.setCapability(CapabilityType.PROXY, value);
-	}
-
-	protected void setRotable(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ROTATABLE.toString(), value);
-			this.dc.setCapability(CapabilityType.ROTATABLE, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportAlerts(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_ALERTS.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_ALERTS, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsApplicationCache(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_APPLICATION_CACHE.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsFindingByCSS(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_FINDING_BY_CSS.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsJavaScript(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_JAVASCRIPT.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsLocationContext(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_LOCATION_CONTEXT.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_LOCATION_CONTEXT, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsNetworkConnection(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_NETWORK_CONNECTION.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsSQLDatabase(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_SQL_DATABASE.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_SQL_DATABASE, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setSupportsWebStorage(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_WEB_STORAGE.toString(), value);
-			this.dc.setCapability(CapabilityType.SUPPORTS_WEB_STORAGE, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setTakesScreenShot(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.TAKES_SCREENSHOT.toString(), value);
-			this.dc.setCapability(CapabilityType.TAKES_SCREENSHOT, Converter.toBoolean(value));
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setUnexpectedAlertBehaviour(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.UNEXPECTED_ALERT_BEHAVIOUR.toString(), value);
-			this.dc.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, value);
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-
-	protected void setVersion(String value) {
-		try {
-			this.logEnteryMessage(desiredCapabilitiesKeysEnum.VERSION.toString(), value);
-			if (value.equalsIgnoreCase(USE_HOST_OS_VERSION)) {
-				value = System.getProperty("os.version");
-			}
-			this.dc.setCapability(CapabilityType.VERSION, value);
-			this.tsl.exitLogger(true);
-		} catch (Exception ex) {
-			this.tsl.catchException(ex);
-			this.tsl.exitLogger(false);
-		}
-	}
-	
-	private void logEnteryMessage(String key, String value) {
-		this.tsl.enterLogger("Setting capability type '" + key + "' to '" +  value.toUpperCase() + "'" );
-	}
-	
-	/*
-			return CapabilityType.ForSeleniumServer.AVOIDING_PROXY;
-		case "ENSURING_CLEAN_SESSION":
-			return CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION;
-		case "ONLY_PROXYING_SELENIUM_TRAFFIC":
-			return CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC;
-		case "PROXY_PAC":
-			return CapabilityType.ForSeleniumServer.PROXY_PAC;
-		case "PROXYING_EVERYTHING":
-			return CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING;
-		}
-		return null;
-	}*/
-
 	/**
 	 * 
 	 * @author yodaqua
@@ -476,6 +170,117 @@ public class FireFoxDesiredCapabilities {
 		VERSION;
 	}
 
+	protected void setAcceptSslCerts(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ACCEPT_SSL_CERTS.toString(), value);
+			this.dc.setCapability(CapabilityType.ACCEPT_SSL_CERTS, Converter.toBoolean(value));
+			this.logger.exit(true);
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setBrowserName(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.BROWSER_NAME.toString(), value);
+			this.dc.setCapability(CapabilityType.BROWSER_NAME, value);
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setEnrollmentBehaviour(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ELEMENT_SCROLL_BEHAVIOR.toString(), value);
+			this.dc.setCapability(CapabilityType.ELEMENT_SCROLL_BEHAVIOR, Converter.toInteger(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setEnableProfilingCapability(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ENABLE_PROFILING_CAPABILITY.toString(), value);
+			this.dc.setCapability(CapabilityType.ENABLE_PROFILING_CAPABILITY, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setHasNativeEvents(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.HAS_NATIVE_EVENTS.toString(), value);
+			this.dc.setCapability(CapabilityType.HAS_NATIVE_EVENTS, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setHasTouchScreen(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.HAS_TOUCHSCREEN.toString(), value);
+			this.dc.setCapability(CapabilityType.HAS_TOUCHSCREEN, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+	
+	protected void setLoggingPrefs(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.LOGGING_PREFS.toString(), value);
+			wdlp = new WebDriverLoggingPreferences(value);
+			this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+	
+	protected String getLoggingPreferences(String enabled) {
+		return wdlp.getLoggingPreferences().getLevel(enabled).toString();
+	}
+
+	protected void setOverlappingCheckDisabled(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.OVERLAPPING_CHECK_DISABLED.toString(), value);
+			this.dc.setCapability(CapabilityType.OVERLAPPING_CHECK_DISABLED, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setPageLoadStrategy(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.PAGE_LOAD_STRATEGY.toString(), value);
+			if (EnumUtils.isValidEnum(pageLoadStrategies.class, value)) {
+				this.dc.setCapability(CapabilityType.PAGE_LOAD_STRATEGY, value);
+			} else {
+				this.logger.log(Level.DEBUG, "The PAGE_LOAD_STRATEGY value of '" + value + "' IS NOT SUPPORTED. Setting the PAGE_LOAD_STRATEGY to 'unstable'");
+				this.dc.setCapability(CapabilityType.PAGE_LOAD_STRATEGY, "unstable");
+			}
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+		
+	}
+		
 	private enum pageLoadStrategies {
 		NONE,
 		UNSTABLE,
@@ -484,6 +289,194 @@ public class FireFoxDesiredCapabilities {
 		NORMAL;
 	}
 
+	protected void setPlatform(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.PLATFORM.toString(), value);
+			if (value.equalsIgnoreCase(USE_HOST_PLATFORM)) {
+				this.dc.setCapability(CapabilityType.PLATFORM, pos.getHostPlatform());
+			} else {
+				this.dc.setCapability(CapabilityType.PLATFORM, pos.getPlatform(value));
+			}
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setProxy(String value) {
+		try {
+			if (!value.equalsIgnoreCase(AUTODETECT)) {
+				WebDriverProxy wdp = new WebDriverProxy();
+				
+				wdp.setHTTPProxy(value);
+				wdp.setFTPProxy(value);
+				wdp.setSSLProxy(value);
+				this.dc.setCapability(CapabilityType.PROXY, wdp.getWebDriverProxy());
+				
+			} else {
+				
+			}
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+		this.dc.setCapability(CapabilityType.PROXY, value);
+	}
+
+	protected void setRotable(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.ROTATABLE.toString(), value);
+			this.dc.setCapability(CapabilityType.ROTATABLE, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param value
+	 */
+	protected void setSupportAlerts(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_ALERTS.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_ALERTS, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsApplicationCache(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_APPLICATION_CACHE.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsFindingByCSS(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_FINDING_BY_CSS.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsJavaScript(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_JAVASCRIPT.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsLocationContext(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_LOCATION_CONTEXT.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_LOCATION_CONTEXT, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsNetworkConnection(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_NETWORK_CONNECTION.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsSQLDatabase(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_SQL_DATABASE.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_SQL_DATABASE, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setSupportsWebStorage(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.SUPPORTS_WEB_STORAGE.toString(), value);
+			this.dc.setCapability(CapabilityType.SUPPORTS_WEB_STORAGE, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setTakesScreenShot(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.TAKES_SCREENSHOT.toString(), value);
+			this.dc.setCapability(CapabilityType.TAKES_SCREENSHOT, Converter.toBoolean(value));
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setUnexpectedAlertBehaviour(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.UNEXPECTED_ALERT_BEHAVIOUR.toString(), value);
+			this.dc.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, value);
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+
+	protected void setVersion(String value) {
+		try {
+			this.logEnteryMessage(desiredCapabilitiesKeysEnum.VERSION.toString(), value);
+			if (value.equalsIgnoreCase(USE_HOST_OS_VERSION)) {
+				value = System.getProperty("os.version");
+			}
+			this.dc.setCapability(CapabilityType.VERSION, value);
+			this.logger.exit(true);
+		} catch (Exception ex) {
+			this.logger.catching(ex);
+			this.logger.exit(false);
+		}
+	}
+	
+	/*
+			return CapabilityType.ForSeleniumServer.AVOIDING_PROXY;
+		case "ENSURING_CLEAN_SESSION":
+			return CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION;
+		case "ONLY_PROXYING_SELENIUM_TRAFFIC":
+			return CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC;
+		case "PROXY_PAC":
+			return CapabilityType.ForSeleniumServer.PROXY_PAC;
+		case "PROXYING_EVERYTHING":
+			return CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING;
+		}
+		return null;
+	}*/
+
 	/**
 	 * 
 	 * @param capabilityType
@@ -491,7 +484,7 @@ public class FireFoxDesiredCapabilities {
 	 * @param defaultCapabilityValue
 	 */
 	private void setSeleniumServerCapability(String capabilityType, String capabilityValue, String defaultCapabilityValue) {
-		tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
+		//tsl.enterLogger("In method setCapability", "capabilityType = '" + capabilityType + "'; capabilityValue = '" + capabilityValue + "'; defaultCapabilityValue = '" + defaultCapabilityValue + "'");
 		try {
 			switch (capabilityType.toUpperCase()) {
 			case "AVOIDING_PROXY":
@@ -510,7 +503,7 @@ public class FireFoxDesiredCapabilities {
 				this.dc.setCapability(CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING, capabilityValue);
 				break;
 			}
-			this.tsl.exitLogger(true);
+			this.logger.exit(true);
 			return;
 		} catch (Exception ex) {
 			if (logger.isDebugEnabled()) {

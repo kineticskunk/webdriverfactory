@@ -11,6 +11,8 @@ import com.kineticskunk.auto.logging.TestServiceLogging;
 
 public class FireFoxProfile {
 	
+	
+	
 	private static final String DEFAULT_WIN_DOWNLOAD_DIRECTORY = System.getProperty("user.home") + "\\downloads\\";
 	private static final String DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY = System.getProperty("user.home") + "/downloads/";
 	
@@ -31,14 +33,8 @@ public class FireFoxProfile {
 		this.ffpConfig = ffpConfig;
 	}
 	
-	public FireFoxProfile(boolean enableLogging) {
-		this();
-	}
-
-	public FireFoxProfile(boolean enableLogging, Hashtable<String, String> dcCondfig) {
-		this(dcCondfig);
-		this.tsl = new TestServiceLogging(LogManager.getLogger(FireFoxProfile.class.getName()) , enableLogging);
-	}
+	
+	
 	
 	/**
 	 * 

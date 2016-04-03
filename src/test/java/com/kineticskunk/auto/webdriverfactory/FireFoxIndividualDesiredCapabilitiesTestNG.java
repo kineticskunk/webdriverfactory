@@ -1,19 +1,13 @@
 package com.kineticskunk.auto.webdriverfactory;
 
 import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.Assert;
-
 import java.io.IOException;
 import java.util.Hashtable;
-
-import org.openqa.selenium.Platform;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -26,7 +20,6 @@ public class FireFoxIndividualDesiredCapabilitiesTestNG {
 	
 	private static DesiredCapabilities dc;
 	private static FireFoxDesiredCapabilities ffdc;
-	private static WebDriver driver;
 	private static Hashtable<String, String> dcConfig;
 	private static Utilties utils;
 	
@@ -34,18 +27,18 @@ public class FireFoxIndividualDesiredCapabilitiesTestNG {
 		dc = null;
 		ffdc = null;
 		dcConfig = new Hashtable<String, String>();
-		
 	}
 	
+	@Parameters ( "desiredCapabilitiesConfigurationFile" )
 	@BeforeClass
-	public static void setupTestClass() throws IOException, DesiredCapabilityException {
+	public static void setupTestClass(String desiredCapabilitiesConfigurationFile) throws IOException, DesiredCapabilityException {
 		utils = Utilties.getInstance();
-		dcConfig = utils.readPropertyFileIntoHashtable(dcConfig, "webdriver-firefox-desired-capabilities.properties");
+		dcConfig = utils.readPropertyFileIntoHashtable(dcConfig, desiredCapabilitiesConfigurationFile);
 	}
 	
 	@BeforeTest
 	public void runTestSetup() {
-		ffdc = new FireFoxDesiredCapabilities(true);
+		ffdc = new FireFoxDesiredCapabilities();
 	}
 	
 	@AfterTest
@@ -214,43 +207,5 @@ public class FireFoxIndividualDesiredCapabilitiesTestNG {
 		dc = ffdc.getFireFoxDesiredCapabilities();
 		Assert.assertTrue(dc.getCapability(CapabilityType.VERSION).equals(System.getProperty("os.version")));
 	}
-	
-	@BeforeGroups(groups = "desiredcapabilities")
-	public static void beforeGroupd() throws IOException, DesiredCapabilityException {
-		
-		dcConfig = utils.readPropertyFileIntoHashtable(dcConfig, "webdriver-firefox-desired-capabilities.properties");
-		ffdc = new FireFoxDesiredCapabilities(true, dcConfig);
-		ffdc.setFireFoxDesiredCapabilities();
-		dc = ffdc.getFireFoxDesiredCapabilities();
-	}
-	
-	/*
-	
-	@Test (priority = 0, groups = "desiredcapabilities")
-	public void checkIfFireFoxPropertiesLoad() {
-		Assert.assertTrue(dcConfig.size() > 0);
-	}
-	
-	@Test (priority = 1, groups = "desiredcapabilities")
-	public void verifyPlaform() {
-		Assert.assertTrue(dc.getPlatform().is(Platform.MAC));
-	}
-	
-	@Test (priority = 2, groups = "desiredcapabilities")
-	public void verifyDesiredCapabiliesObjectInstanciation() {
-		Assert.assertTrue(dc.getPlatform().is(Platform.MAC));
-		
-	}
-	
-	
-	
-	@Test (priority = 3, groups = "desiredcapabilities")
-	public void verifyFireFoxDriverInstanciation() {
-		driver = new FirefoxDriver(dc);
-		driver.navigate().to("http://www.kineticskunk.com");
-		System.out.println(driver.getClass().getSimpleName());
-	}
-	
-	*/
-	
+
 }
