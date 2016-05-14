@@ -14,14 +14,12 @@
    	limitations under the License.
 */
 
-package com.kineticskunk.auto.webdriverfactory;
+package com.kineticskunk.driverutilities;
 
 import java.util.Hashtable;
-
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
-
-import com.kineticskunk.auto.converter.Converter;
+import com.kineticskunk.utilities.Converter;
 
 public class WebDriverProxy {
 	
@@ -82,7 +80,11 @@ public class WebDriverProxy {
 		this.proxy.setFtpProxy(this.proxyConfig.get(FTP_PROXY));
 	}
 
-	public Proxy getWebDriverProxy() {
+	public Proxy getSSLProxy() {
+		return this.proxy;
+	}
+	
+	public Proxy getHTTPProxy() {
 		return this.proxy;
 	}
 

@@ -1,4 +1,4 @@
-package com.kineticskunk.auto.webdriverfactory;
+package com.kineticskunk.driverutilities;
 
 public class DesiredCapabilityException extends Exception {
 	
@@ -12,7 +12,7 @@ public class DesiredCapabilityException extends Exception {
 		super();
 	}
 
-	DesiredCapabilityException(String message) {
+	public DesiredCapabilityException(String message) {
 		super(message);
 		this.message = message;
 	}

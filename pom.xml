@@ -16,6 +16,9 @@
 		<firefox.driver.version>2.53.0</firefox.driver.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
 		<testng.version>6.9.10</testng.version>
+		<utilities.version>0.0.1-SNAPSHOT</utilities.version>
+		<phantom.js.driver.version>1.1.0</phantom.js.driver.version>
+		<safari.driver.version>2.48.0</safari.driver.version>
 	</properties>
 
 	<build>
@@ -167,6 +170,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.kineticskunk.auto</groupId>
+			<artifactId>utilities</artifactId>
+			<version>${utilities.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.kineticskunk.auto</groupId>
 			<artifactId>logging</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
@@ -186,9 +194,14 @@
 			<version>${testng.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.kineticskunk.auto</groupId>
-			<artifactId>converter</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>com.github.detro.ghostdriver</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>${phantom.js.driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-safari-driver</artifactId>
+			<version>${safari.driver.version}</version>
 		</dependency>
 	</dependencies>
 </project>

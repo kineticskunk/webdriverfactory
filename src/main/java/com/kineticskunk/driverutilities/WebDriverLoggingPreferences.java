@@ -1,4 +1,4 @@
-package com.kineticskunk.auto.webdriverfactory;
+package com.kineticskunk.driverutilities;
 
 import java.util.logging.Level;
 import org.openqa.selenium.logging.LogType;
