@@ -62,41 +62,6 @@ public class SetFireFoxProfile {
 
 	/**
 	 * 
-	 * @param standardProfilePrerenceName
-	 * @param standardProfilePrerenceValue
-	 */
-
-	public void setStandardProfilePreference(String standardProfilePrerenceName, String standardProfilePrerenceValue) {
-		logger.log(Level.INFO, FIREFOXPROFILE, "In method setStandardProfilePreference", "standardProfilePrerenceName = '" + standardProfilePrerenceName + ", standardProfilePrerenceValue = '" + standardProfilePrerenceValue + "'");
-		try {
-			if (!Converter.isBoolean(standardProfilePrerenceValue)) {
-				logger.log(Level.WARN, FIREFOXPROFILE, "Standrd profile preference value '" + standardProfilePrerenceValue + "' for is NOT A BOOLEAN value. Setting the profile preference value to 'TRUE'");
-				standardProfilePrerenceValue = "true";
-			}
-			switch (standardProfilePrerenceName.toLowerCase()) {
-			case "accept.untrusted.certificates":
-				this.ffp.setAcceptUntrustedCertificates(Boolean.valueOf(standardProfilePrerenceValue));
-				break;
-			case "always.load.no.focus.lib":
-				this.ffp.setAlwaysLoadNoFocusLib(Boolean.valueOf(standardProfilePrerenceValue));
-				break;
-			case "assume.untrusted.certificate.issuer":
-				this.ffp.setAssumeUntrustedCertificateIssuer(Boolean.valueOf(standardProfilePrerenceValue));
-				break;
-			case "enable.native.events":
-				this.ffp.setEnableNativeEvents(Boolean.valueOf(standardProfilePrerenceValue));
-				break;
-			default:
-				logger.log(Level.WARN, FIREFOXPROFILE, "Standrd profile preference '" + standardProfilePrerenceName + "' is NOT SUPPORTED.");
-			}
-		} catch (Exception ex) {
-			logger.catching(ex);
-		}
-	}
-
-
-	/**
-	 * 
 	 * @param downloodLocation
 	 */
 	private void setFireBrowserDownLoad(String downloodLocation) {
