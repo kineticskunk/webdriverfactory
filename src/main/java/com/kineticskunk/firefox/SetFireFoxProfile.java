@@ -30,11 +30,11 @@ public class SetFireFoxProfile {
 	private HashMap<String, Object> params;
 	
 	public SetFireFoxProfile() {
-		ffp = new FirefoxProfile();
-		pos = new PlatformOperatingSystem();
-		ap = ApplicationProperties.getInstance();
-		ap.prop.clear();
-		params = new HashMap<String, Object>();
+		this.ffp = new FirefoxProfile();
+		this.pos = new PlatformOperatingSystem();
+		this.ap = ApplicationProperties.getInstance();
+		this.ap.getProperties().clear();
+		this.params = new HashMap<String, Object>();
 	}
 	
 	public SetFireFoxProfile(HashMap<String, Object> params) {
@@ -51,11 +51,15 @@ public class SetFireFoxProfile {
 	}
 	
 	public void setPreferences(String profilePreferences) throws IOException {
-		this.params = ap.readPropertyFile(this.params, profilePreferences);	
+		this.params = this.ap.readPropertyFile(this.params, profilePreferences);	
 	}
 	
 	public HashMap<String, Object> getPreferences() throws IOException {
 		return params;	
+	}
+	
+	public void setAddFireBug(String fireBugLocation, String fireBugName) throws IOException {
+		this.ffp.addExtension(new File(fireBugLocation, fireBugName));
 	}
 	
 	/**
@@ -66,7 +70,7 @@ public class SetFireFoxProfile {
 		try {
 			Set<String> keys = this.params.keySet();
 			for (String key : keys) {
-				if (EnumUtils.isValidEnum(ProfileSetting.class, key.replace(".", "_"))) {
+				if (EnumUtils.isValidEnum(profileSetting.class, key.replace(".", "_"))) {
 					String value = this.params.get(key).toString(); 
 					logger.log(Level.INFO, FIREFOXPROFILE, "Preference name = '" + key + "'; Preferance value = '" + value + "'");
 					if (key.equalsIgnoreCase("browser.download.dir")) {
@@ -110,7 +114,7 @@ public class SetFireFoxProfile {
 		}
 	}
 
-	private enum ProfileSetting {
+	private enum profileSetting {
 		accept_untrusted_certificates,
 		always_load_no_focus_lib,
 		assume_untrusted_certificate_issuer,
@@ -126,7 +130,14 @@ public class SetFireFoxProfile {
 		browser_helperApps_alwaysAsk_force,
 		browser_helperApps_neverAsk_openFile,
 		browser_helperApps_neverAsk_saveToDisk,
-		enable_native_events;
+		enable_native_events,
+		extensions_firebug_currentVersion,
+		extensions_firebug_console_enableSites,
+		extensions_firebug_script_enableSites,
+		extensions_firebug_defaultPanelName,
+		extensions_firebug_net_enableSites,
+		extensions_firebug_allPagesActivation,
+		extensions_firebug_cookies_enableSites;
 	}
-
+	
 }

@@ -2,7 +2,6 @@ package com.kineticskunk.firefox;
 
 import java.io.IOException;
 import java.util.HashMap;
-
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +14,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
 import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.ini.PlatformOperatingSystem;
@@ -40,7 +38,7 @@ public class SetFireFoxDesiredCapabilities {
 		this.dc = new DesiredCapabilities();
 		this.pos = new PlatformOperatingSystem();
 		this.ap = ApplicationProperties.getInstance();
-		this.ap.prop.clear();
+		this.ap.getProperties().clear();
 		this.params = new HashMap<String, Object>();
 	}
 
@@ -66,7 +64,7 @@ public class SetFireFoxDesiredCapabilities {
 	public void setFireFoxDesiredCapabilities() throws DesiredCapabilityException {
 		for (String key : this.params.keySet()) {
 			String value = params.get(key).toString();
-			if (!value.isEmpty() || !value.equals(null) || !value.equals("") || value.equals(Keys.SPACE)) {
+			if (!value.isEmpty() && !value.equals(null) && !value.equals("") && !value.equals(Keys.SPACE)) {
 				if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
 					logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has been set to '" + value + "'");
 					if (key.equalsIgnoreCase("platform")) {

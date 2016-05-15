@@ -18,8 +18,8 @@ public class DriverFactoryTestNG {
 	private WebDriver wd;
 	
 	@BeforeClass
-	@Parameters({"desiredCapabilites", "profilePreferences"})
-	private void beforeDriverFactoryTestNG(String desiredCapabilites,  String profilePreferences) {
+	@Parameters({"desiredCapabilites", "profilePreferences", "firebugPreferences"})
+	private void beforeDriverFactoryTestNG(String desiredCapabilites,  String profilePreferences, String firebugPreferences) {
 		this.params = new HashMap<String, Object>();
 		this.params.put("chromedriver", "/usr/local/ks-test-automation/webdriver-lib/chromedriver");
 		this.params.put("Browser", "FIREFOX");
@@ -31,6 +31,10 @@ public class DriverFactoryTestNG {
 		this.params.put("addProfile", "true");
 		this.params.put("desiredCapabilites", desiredCapabilites);
 		this.params.put("profilePreferences", profilePreferences);
+		this.params.put("addFireBug", true);
+		this.params.put("fireBugLocation", "/Users/yodaqua/Library/Application Support/Firefox/Profiles/24nxve48.default/extensions/");
+		this.params.put("firebugPreferences", firebugPreferences);
+		this.params.put("fireBugName", "firebug@software.joehewitt.com.xpi");
 		this.df = new DriverFactory(this.params);
 	}
 

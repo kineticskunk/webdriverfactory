@@ -9,8 +9,9 @@
 	<test name="Test">
 	    <parameter name="desiredCapabilites" value="desiredcapabilities.properties" />
 		<parameter name="profilePreferences" value="profileperferences.properties" />
+		<parameter name="firebugPreferences" value="firebugpreferences.properties" />
 		<classes>
-			<class name="com.kineticskunk.auto.webdriverfactory.FireFoxProfileTestNG" />
+			<!-- <class name="com.kineticskunk.auto.webdriverfactory.FireFoxProfileTestNG" /> -->
 			<class name="com.kineticskunk.auto.webdriverfactory.DriverFactoryTestNG"/>
 		</classes>
 	</test> <!-- Test -->

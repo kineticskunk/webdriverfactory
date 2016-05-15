@@ -1,5 +1,10 @@
 package com.kineticskunk.driverfactory;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -35,11 +40,21 @@ public enum DriverType implements DriverSetup {
         		SetFireFoxProfile p = new SetFireFoxProfile();
         		if (params.containsKey("profilePreferences")) {
         			p.setPreferences(params.get("profilePreferences").toString());
+            		if (params.get("addFireBug").toString().equalsIgnoreCase("TRUE")) {
+            			if (params.containsKey("firebugPreferences")) {
+            				p.setPreferences(params.get("firebugPreferences").toString());
+                			p.setAddFireBug(params.get("fireBugLocation").toString(), params.get("fireBugName").toString());
+            			}
+            		} else {
+            			logger.log(Level.INFO, DRIVERTYPE, "Not adding FireBug extension name = '" + params.get("profilePreferences").toString() + "'");
+            		}
             		p.setFirefoxProfile();
             		dc.setFireFoxProfile(p.getFirefoxProfile());
         		} else {
-        			
+        			logger.log(Level.INFO, DRIVERTYPE, "Not adding FireBug extension name = '" + params.get("profilePreferences").toString() + "'");
         		}
+        	} else {
+    			logger.log(Level.INFO, DRIVERTYPE, "FireFox has been loaded with standard WebDriver extension");        		
         	}
             return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);
         }
@@ -114,6 +129,9 @@ public enum DriverType implements DriverSetup {
             return new PhantomJSDriver(capabilities);
         }
     };
+    
+    private static final Logger logger = LogManager.getLogger(DriverType.class.getName());
+	private static final Marker DRIVERTYPE = MarkerManager.getMarker("DRIVERTYPE");
 
     protected DesiredCapabilities addProxySettings(DesiredCapabilities capabilities, Proxy proxySettings) {
         if (null != proxySettings) {
