@@ -1,5 +1,6 @@
 package com.kineticskunk.firefox;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -18,6 +19,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
 import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.ini.PlatformOperatingSystem;
+import com.kineticskunk.utilities.ApplicationProperties;
 import com.kineticskunk.utilities.Converter;
 
 public class SetFireFoxDesiredCapabilities {
@@ -31,11 +33,15 @@ public class SetFireFoxDesiredCapabilities {
 	private DesiredCapabilities dc;
 	private WebDriverLoggingPreferences wdlp;
 	private PlatformOperatingSystem pos;
+	private ApplicationProperties ap;
 	private HashMap<String, Object> params;
 
 	public SetFireFoxDesiredCapabilities() {
 		this.dc = new DesiredCapabilities();
 		this.pos = new PlatformOperatingSystem();
+		this.ap = ApplicationProperties.getInstance();
+		this.ap.prop.clear();
+		this.params = new HashMap<String, Object>();
 	}
 
 	public SetFireFoxDesiredCapabilities(HashMap<String, Object> params) throws DesiredCapabilityException {
@@ -44,6 +50,16 @@ public class SetFireFoxDesiredCapabilities {
 	}
 	
 	/**
+	 * Read desiredCapabilities property file.
+	 * 
+	 * @param profilePreferences
+	 * @throws IOException
+	 */
+	public void setDesiredCapabilitiesProperties(String profilePreferences) throws IOException {
+		this.params = ap.readPropertyFile(this.params, profilePreferences);	
+	}
+
+	/**
 	 * Set FireFox DesiredCapabilities
 	 * @throws DesiredCapabilityException
 	 */
@@ -51,24 +67,45 @@ public class SetFireFoxDesiredCapabilities {
 		for (String key : this.params.keySet()) {
 			String value = params.get(key).toString();
 			if (!value.isEmpty() || !value.equals(null) || !value.equals("") || value.equals(Keys.SPACE)) {
-				if (EnumUtils.isValidEnum(desiredCapabilitiesKeysEnum.class, key.toUpperCase())) {
-					switch (key.toUpperCase()) {
-					case "VERSION":
-						this.dc.setCapability(key.toUpperCase(), System.getProperty("os.version"));
-						break;
-					case "PLATFORM":
+				if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
+					logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has been set to '" + value + "'");
+					if (key.equalsIgnoreCase("platform")) {
 						this.dc.setCapability(key.toUpperCase(), System.getProperty("os.name"));
-						break;
-					default:
+					} else {
 						this.dc.setCapability(key.toUpperCase(), value);
 					}
-				} else if (EnumUtils.isValidEnum(seleniumServerDesiredCapabiltiesEnum.class, key.toUpperCase())){
-					this.setSeleniumServerCapability(key.toUpperCase(), value);
+				} else {
+					logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + ", is invalid");
 				}
 			} else {
-				logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has not being set as the value is either empty, null or equals " + (char)34 + (char)34  + ".");
+				logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has not being set as the value is either empty, null or equals " + (char)34 + (char)34);
 			}
 		}
+	}
+
+	private enum desiredCapabilities {
+		acceptSslCerts,
+		browser,
+		version,
+		platform,
+		javascriptEnabled,
+		takesScreenshot,
+		handlesAlerts,
+		databaseEnabled,
+		locationContextEnabled,
+		applicationCacheEnabled,
+		browserConnectionEnabled,
+		cssSelectorsEnabled,
+		rotatable,
+		webStorageEnabled,
+		acceptSSLCerts,
+		nativeEvents,
+		proxy,
+		unexpectedAlertBehavior,
+		pageLoadingStrategy,
+		elementScrollBehavior,
+		loggingPrefs,
+		firefox_binary;
 	}
 
 	/**
@@ -77,7 +114,7 @@ public class SetFireFoxDesiredCapabilities {
 	 * @param capabilityValue
 	 * @param defaultCapabilityValue
 	 */
-	private void setSeleniumServerCapability(String capabilityType, String capabilityValue) {
+	public void setSeleniumServerCapability(String capabilityType, String capabilityValue) {
 		try {
 			switch (capabilityType.toUpperCase()) {
 			case "AVOIDING_PROXY":
@@ -96,14 +133,8 @@ public class SetFireFoxDesiredCapabilities {
 				this.dc.setCapability(CapabilityType.ForSeleniumServer.PROXYING_EVERYTHING, capabilityValue);
 				break;
 			}
-
-			return;
 		} catch (Exception ex) {
-			if (logger.isDebugEnabled()) {
-				logger.catching(Level.DEBUG, ex);
-	
-			}
-			return;
+			logger.catching(Level.DEBUG, ex);
 		}
 	}
 
@@ -120,7 +151,7 @@ public class SetFireFoxDesiredCapabilities {
 	 * @author yodaqua
 	 * @since
 	 */
-	private enum desiredCapabilitiesKeysEnum {
+	private enum capabiltiesType {
 		ACCEPT_SSL_CERTS,
 		BROWSER_NAME,
 		ELEMENT_SCROLL_BEHAVIOR,
@@ -192,7 +223,7 @@ public class SetFireFoxDesiredCapabilities {
 	 */
 	public void setBrowserName(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.BROWSER_NAME.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.BROWSER_NAME.toString(), value);
 			this.dc.setCapability(CapabilityType.BROWSER_NAME, value);
 
 		} catch (Exception ex) {
@@ -209,7 +240,7 @@ public class SetFireFoxDesiredCapabilities {
 	 */
 	public void setEnrollmentBehaviour(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.ELEMENT_SCROLL_BEHAVIOR.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.ELEMENT_SCROLL_BEHAVIOR.toString(), value);
 			this.dc.setCapability(CapabilityType.ELEMENT_SCROLL_BEHAVIOR, Converter.toInteger(value));
 
 		} catch (Exception ex) {
@@ -220,7 +251,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setEnableProfilingCapability(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.ENABLE_PROFILING_CAPABILITY.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.ENABLE_PROFILING_CAPABILITY.toString(), value);
 			this.dc.setCapability(CapabilityType.ENABLE_PROFILING_CAPABILITY, Converter.toBoolean(value));
 
 		} catch (Exception ex) {
@@ -231,7 +262,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setHasNativeEvents(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.HAS_NATIVE_EVENTS.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.HAS_NATIVE_EVENTS.toString(), value);
 			this.dc.setCapability(CapabilityType.HAS_NATIVE_EVENTS, Converter.toBoolean(value));
 
 		} catch (Exception ex) {
@@ -242,7 +273,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setHasTouchScreen(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.HAS_TOUCHSCREEN.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.HAS_TOUCHSCREEN.toString(), value);
 			this.dc.setCapability(CapabilityType.HAS_TOUCHSCREEN, Converter.toBoolean(value));
 
 		} catch (Exception ex) {
@@ -253,7 +284,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setLoggingPrefs(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.LOGGING_PREFS.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.LOGGING_PREFS.toString(), value);
 			wdlp = new WebDriverLoggingPreferences(value);
 			this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
 
@@ -269,7 +300,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setOverlappingCheckDisabled(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.OVERLAPPING_CHECK_DISABLED.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.OVERLAPPING_CHECK_DISABLED.toString(), value);
 			this.dc.setCapability(CapabilityType.OVERLAPPING_CHECK_DISABLED, Converter.toBoolean(value));
 
 		} catch (Exception ex) {
@@ -280,7 +311,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setPageLoadStrategy(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.PAGE_LOAD_STRATEGY.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.PAGE_LOAD_STRATEGY.toString(), value);
 			if (EnumUtils.isValidEnum(pageLoadStrategies.class, value.toLowerCase())) {
 				this.dc.setCapability(CapabilityType.PAGE_LOAD_STRATEGY, value);
 			} else {
@@ -305,7 +336,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setPlatform(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.PLATFORM.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.PLATFORM.toString(), value);
 			if (value.equalsIgnoreCase(USE_HOST_PLATFORM)) {
 				this.dc.setCapability(CapabilityType.PLATFORM, pos.getHostPlatform());
 			} else {
@@ -318,7 +349,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setRotable(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.ROTATABLE.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.ROTATABLE.toString(), value);
 			this.dc.setCapability(CapabilityType.ROTATABLE, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -331,7 +362,7 @@ public class SetFireFoxDesiredCapabilities {
 	 */
 	public void setSupportAlerts(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_ALERTS.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_ALERTS.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_ALERTS, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -340,7 +371,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsApplicationCache(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_APPLICATION_CACHE.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_APPLICATION_CACHE.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -349,7 +380,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsFindingByCSS(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_FINDING_BY_CSS.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_FINDING_BY_CSS.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -358,7 +389,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsJavaScript(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_JAVASCRIPT.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_JAVASCRIPT.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -367,7 +398,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsLocationContext(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_LOCATION_CONTEXT.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_LOCATION_CONTEXT.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_LOCATION_CONTEXT, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -376,7 +407,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsNetworkConnection(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_NETWORK_CONNECTION.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_NETWORK_CONNECTION.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_NETWORK_CONNECTION, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -385,7 +416,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsSQLDatabase(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_SQL_DATABASE.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_SQL_DATABASE.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_SQL_DATABASE, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -394,7 +425,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	public void setSupportsWebStorage(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.SUPPORTS_WEB_STORAGE.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.SUPPORTS_WEB_STORAGE.toString(), value);
 			this.dc.setCapability(CapabilityType.SUPPORTS_WEB_STORAGE, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
@@ -407,13 +438,13 @@ public class SetFireFoxDesiredCapabilities {
 	 */
 	public void setTakesScreenShot(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.TAKES_SCREENSHOT.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.TAKES_SCREENSHOT.toString(), value);
 			this.dc.setCapability(CapabilityType.TAKES_SCREENSHOT, Converter.toBoolean(value));
 		} catch (Exception ex) {
 			logger.catching(ex);
 		}
 	}
-	
+
 	/**
 	 * Set Unexpected Alert Behaviour value. Valid values are 'ACCEPT', 'DISMISS' and 'IGNORE'. In the event of an invalid Unexpected Alert Behaviour value, the value will defaul to 'ACCEPT'
 	 * 
@@ -421,7 +452,7 @@ public class SetFireFoxDesiredCapabilities {
 	 */
 	public void setUnexpectedAlertBehaviour(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.UNEXPECTED_ALERT_BEHAVIOUR.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.UNEXPECTED_ALERT_BEHAVIOUR.toString(), value);
 			if (value.equalsIgnoreCase("ACCEPT") || value.equalsIgnoreCase("DISMISS") || value.equalsIgnoreCase("IGNORE")) {
 				this.dc.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.valueOf(value));
 			} else {
@@ -432,7 +463,7 @@ public class SetFireFoxDesiredCapabilities {
 			logger.catching(ex);
 		}
 	}
-	
+
 	/**
 	 * Set the OS version of the target machine. Set <strong>value</string> to "use_host_os_version" if the the host is to be used for test execution
 	 * 
@@ -440,7 +471,7 @@ public class SetFireFoxDesiredCapabilities {
 	 */
 	public void setVersion(String value) {
 		try {
-			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, desiredCapabilitiesKeysEnum.VERSION.toString(), value);
+			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.VERSION.toString(), value);
 			if (value.equalsIgnoreCase(USE_HOST_OS_VERSION)) {
 				value = System.getProperty("os.version");
 			}
@@ -450,7 +481,7 @@ public class SetFireFoxDesiredCapabilities {
 
 		}
 	}
-	
+
 	public void setFireFoxProfile(FirefoxProfile p) {
 		this.dc.setCapability(FirefoxDriver.PROFILE, p);
 	}

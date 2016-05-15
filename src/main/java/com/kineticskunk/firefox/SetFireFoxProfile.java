@@ -33,6 +33,7 @@ public class SetFireFoxProfile {
 		ffp = new FirefoxProfile();
 		pos = new PlatformOperatingSystem();
 		ap = ApplicationProperties.getInstance();
+		ap.prop.clear();
 		params = new HashMap<String, Object>();
 	}
 	

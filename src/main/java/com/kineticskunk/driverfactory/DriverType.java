@@ -28,13 +28,18 @@ public enum DriverType implements DriverSetup {
 
     FIREFOX {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException, IOException {
-        	SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities(params);
+        	SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities();
+        	dc.setDesiredCapabilitiesProperties(params.get("desiredCapabilites").toString());
         	dc.setFireFoxDesiredCapabilities();
         	if (params.get("addProfile").toString().equalsIgnoreCase("TRUE")) {
         		SetFireFoxProfile p = new SetFireFoxProfile();
-        		p.setPreferences(params.get("profileName").toString());
-        		p.setFirefoxProfile();
-        		dc.setFireFoxProfile(p.getFirefoxProfile());
+        		if (params.containsKey("profilePreferences")) {
+        			p.setPreferences(params.get("profilePreferences").toString());
+            		p.setFirefoxProfile();
+            		dc.setFireFoxProfile(p.getFirefoxProfile());
+        		} else {
+        			
+        		}
         	}
             return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);
         }

@@ -18,8 +18,8 @@ public class DriverFactoryTestNG {
 	private WebDriver wd;
 	
 	@BeforeClass
-	@Parameters("firefoxProfilePreferences")
-	private void beforeDriverFactoryTestNG(String firefoxProfilePreferences) {
+	@Parameters({"desiredCapabilites", "profilePreferences"})
+	private void beforeDriverFactoryTestNG(String desiredCapabilites,  String profilePreferences) {
 		this.params = new HashMap<String, Object>();
 		this.params.put("chromedriver", "/usr/local/ks-test-automation/webdriver-lib/chromedriver");
 		this.params.put("Browser", "FIREFOX");
@@ -29,7 +29,8 @@ public class DriverFactoryTestNG {
 		this.params.put("proxyPort", "");
 		this.params.put("proxyDetails", "");
 		this.params.put("addProfile", "true");
-		this.params.put("profileName", firefoxProfilePreferences);
+		this.params.put("desiredCapabilites", desiredCapabilites);
+		this.params.put("profilePreferences", profilePreferences);
 		this.df = new DriverFactory(this.params);
 	}
 

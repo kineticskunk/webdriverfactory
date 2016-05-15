@@ -16,10 +16,10 @@ public class FireFoxProfileTestNG {
 	}
 	
 	@BeforeClass
-	@Parameters("firefoxProfilePreferences")
-	public void beforeFireFoxProfileTestNG(String firefoxProfilePreferences) throws IOException {
+	@Parameters("profilePreferences")
+	public void beforeFireFoxProfileTestNG(String profilePreferences) throws IOException {
 		sffp = new SetFireFoxProfile();
-		sffp.setPreferences(firefoxProfilePreferences);
+		sffp.setPreferences(profilePreferences);
 		sffp.setFirefoxProfile();
 	}
 	
