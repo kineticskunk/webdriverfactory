@@ -3,7 +3,8 @@
 <suite name="Suite" parallel="false">
   <test name="Test">
     <classes>
-      <class name="com.kineticskunk.auto.webdriverfactory.DriverFactoryTestNG"/>
+      <class name="com.kineticskunk.auto.webdriverfactory.FireFoxProfileTestNG"/>
+      <!-- <class name="com.kineticskunk.auto.webdriverfactory.DriverFactoryTestNG"/> -->
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->

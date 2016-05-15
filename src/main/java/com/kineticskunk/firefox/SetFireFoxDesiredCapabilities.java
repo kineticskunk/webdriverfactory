@@ -1,6 +1,7 @@
 package com.kineticskunk.firefox;
 
 import java.util.HashMap;
+
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,8 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -17,9 +20,9 @@ import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.ini.PlatformOperatingSystem;
 import com.kineticskunk.utilities.Converter;
 
-public class FireFoxDesiredCapabilities {
+public class SetFireFoxDesiredCapabilities {
 
-	private static final Logger logger = LogManager.getLogger(FireFoxDesiredCapabilities.class.getName());
+	private static final Logger logger = LogManager.getLogger(SetFireFoxDesiredCapabilities.class.getName());
 	private static final Marker FIREFOXDESIREDCAPABILITIES = MarkerManager.getMarker("FIREFOXDESIREDCAPABILITIES");
 
 	private static final String USE_HOST_PLATFORM = "use_host_platform";
@@ -30,12 +33,12 @@ public class FireFoxDesiredCapabilities {
 	private PlatformOperatingSystem pos;
 	private HashMap<String, Object> params;
 
-	public FireFoxDesiredCapabilities() {
+	public SetFireFoxDesiredCapabilities() {
 		this.dc = new DesiredCapabilities();
 		this.pos = new PlatformOperatingSystem();
 	}
 
-	public FireFoxDesiredCapabilities(HashMap<String, Object> params) throws DesiredCapabilityException {
+	public SetFireFoxDesiredCapabilities(HashMap<String, Object> params) throws DesiredCapabilityException {
 		this();
 		this.params = params;
 	}
@@ -446,6 +449,10 @@ public class FireFoxDesiredCapabilities {
 			logger.catching(ex);
 
 		}
+	}
+	
+	public void setFireFoxProfile(FirefoxProfile p) {
+		this.dc.setCapability(FirefoxDriver.PROFILE, p);
 	}
 
 }

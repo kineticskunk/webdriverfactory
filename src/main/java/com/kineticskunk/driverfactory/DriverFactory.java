@@ -43,7 +43,7 @@ public class DriverFactory {
     
     public DriverFactory(HashMap<String, Object> params) {
     	this.params = params;
-    	System.setProperty("webdriver.chrome.driver", (new File(params.get("chromedriver").toString()).getAbsolutePath()));
+    	
     	this.defaultDriverType = valueOf(this.params.get("Browser").toString().toUpperCase());
     	this.browser = this.params.get("Browser").toString();
     	this.operatingSystem = System.getProperty("os.name").toUpperCase();
@@ -69,7 +69,7 @@ public class DriverFactory {
                 proxy.setSslProxy(proxyDetails);
             }
             determineEffectiveDriverType();
-            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(params, proxy);
+            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.params, proxy);
             instantiateWebDriver(desiredCapabilities);
         }
 

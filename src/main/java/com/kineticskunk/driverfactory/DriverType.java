@@ -12,8 +12,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
-import com.kineticskunk.firefox.FireFoxDesiredCapabilities;
+import com.kineticskunk.firefox.SetFireFoxDesiredCapabilities;
+import com.kineticskunk.firefox.SetFireFoxProfile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,8 +27,13 @@ public enum DriverType implements DriverSetup {
 
     FIREFOX {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException {
-        	FireFoxDesiredCapabilities dc = new FireFoxDesiredCapabilities(params);
+        	SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities(params);
         	dc.setFireFoxDesiredCapabilities();
+        	if (params.get("ADD_PROFILE").toString().equalsIgnoreCase("TRUE")) {
+        		SetFireFoxProfile p = new SetFireFoxProfile();
+        		p.setFirefoxProfile(params);
+        		dc.setFireFoxProfile(p.getFirefoxProfile());
+        	}
             return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);
         }
 
@@ -36,6 +43,7 @@ public enum DriverType implements DriverSetup {
     },
     CHROME {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
+        	System.setProperty("webdriver.chrome.driver", (new File(params.get("chromedriver").toString()).getAbsolutePath()));
             DesiredCapabilities capabilities = DesiredCapabilities.chrome();
             capabilities.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
             HashMap<String, String> chromePreferences = new HashMap<String, String>();
@@ -104,7 +112,6 @@ public enum DriverType implements DriverSetup {
         if (null != proxySettings) {
             capabilities.setCapability(PROXY, proxySettings);
         }
-
         return capabilities;
     }
 
