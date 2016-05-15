@@ -16,6 +16,7 @@ import com.kineticskunk.firefox.SetFireFoxDesiredCapabilities;
 import com.kineticskunk.firefox.SetFireFoxProfile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,12 +27,13 @@ import static org.openqa.selenium.remote.CapabilityType.PROXY;
 public enum DriverType implements DriverSetup {
 
     FIREFOX {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException {
+        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException, IOException {
         	SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities(params);
         	dc.setFireFoxDesiredCapabilities();
-        	if (params.get("ADD_PROFILE").toString().equalsIgnoreCase("TRUE")) {
+        	if (params.get("addProfile").toString().equalsIgnoreCase("TRUE")) {
         		SetFireFoxProfile p = new SetFireFoxProfile();
-        		p.setFirefoxProfile(params);
+        		p.setPreferences(params.get("profileName").toString());
+        		p.setFirefoxProfile();
         		dc.setFireFoxProfile(p.getFirefoxProfile());
         	}
             return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);

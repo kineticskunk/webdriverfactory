@@ -1,5 +1,6 @@
 package com.kineticskunk.driverfactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.openqa.selenium.Proxy;
@@ -12,5 +13,5 @@ public interface DriverSetup {
 
     WebDriver getWebDriverObject(DesiredCapabilities desiredCapabilities);
 
-    DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException;
+    DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException, IOException;
 }

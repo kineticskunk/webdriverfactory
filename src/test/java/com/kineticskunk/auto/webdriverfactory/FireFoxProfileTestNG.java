@@ -1,31 +1,26 @@
 package com.kineticskunk.auto.webdriverfactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-
 import com.kineticskunk.firefox.SetFireFoxProfile;
-import com.kineticskunk.utilities.ApplicationProperties;
+
 
 public class FireFoxProfileTestNG {
 	
-	private ApplicationProperties ap;
-	private HashMap<String, Object> params;
 	private SetFireFoxProfile sffp;
 	
 	public FireFoxProfileTestNG() {
-		ap = ApplicationProperties.getInstance();
-		params = new HashMap<String, Object>();
 	}
 	
 	@BeforeClass
-	public void beforeFireFoxProfileTestNG() throws IOException {
-		params = ap.readPropertyFile(params, "webdriver-firefox.properties");
+	@Parameters("firefoxProfilePreferences")
+	public void beforeFireFoxProfileTestNG(String firefoxProfilePreferences) throws IOException {
 		sffp = new SetFireFoxProfile();
-		sffp.setFirefoxProfile(params);
+		sffp.setPreferences(firefoxProfilePreferences);
+		sffp.setFirefoxProfile();
 	}
 	
 	@Test

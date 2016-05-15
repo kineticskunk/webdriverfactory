@@ -12,10 +12,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<google.inject.guice>3.0</google.inject.guice>
 		<junit.version>4.12</junit.version>
 		<firefox.driver.version>2.53.0</firefox.driver.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
 		<testng.version>6.9.10</testng.version>
+		<reportng.version>1.1.4</reportng.version>
 		<utilities.version>0.0.1-SNAPSHOT</utilities.version>
 		<phantom.js.driver.version>1.1.0</phantom.js.driver.version>
 		<safari.driver.version>2.48.0</safari.driver.version>
@@ -164,10 +166,68 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-testng</artifactId>
+						<version>2.19.1</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<argLine>-Xmx1024m</argLine>
+					<parallel>suites</parallel>
+					<threadCount>3</threadCount>
+					<systemProperties>
+						<property>
+							<name>firefoxProfilePreferences</name>
+							<value>firefoxprofileperferences.properties</value>
+						</property>
+					</systemProperties>
+					<suiteXmlFiles>
+
+						<suiteXmlFile>DriverFactoryTestNG.xml</suiteXmlFile>
+						<!--<suiteXmlFile>individual_applicant_kyc_maven_test.xml</suiteXmlFile> 
+							<suiteXmlFile>demo_email_validation_maven_test.xml</suiteXmlFile> <suiteXmlFile>email_validation_maven.xml</suiteXmlFile> 
+							<suiteXmlFile>tradedesk_landing_page_test_maven.xml</suiteXmlFile> <suiteXmlFile>tradedesk_demo_account_test_maven.xml</suiteXmlFile> -->
+					</suiteXmlFiles>
+					<properties>
+						<property>
+							<name>suitethreadpoolsize</name>
+							<value>3</value>
+						</property>
+						<property>
+							<name>usedefaultlisteners</name>
+							<value>false</value>
+						</property>
+						<property>
+							<name>listener</name>
+							<value> org.uncommons.reportng.HTMLReporter,
+								org.uncommons.reportng.JUnitXMLReporter</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
+	<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>${google.inject.guice}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.kineticskunk.auto</groupId>
 			<artifactId>utilities</artifactId>
@@ -192,6 +252,18 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.uncommons</groupId>
+			<artifactId>reportng</artifactId>
+			<version>${reportng.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.detro.ghostdriver</groupId>

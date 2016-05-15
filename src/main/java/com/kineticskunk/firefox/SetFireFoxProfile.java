@@ -1,6 +1,7 @@
 package com.kineticskunk.firefox;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
-import com.kineticskunk.utilities.Converter;
+import com.kineticskunk.utilities.ApplicationProperties;
 import com.kineticskunk.utilities.PlatformOperatingSystem;
 
 public class SetFireFoxProfile {
@@ -25,34 +26,57 @@ public class SetFireFoxProfile {
 
 	private FirefoxProfile ffp;
 	private PlatformOperatingSystem pos;
-
+	private ApplicationProperties ap;
+	private HashMap<String, Object> params;
+	
 	public SetFireFoxProfile() {
 		ffp = new FirefoxProfile();
 		pos = new PlatformOperatingSystem();
+		ap = ApplicationProperties.getInstance();
+		params = new HashMap<String, Object>();
+	}
+	
+	public SetFireFoxProfile(HashMap<String, Object> params) {
+		this();
+		this.params = params;
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-
 	public FirefoxProfile getFirefoxProfile() {
 		return this.ffp;
 	}
-
-	public void setFirefoxProfile(HashMap<String, Object> params) {
+	
+	public void setPreferences(String profilePreferences) throws IOException {
+		this.params = ap.readPropertyFile(this.params, profilePreferences);	
+	}
+	
+	public HashMap<String, Object> getPreferences() throws IOException {
+		return params;	
+	}
+	
+	/**
+	 * Set the FireFoxProfile preferences.
+	 * @param params
+	 */
+	public void setFirefoxProfile() {
 		try {
-			Set<String> keys = params.keySet();
+			Set<String> keys = this.params.keySet();
 			for (String key : keys) {
-				if (EnumUtils.isValidEnum(ProfileSetting.class, key.replaceAll(".", "_"))) {
-					logger.log(Level.INFO, "Preference name = '" + key + "'; Preferance value = '" + params.get(key).toString() + "'");
-					if (key.contains("browser.download.dir")) {
-						this.setFireBrowserDownLoad(params.get(key).toString());
+				if (EnumUtils.isValidEnum(ProfileSetting.class, key.replace(".", "_"))) {
+					String value = this.params.get(key).toString(); 
+					logger.log(Level.INFO, FIREFOXPROFILE, "Preference name = '" + key + "'; Preferance value = '" + value + "'");
+					if (key.equalsIgnoreCase("browser.download.dir")) {
+						this.setBrowserDownloadLocation(value);
+					} else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("true")) {
+						this.ffp.setPreference(key, Boolean.parseBoolean(value));
 					} else {
-						this.ffp.setPreference(key, params.get(key).toString());
+						this.ffp.setPreference(key, value);
 					}
 				} else {
-					logger.log(Level.DEBUG, "Preference name = '" + key + "'; Preferance value = '" + params.get(key).toString() + "' is invalid");
+					logger.log(Level.DEBUG, "Preference name = '" + key + "' is invalid");
 				}
 			}
 		} catch (Exception ex) {
@@ -61,21 +85,22 @@ public class SetFireFoxProfile {
 	}
 
 	/**
+	 * Set the FireFox download location.
+	 * If the provided directory is invalid the download location will be set to <strong>System.getProperty("user.home") + \\downloads\\ </strong> for windows and to <strong>System.getProperty("user.home") + /downloads/</strong> for mac/linux
 	 * 
 	 * @param downloodLocation
 	 */
-	private void setFireBrowserDownLoad(String downloodLocation) {
+	private void setBrowserDownloadLocation(String downloodLocation) {
 		try {
 			File downloadlocation = new File(downloodLocation);
 			if (downloadlocation.isDirectory()) {
-				logger.log(Level.INFO, FIREFOXPROFILE, "Setting FireFox profile 'browser.download.dir' to '" + downloodLocation + "'");
 				this.ffp.setPreference("browser.download.dir", downloodLocation);
 			} else {
 				if (pos.isWindows()) {
-					logger.log(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
+					logger.log(Level.WARN, FIREFOXPROFILE, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
 					this.ffp.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
 				} else if (pos.isMac() || pos.isSolaris() || pos.isUnix()) {
-					logger.log(Level.WARN, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
+					logger.log(Level.WARN, FIREFOXPROFILE, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
 					this.ffp.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
 				}
 			}
@@ -85,21 +110,22 @@ public class SetFireFoxProfile {
 	}
 
 	private enum ProfileSetting {
+		accept_untrusted_certificates,
+		always_load_no_focus_lib,
 		assume_untrusted_certificate_issuer,
-		enable_native_events,
 		browser_cache_disk_enable,
-		browser_download_dir_linuxbased,
-		browser_download_dir_windowsbased,
+		browser_download_dir,
 		browser_download_folderList,
-		browser_download_manager_showWhenStarting,
 		browser_download_manager_alertOnEXEOpen,
-		browser_download_manager_focusWhenStarting,
-		browser_helperApps_neverAsk_saveToDisk,
-		browser_download_manager_useWindow,
-		browser_download_manager_showAlertOnComplete,
 		browser_download_manager_closeWhenDone,
+		browser_download_manager_focusWhenStarting,
+		browser_download_manager_showAlertOnComplete,
+		browser_download_manager_showWhenStarting,
+		browser_download_manager_useWindow,
+		browser_helperApps_alwaysAsk_force,
 		browser_helperApps_neverAsk_openFile,
-		browser_helperApps_alwaysAsk_force;
+		browser_helperApps_neverAsk_saveToDisk,
+		enable_native_events;
 	}
 
 }
