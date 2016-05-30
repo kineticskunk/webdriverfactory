@@ -16,14 +16,13 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 
+import com.kineticskunk.chrome.SetChromeDriverDesiredCapabilities;
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
 import com.kineticskunk.firefox.SetFireFoxDesiredCapabilities;
-import com.kineticskunk.firefox.SetFireFoxProfile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,30 +32,14 @@ public enum DriverType implements DriverSetup {
 
     FIREFOX {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException, IOException {
-        	SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities();
-        	dc.setDesiredCapabilitiesProperties(params.get("desiredCapabilites").toString());
-        	dc.setFireFoxDesiredCapabilities();
-        	if (params.get("addProfile").toString().equalsIgnoreCase("TRUE")) {
-        		SetFireFoxProfile p = new SetFireFoxProfile();
-        		if (params.containsKey("profilePreferences")) {
-        			p.setPreferences(params.get("profilePreferences").toString());
-            		if (params.get("addFireBug").toString().equalsIgnoreCase("TRUE")) {
-            			if (params.containsKey("firebugPreferences")) {
-            				p.setPreferences(params.get("firebugPreferences").toString());
-                			p.setAddFireBug(params.get("fireBugLocation").toString(), params.get("fireBugName").toString());
-            			}
-            		} else {
-            			logger.log(Level.INFO, DRIVERTYPE, "Not adding FireBug extension name = '" + params.get("profilePreferences").toString() + "'");
-            		}
-            		p.setFirefoxProfile();
-            		dc.setFireFoxProfile(p.getFirefoxProfile());
-        		} else {
-        			logger.log(Level.INFO, DRIVERTYPE, "Not adding FireBug extension name = '" + params.get("profilePreferences").toString() + "'");
-        		}
-        	} else {
-    			logger.log(Level.INFO, DRIVERTYPE, "FireFox has been loaded with standard WebDriver extension");        		
+        	try {
+        		SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities(params);
+            	dc.setFireFoxDesiredCapabilities();
+            	return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);
+        	} catch (Exception ex) {
+        		catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities", new String[]{params.toString(), proxySettings.toString()}, ex);
+        		return null;
         	}
-            return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);
         }
 
         public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -64,14 +47,11 @@ public enum DriverType implements DriverSetup {
         }
     },
     CHROME {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
-        	System.setProperty("webdriver.chrome.driver", (new File(params.get("chromedriver").toString()).getAbsolutePath()));
-            DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-            capabilities.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
-            HashMap<String, String> chromePreferences = new HashMap<String, String>();
-            chromePreferences.put("profile.password_manager_enabled", "false");
-            capabilities.setCapability("chrome.prefs", chromePreferences);
-            return addProxySettings(capabilities, proxySettings);
+        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws Exception {
+        	System.setProperty("webdriver.chrome.driver", (new File(params.get("chromeDriverExecutable").toString()).getAbsolutePath()));
+        	SetChromeDriverDesiredCapabilities cddc = new SetChromeDriverDesiredCapabilities(params);
+        	cddc.setDesiredCapabilities();
+            return addProxySettings(cddc.getDesiredCapabilities(), proxySettings);
         }
 
         public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -132,11 +112,27 @@ public enum DriverType implements DriverSetup {
     
     private static final Logger logger = LogManager.getLogger(DriverType.class.getName());
 	private static final Marker DRIVERTYPE = MarkerManager.getMarker("DRIVERTYPE");
+	
+	public void catchError(Level level, Marker marker, String methodName,  String params[], Exception ex) {
+		logger.entry();
+		if (logger.isDebugEnabled()) {
+			logger.log(level, marker, "RUN {} USING {}", methodName, params);
+			logger.log(level, marker, "Cause = " + ex.getCause());
+			logger.log(level, marker, "Message = " + ex.getMessage());
+			logger.log(level, marker, "Local Message = " + ex.getLocalizedMessage());
+			logger.catching(level, ex);
+		}
+		logger.exit();
+	}
 
     protected DesiredCapabilities addProxySettings(DesiredCapabilities capabilities, Proxy proxySettings) {
-        if (null != proxySettings) {
-            capabilities.setCapability(PROXY, proxySettings);
-        }
+    	try {
+    		if (null != proxySettings) {
+                capabilities.setCapability(PROXY, proxySettings);
+            }
+    	} catch (Exception ex) {
+    		catchError(Level.FATAL, DRIVERTYPE, "addProxySettings", new String[]{capabilities.toString(), proxySettings.toString()}, ex);
+    	}
         return capabilities;
     }
 

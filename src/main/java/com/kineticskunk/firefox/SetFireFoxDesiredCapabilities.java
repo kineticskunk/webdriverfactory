@@ -58,22 +58,26 @@ public class SetFireFoxDesiredCapabilities {
 	}
 
 	/**
-	 * Set FireFox DesiredCapabilities
+	 * Set FireFox DesiredCapabilities and profile
 	 * @throws DesiredCapabilityException
-	 */
+	 */	
 	public void setFireFoxDesiredCapabilities() throws DesiredCapabilityException {
 		for (String key : this.params.keySet()) {
-			String value = params.get(key).toString();
-			if (!value.isEmpty() && !value.equals(null) && !value.equals("") && !value.equals(Keys.SPACE)) {
-				if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
-					logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has been set to '" + value + "'");
-					if (key.equalsIgnoreCase("platform")) {
-						this.dc.setCapability(key.toUpperCase(), System.getProperty("os.name"));
-					} else {
-						this.dc.setCapability(key.toUpperCase(), value);
-					}
+			Object value = params.get(key);
+			if (!value.equals(null) && !value.equals("") && !value.equals(Keys.SPACE)) {
+				if (key.equalsIgnoreCase("profilePreferences")) {
+					this.dc.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) value);
 				} else {
-					logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + ", is invalid");
+					if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
+						logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has been set to '" + value + "'");
+						if (key.equalsIgnoreCase("platform")) {
+							this.dc.setCapability(key.toUpperCase(), System.getProperty("os.name"));							
+						} else {
+							this.dc.setCapability(key.toUpperCase(), value);
+						}
+					} else {
+						logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + ", is invalid");
+					}
 				}
 			} else {
 				logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has not being set as the value is either empty, null or equals " + (char)34 + (char)34);
@@ -479,7 +483,7 @@ public class SetFireFoxDesiredCapabilities {
 
 		}
 	}
-
+	
 	public void setFireFoxProfile(FirefoxProfile p) {
 		this.dc.setCapability(FirefoxDriver.PROFILE, p);
 	}

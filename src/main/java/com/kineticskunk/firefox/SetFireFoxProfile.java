@@ -58,7 +58,7 @@ public class SetFireFoxProfile {
 		return params;	
 	}
 	
-	public void setAddFireBug(String fireBugLocation, String fireBugName) throws IOException {
+	public void addFireFoxExtension(String fireBugLocation, String fireBugName) throws IOException {
 		this.ffp.addExtension(new File(fireBugLocation, fireBugName));
 	}
 	

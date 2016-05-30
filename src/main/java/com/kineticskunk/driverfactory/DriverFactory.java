@@ -5,12 +5,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
 import com.kineticskunk.utilities.Converter;
+
+import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -24,10 +30,8 @@ public class DriverFactory {
 	private static final Marker DRIVEFACTORY = MarkerManager.getMarker("DRIVEFACTORY");
 	
 	private HashMap<String, Object> params;
-
     private WebDriver webdriver;
     private DriverType selectedDriverType;
-
     private DriverType defaultDriverType;
     private String browser;
     private String operatingSystem;
@@ -37,16 +41,20 @@ public class DriverFactory {
     private String proxyHost;
     private Integer proxyPort;
     private String proxyDetails;
+    private boolean bringDriverToFront;
+    private boolean resizeBrower;
+    
+    public DriverFactory() {
+    }
     
     public DriverFactory(HashMap<String, Object> params) {
     	this.params = params;
     	
-    	this.defaultDriverType = valueOf(this.params.get("Browser").toString().toUpperCase());
-    	this.browser = this.params.get("Browser").toString();
+    	this.defaultDriverType = valueOf(this.params.get("browser").toString().toUpperCase());
+    	this.browser = this.params.get("browser").toString();
     	this.operatingSystem = System.getProperty("os.name").toUpperCase();
         this.systemArchitecture = System.getProperty("os.arch");
-    	this.useRemoteWebDriver = Converter.toBoolean(this.params.get("useRemoteWebDriver").toString());
-    	this.proxyEnabled = Converter.toBoolean(this.params.get("proxyEnabled").toString());
+    	
     	if (this.proxyEnabled) {
     		this.proxyHost = this.params.get("proxyHost").toString();
         	this.proxyPort = Converter.toInteger(this.params.get("proxyPort").toString());
@@ -55,22 +63,50 @@ public class DriverFactory {
     		this.proxyDetails = "AUTODETECT";
     	}
     }
-
+    
+    public void setUseProxy(boolean proxyEnabled) {
+    	this.proxyEnabled = proxyEnabled;
+    }
+    
+    public void setUseRemoteWebDriver(boolean useRemoteWebDriver) {
+    	this.useRemoteWebDriver = useRemoteWebDriver;
+    }
+    
+    public void setBringDriverToFront(boolean bringDriverToFront) {
+    	this.bringDriverToFront = bringDriverToFront;
+    }
+    
+    public void setResizeBrowser(boolean resizeBrower) {
+    	this.resizeBrower = resizeBrower;
+    }
+    
     public WebDriver getDriver() throws Exception {
         if (null == webdriver) {
-            Proxy proxy = null;
+            Proxy proxy = new Proxy();
             if (this.proxyEnabled) {
-                proxy = new Proxy();
                 proxy.setProxyType(MANUAL);
                 proxy.setHttpProxy(proxyDetails);
                 proxy.setSslProxy(proxyDetails);
+            } else {
+            	proxy.setProxyType(ProxyType.AUTODETECT);
             }
             determineEffectiveDriverType();
             DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.params, proxy);
             instantiateWebDriver(desiredCapabilities);
         }
-
-        return webdriver;
+        
+        if (this.bringDriverToFront) {
+        	String currentWindowHandle = this.webdriver.getWindowHandle();
+    		((JavascriptExecutor) this.webdriver).executeScript("alert('Test')"); 
+    		this.webdriver.switchTo().alert().accept();
+    		this.webdriver.switchTo().window(currentWindowHandle);
+        }
+        
+        if (this.resizeBrower) {
+        	java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    		this.webdriver.manage().window().setSize(new Dimension(Converter.toInteger(screenSize.getWidth()), Converter.toInteger(screenSize.getHeight())));
+        }
+        return this.webdriver;
     }
 
     public void quitDriver() {
@@ -82,7 +118,7 @@ public class DriverFactory {
     private void determineEffectiveDriverType() {
         DriverType driverType = defaultDriverType;
         try {
-            driverType = valueOf(this.browser);
+            driverType = valueOf(this.browser.toUpperCase());
         } catch (IllegalArgumentException ignored) {
         	logger.catching(ignored);
         	logger.log(Level.FATAL, DRIVEFACTORY, "Unknown driver specified, defaulting to '" + driverType + "'...");
@@ -117,4 +153,3 @@ public class DriverFactory {
         }
     }
 }
-
