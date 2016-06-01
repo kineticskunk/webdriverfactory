@@ -42,7 +42,7 @@ public class DriverFactory {
     private Integer proxyPort;
     private String proxyDetails;
     private boolean bringDriverToFront;
-    private boolean resizeBrower;
+    private boolean resizeBrowser;
     
     public DriverFactory() {
     }
@@ -76,8 +76,8 @@ public class DriverFactory {
     	this.bringDriverToFront = bringDriverToFront;
     }
     
-    public void setResizeBrowser(boolean resizeBrower) {
-    	this.resizeBrower = resizeBrower;
+    public void setResizeBrowser(boolean resizeBrowser) {
+    	this.resizeBrowser = resizeBrowser;
     }
     
     public WebDriver getDriver() throws Exception {
@@ -102,7 +102,7 @@ public class DriverFactory {
     		this.webdriver.switchTo().window(currentWindowHandle);
         }
         
-        if (this.resizeBrower) {
+        if (this.resizeBrowser) {
         	java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     		this.webdriver.manage().window().setSize(new Dimension(Converter.toInteger(screenSize.getWidth()), Converter.toInteger(screenSize.getHeight())));
         }

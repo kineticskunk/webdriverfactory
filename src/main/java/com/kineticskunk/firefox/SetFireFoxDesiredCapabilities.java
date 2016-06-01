@@ -60,13 +60,17 @@ public class SetFireFoxDesiredCapabilities {
 	/**
 	 * Set FireFox DesiredCapabilities and profile
 	 * @throws DesiredCapabilityException
+	 * @throws IOException 
 	 */	
-	public void setFireFoxDesiredCapabilities() throws DesiredCapabilityException {
+	public void setFireFoxDesiredCapabilities() throws DesiredCapabilityException, IOException {
 		for (String key : this.params.keySet()) {
 			Object value = params.get(key);
 			if (!value.equals(null) && !value.equals("") && !value.equals(Keys.SPACE)) {
 				if (key.equalsIgnoreCase("profilePreferences")) {
-					this.dc.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) value);
+					FirefoxProfile p = (FirefoxProfile) value;
+					p.layoutOnDisk();
+					logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type 'FirefoxDriver.PROFILE' has been set to '" + p.toString() + "'");
+					this.dc.setCapability(FirefoxDriver.PROFILE, p);
 				} else {
 					if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
 						logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has been set to '" + value + "'");
@@ -74,6 +78,7 @@ public class SetFireFoxDesiredCapabilities {
 							this.dc.setCapability(key.toUpperCase(), System.getProperty("os.name"));							
 						} else {
 							this.dc.setCapability(key.toUpperCase(), value);
+							this.dc.asMap().toString();
 						}
 					} else {
 						logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + ", is invalid");

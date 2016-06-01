@@ -24,13 +24,13 @@ public class SetFireFoxProfile {
 	private static final String DEFAULT_WIN_DOWNLOAD_DIRECTORY = System.getProperty("user.home") + "\\downloads\\";
 	private static final String DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY = System.getProperty("user.home") + "/downloads/";
 
-	private FirefoxProfile ffp;
+	private FirefoxProfile profile;
 	private PlatformOperatingSystem pos;
 	private ApplicationProperties ap;
 	private HashMap<String, Object> params;
 	
 	public SetFireFoxProfile() {
-		this.ffp = new FirefoxProfile();
+		this.profile = new FirefoxProfile();
 		this.pos = new PlatformOperatingSystem();
 		this.ap = ApplicationProperties.getInstance();
 		this.ap.getProperties().clear();
@@ -41,25 +41,40 @@ public class SetFireFoxProfile {
 		this();
 		this.params = params;
 	}
+	
+	public SetFireFoxProfile(HashMap<String, Object> params, FirefoxProfile profile) {
+		this();
+		this.params = params;
+		this.profile = profile;
+	}
 
 	/**
 	 * 
 	 * @return
 	 */
 	public FirefoxProfile getFirefoxProfile() {
-		return this.ffp;
+		return this.profile;
 	}
 	
 	public void setPreferences(String profilePreferences) throws IOException {
 		this.params = this.ap.readPropertyFile(this.params, profilePreferences);	
 	}
 	
+	public void setPreferences(HashMap<String, Object> preferences) throws IOException {
+		this.params = preferences;	
+	}
+	
+	
 	public HashMap<String, Object> getPreferences() throws IOException {
 		return params;	
 	}
 	
 	public void addFireFoxExtension(String fireBugLocation, String fireBugName) throws IOException {
-		this.ffp.addExtension(new File(fireBugLocation, fireBugName));
+		this.profile.addExtension(new File(fireBugLocation, fireBugName));
+	}
+	
+	public void addFireFoxExtension(String fireBugName) throws IOException {
+		this.profile.addExtension(new File(fireBugName));
 	}
 	
 	/**
@@ -70,15 +85,21 @@ public class SetFireFoxProfile {
 		try {
 			Set<String> keys = this.params.keySet();
 			for (String key : keys) {
+				String value = this.params.get(key).toString();
+				if (key.equalsIgnoreCase("fireBug")) {
+					this.addFireFoxExtension(params.get("fireBugLocation").toString(), params.get("fireBugName").toString());
+				}
+				
+				
 				if (EnumUtils.isValidEnum(profileSetting.class, key.replace(".", "_"))) {
-					String value = this.params.get(key).toString(); 
+					 
 					logger.log(Level.INFO, FIREFOXPROFILE, "Preference name = '" + key + "'; Preferance value = '" + value + "'");
 					if (key.equalsIgnoreCase("browser.download.dir")) {
 						this.setBrowserDownloadLocation(value);
 					} else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("true")) {
-						this.ffp.setPreference(key, Boolean.parseBoolean(value));
+						this.profile.setPreference(key, Boolean.parseBoolean(value));
 					} else {
-						this.ffp.setPreference(key, value);
+						this.profile.setPreference(key, value);
 					}
 				} else {
 					logger.log(Level.DEBUG, "Preference name = '" + key + "' is invalid");
@@ -99,14 +120,14 @@ public class SetFireFoxProfile {
 		try {
 			File downloadlocation = new File(downloodLocation);
 			if (downloadlocation.isDirectory()) {
-				this.ffp.setPreference("browser.download.dir", downloodLocation);
+				this.profile.setPreference("browser.download.dir", downloodLocation);
 			} else {
 				if (pos.isWindows()) {
 					logger.log(Level.WARN, FIREFOXPROFILE, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
-					this.ffp.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
+					this.profile.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
 				} else if (pos.isMac() || pos.isSolaris() || pos.isUnix()) {
 					logger.log(Level.WARN, FIREFOXPROFILE, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
-					this.ffp.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
+					this.profile.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
 				}
 			}
 		} catch (Exception ex) {
