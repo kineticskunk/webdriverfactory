@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
 import com.kineticskunk.utilities.ApplicationProperties;
@@ -90,7 +91,6 @@ public class SetFireFoxProfile {
 					this.addFireFoxExtension(params.get("fireBugLocation").toString(), params.get("fireBugName").toString());
 				}
 				
-				
 				if (EnumUtils.isValidEnum(profileSetting.class, key.replace(".", "_"))) {
 					 
 					logger.log(Level.INFO, FIREFOXPROFILE, "Preference name = '" + key + "'; Preferance value = '" + value + "'");
@@ -122,10 +122,10 @@ public class SetFireFoxProfile {
 			if (downloadlocation.isDirectory()) {
 				this.profile.setPreference("browser.download.dir", downloodLocation);
 			} else {
-				if (pos.isWindows()) {
+				if (this.pos.isWindows()) {
 					logger.log(Level.WARN, FIREFOXPROFILE, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_WIN_DOWNLOAD_DIRECTORY + "'");
 					this.profile.setPreference("browser.download.dir", DEFAULT_WIN_DOWNLOAD_DIRECTORY);
-				} else if (pos.isMac() || pos.isSolaris() || pos.isUnix()) {
+				} else if (this.pos.isMac() || this.pos.isSolaris() || this.pos.isUnix()) {
 					logger.log(Level.WARN, FIREFOXPROFILE, "The provided download location '" + downloodLocation + "' is not a directory. Setting the download location to it's default value of '" + DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY + "'");
 					this.profile.setPreference("browser.download.dir", DEFAULT_UNIX_BASED_DOWNLOAD_DIRECTORY);
 				}

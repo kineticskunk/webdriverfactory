@@ -1,7 +1,9 @@
 package com.kineticskunk.firefox;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -10,10 +12,12 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
 import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.ini.PlatformOperatingSystem;
@@ -71,7 +75,9 @@ public class SetFireFoxDesiredCapabilities {
 					p.layoutOnDisk();
 					logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type 'FirefoxDriver.PROFILE' has been set to '" + p.toString() + "'");
 					this.dc.setCapability(FirefoxDriver.PROFILE, p);
-				} else {
+				} else if (key.equalsIgnoreCase("firefox_binary") && this.pos.isWindows()) {
+					this.dc.setCapability(key, new FirefoxBinary(new File(value.toString())));
+				}  else {
 					if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
 						logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + "' has been set to '" + value + "'");
 						if (key.equalsIgnoreCase("platform")) {
