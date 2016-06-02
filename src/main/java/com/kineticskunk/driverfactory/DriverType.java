@@ -60,9 +60,11 @@ public enum DriverType implements DriverSetup {
     },
     IE {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params,Proxy proxySettings) {
+        	System.setProperty("webdriver.ie.driver", (new File(params.get("internetExplorerDriverExecutable").toString()).getAbsolutePath()));
             DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
             capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
             capabilities.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, true);
+            capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
             capabilities.setCapability("requireWindowFocus", true);
             return addProxySettings(capabilities, proxySettings);
         }

@@ -58,7 +58,8 @@ public class SetFireFoxDesiredCapabilities {
 	 * @throws IOException
 	 */
 	public void setDesiredCapabilitiesProperties(String profilePreferences) throws IOException {
-		this.params = ap.readPropertyFile(this.params, profilePreferences);	
+		this.params = ap.readPropertyFile(this.params, profilePreferences);
+		
 	}
 
 	/**
@@ -86,6 +87,8 @@ public class SetFireFoxDesiredCapabilities {
 							this.dc.setCapability(key.toUpperCase(), value);
 							this.dc.asMap().toString();
 						}
+					} else if (EnumUtils.isValidEnum(seleniumServerDesiredCapabiltiesEnum.class, key)) {
+						this.setSeleniumServerCapability(key, value.toString());
 					} else {
 						logger.log(Level.DEBUG, FIREFOXDESIREDCAPABILITIES, "Capability type '" + key.toUpperCase() + ", is invalid");
 					}
@@ -98,6 +101,7 @@ public class SetFireFoxDesiredCapabilities {
 
 	private enum desiredCapabilities {
 		acceptSslCerts,
+		binary,
 		browser,
 		version,
 		platform,
@@ -119,6 +123,19 @@ public class SetFireFoxDesiredCapabilities {
 		elementScrollBehavior,
 		loggingPrefs,
 		firefox_binary;
+	}
+	
+	/**
+	 * 
+	 * @author yodaqua
+	 *
+	 */
+	private enum seleniumServerDesiredCapabiltiesEnum {
+		AVOIDING_PROXY,
+		ENSURING_CLEAN_SESSION,
+		ONLY_PROXYING_SELENIUM_TRAFFIC,
+		PROXY_PAC,
+		PROXYING_EVERYTHING;
 	}
 
 	/**
@@ -190,18 +207,7 @@ public class SetFireFoxDesiredCapabilities {
 		VERSION;
 	}
 
-	/**
-	 * 
-	 * @author yodaqua
-	 *
-	 */
-	private enum seleniumServerDesiredCapabiltiesEnum {
-		AVOIDING_PROXY,
-		ENSURING_CLEAN_SESSION,
-		ONLY_PROXYING_SELENIUM_TRAFFIC,
-		PROXY_PAC,
-		PROXYING_EVERYTHING;
-	}
+	
 
 	protected void setDesiredCapability(String capabilityType, String capabilityValue) {
 		try {
