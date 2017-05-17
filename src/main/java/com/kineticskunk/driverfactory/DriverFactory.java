@@ -49,7 +49,6 @@ public class DriverFactory {
     
     public DriverFactory(HashMap<String, Object> params) {
     	this.params = params;
-    	
     	this.defaultDriverType = valueOf(this.params.get("browser").toString().toUpperCase());
     	this.browser = this.params.get("browser").toString();
     	this.operatingSystem = System.getProperty("os.name").toUpperCase();

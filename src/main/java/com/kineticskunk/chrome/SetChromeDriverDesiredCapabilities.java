@@ -2,7 +2,6 @@ package com.kineticskunk.chrome;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.logging.log4j.Level;
@@ -25,20 +24,17 @@ public class SetChromeDriverDesiredCapabilities {
 	private DesiredCapabilities dc;
 	private ChromeDriver cd; 
 	private ChromeDriverService cs;
-	private ChromeOptions co;
 	private HashMap<String, Object> params;
 
 	public SetChromeDriverDesiredCapabilities(HashMap<String, Object> params) {
 		this.dc = DesiredCapabilities.chrome();
 		this.cd = null;
 		this.cs = null;
-		this.co = new ChromeOptions();
 		this.params = params;
 	}
 
 	public void configureDriver() throws Exception {
 		this.setChromeService();
-		//this.setChromeOptions();
 		this.setDesiredCapabilities();
 		this.setDriver();
 		this.startChromeService();

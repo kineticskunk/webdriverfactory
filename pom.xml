@@ -18,9 +18,9 @@
 		<commons.lang3.version>3.4</commons.lang3.version>
 		<testng.version>6.9.10</testng.version>
 		<reportng.version>1.1.4</reportng.version>
-		<utilities.version>0.0.1-SNAPSHOT</utilities.version>
+		<utilities.version>0.0.1.1-SNAPSHOT</utilities.version>
 		<phantom.js.driver.version>1.1.0</phantom.js.driver.version>
-		<safari.driver.version>2.53.0</safari.driver.version>
+		<safari.driver.version>2.53.1</safari.driver.version>
 	</properties>
 
 	<build>

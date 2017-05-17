@@ -49,13 +49,19 @@ public class FireFoxDriverFactoryTestNG {
 		params.put("pageLoadingStrategy", "normal");
 		params.put("elementScrollBehavior", 0);
 		params.put("loggingPrefs", "all");
-		params.put("firefox_binary", "");
-		params.put("profilePreferences", getFireFoxProfile(true));
+		
+		
+		switch (params.get("browser").toString().toLowerCase()) {
+		case "firefox":
+			params.put("firefox_binary", "");
+			params.put("profilePreferences", getFireFoxProfile(true));
+		}
 		return params;
 	}
 
 	private FirefoxProfile getFireFoxProfile(boolean loadFireBug) throws IOException {
 		HashMap<String, Object> params = new HashMap<String, Object>();
+		SetFireFoxProfile p = new SetFireFoxProfile();
 		params.put("accept.untrusted.certificates", true);
 		params.put("always.load.no.focus.lib", true);
 		params.put("assume.untrusted.certificate.issuer", true);
@@ -72,7 +78,6 @@ public class FireFoxDriverFactoryTestNG {
 		params.put("browser.helperApps.neverAsk.openFile", "text/csv,application/excel,image/png,image/jpeg,text/html,text/plain,application/msword,application/xml,application/zip");
 		params.put("browser.helperApps.neverAsk.saveToDisk", "text/csv,application/excel,image/png,image/jpeg,text/html,text/plain,application/msword,application/xml,application/zip");
 		params.put("enable.native.events", true);
-		SetFireFoxProfile p = new SetFireFoxProfile();
 		if (loadFireBug) {
 			p.addFireFoxExtension("/Users/yodaqua/Library/Application Support/Firefox/Profiles/24nxve48.default/extensions/", "firebug@software.joehewitt.com.xpi");
 			params.put("extensions.firebug.currentVersion", "2.0.16");
@@ -83,6 +88,8 @@ public class FireFoxDriverFactoryTestNG {
 			params.put("extensions.firebug.allPagesActivation", "on");
 			params.put("extensions.firebug.cookies.enableSites", true);
 		}
+		
+		
 		p.setPreferences(params);
 		p.setFirefoxProfile();
 		return p.getFirefoxProfile();
