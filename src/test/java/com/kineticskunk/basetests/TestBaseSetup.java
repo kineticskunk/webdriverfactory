@@ -86,6 +86,7 @@ public class TestBaseSetup {
 		}
 		
 		try {
+			this.df.setUseProxy(false);
 			this.df = new DriverFactory(this.params);
 			this.wd = df.getDriver();
 		} catch (Exception e) {
@@ -102,6 +103,7 @@ public class TestBaseSetup {
 				this.params = ap.readResourcePropertyFile("chromedesiredcapabilities.properties");
 				File f = new File(this.getClass().getClassLoader().getResource("chromedrivermac64").getPath());
 				this.params.put("chromeDriverExecutable", f.getAbsolutePath());
+				System.setProperty("webdriver.chrome.driver", f.getAbsolutePath());
 				this.params.put("chrome.switches", Arrays.asList("--no-default-browser-check"));
 				this.params.put("chromeOptions", getChromeOptions());
 				this.params.put("chromePreferences", getChromePreferences()); 
@@ -110,6 +112,7 @@ public class TestBaseSetup {
 			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.params.get("driverType").toString().equalsIgnoreCase("geckodriver")) {
 				this.params = ap.readResourcePropertyFile("firefoxdesiredcapabilities.properties");
 				File f = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
+				System.setProperty("webdriver.gecko.driver", f.getAbsolutePath());
 				this.params.put("geckoDriverExecutable", f.getAbsolutePath());
 				this.makeDriverExecutable(f.getAbsolutePath());
 			}

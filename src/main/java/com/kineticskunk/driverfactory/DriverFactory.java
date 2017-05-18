@@ -132,7 +132,7 @@ public class DriverFactory {
     	logger.log(Level.INFO, DRIVEFACTORY, "Current Operating System: " + operatingSystem);
     	logger.log(Level.INFO, DRIVEFACTORY, "Current Architecture: " + systemArchitecture);
     	logger.log(Level.INFO, DRIVEFACTORY, "Current Browser Selection: " + selectedDriverType);
-
+    	
         if (useRemoteWebDriver) {
             URL seleniumGridURL = new URL(this.params.get("gridURL").toString());
             String desiredBrowserVersion = this.params.get("desiredBrowserVersion").toString();
@@ -146,7 +146,7 @@ public class DriverFactory {
                 desiredCapabilities.setVersion(desiredBrowserVersion);
             }
 
-            webdriver = new RemoteWebDriver(seleniumGridURL, desiredCapabilities);
+            //webdriver = new RemoteWebDriver(seleniumGridURL, desiredCapabilities);
         } else {
             webdriver = selectedDriverType.getWebDriverObject(desiredCapabilities);
         }

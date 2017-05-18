@@ -76,7 +76,7 @@ public class SetFireFoxDesiredCapabilities {
 					p.layoutOnDisk();
 					logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type 'FirefoxDriver.PROFILE' has been set to '" + p.toString() + "'");
 					this.dc.setCapability(FirefoxDriver.PROFILE, p);
-				} else if (key.equalsIgnoreCase("firefox_binary") && this.pos.isWindows()) {
+				} else if (key.equalsIgnoreCase("firefox_binary")) {
 					this.dc.setCapability(key, new FirefoxBinary(new File(value.toString())));
 				}  else {
 					if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {
@@ -122,6 +122,8 @@ public class SetFireFoxDesiredCapabilities {
 		pageLoadingStrategy,
 		elementScrollBehavior,
 		loggingPrefs,
+		marionette,
+		geckodriverexecutable,
 		firefox_binary;
 	}
 	

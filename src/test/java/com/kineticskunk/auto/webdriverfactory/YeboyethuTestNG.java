@@ -57,7 +57,7 @@ public class YeboyethuTestNG {
 		params.put("pageLoadingStrategy", "normal");
 		params.put("elementScrollBehavior", 0);
 		params.put("loggingPrefs", "all");
-		params.put("firefox_binary", "");
+		params.put("firefox_binary", "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_49.app/Contents/MacOS/firefox-bin");
 		params.put("profilePreferences", getFireFoxProfile(true));
 		return params;
 	}

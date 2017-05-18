@@ -12,15 +12,14 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<google.inject.guice>3.0</google.inject.guice>
+		<google.inject.guice>4.1.0</google.inject.guice>
 		<junit.version>4.12</junit.version>
-		<firefox.driver.version>2.53.0</firefox.driver.version>
+		<selenium.version>3.0.1</selenium.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
 		<testng.version>6.9.10</testng.version>
 		<reportng.version>1.1.4</reportng.version>
 		<utilities.version>0.0.1.1-SNAPSHOT</utilities.version>
-		<phantom.js.driver.version>1.1.0</phantom.js.driver.version>
-		<safari.driver.version>2.53.1</safari.driver.version>
+		<phantom.js.driver.version>2.1</phantom.js.driver.version>
 	</properties>
 
 	<build>
@@ -224,9 +223,26 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-container-default</artifactId>
+			<version>1.7.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.collections</groupId>
+					<artifactId>google-collections</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>${google.inject.guice}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>21.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.kineticskunk.auto</groupId>
@@ -238,10 +254,23 @@
 			<artifactId>logging</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-firefox-driver -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-firefox-driver</artifactId>
-			<version>${firefox.driver.version}</version>
+			<version>${selenium.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-chrome-driver</artifactId>
+			<version>${selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -264,16 +293,6 @@
 					<artifactId>testng</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.github.detro.ghostdriver</groupId>
-			<artifactId>phantomjsdriver</artifactId>
-			<version>${phantom.js.driver.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-safari-driver</artifactId>
-			<version>${safari.driver.version}</version>
 		</dependency>
 	</dependencies>
 </project>
