@@ -1,6 +1,5 @@
 package com.kineticskunk.auto.webdriverfactory;
 
-import java.io.IOException;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -13,15 +12,14 @@ import com.kineticskunk.basetests.TestBaseSetup;
 
 public class ChromeDriverFactoryTestNG extends TestBaseSetup {
 	
-	public ChromeDriverFactoryTestNG() throws IOException {
+	public ChromeDriverFactoryTestNG() {
 		super();
 	}
 
 	private WebDriver wd;
 
 	@BeforeClass
-	private void beforeChromeDriverFactoryTestNG() throws IOException {
-		//setDriver("chrome");
+	private void beforeChromeDriverFactoryTestNG() {
 	}
 	
 	@BeforeGroups(groups = "KineticSkunk")
