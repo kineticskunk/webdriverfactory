@@ -96,9 +96,6 @@ public class TestBaseSetup {
 	}
 
 	private void loadWebDriverProperties(String propertiesFileName) {
-		System.out.println("OS name : "+System.getProperty("os.name"));
-		System.out.println("OS arch : "+System.getProperty("os.arch"));
-		System.out.println("pos.isMac() : "+pos.isMac());
 		try {
 			this.params = ap.readResourcePropertyFile(propertiesFileName);
 			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.params.get("driverType").toString().equalsIgnoreCase("chromedriver")) {
