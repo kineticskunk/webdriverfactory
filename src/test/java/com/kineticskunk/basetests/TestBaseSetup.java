@@ -38,7 +38,7 @@ public class TestBaseSetup {
 			this.getLogger().info("-------------***LAUNCHING MOZILLA FIREFOX***--------------");
 			try {
 				//ldc.loadWebDriverProperties("firefoxdesiredcapabilities.properties");
-				ldc.loadWebDriverProfilePreference("firefoxprofile.properties");
+				//ldc.loadWebDriverProfilePreference("firefoxprofile.properties");
 			} catch (Exception e) {
 				this.getLogger().fatal("An error occurred while attempting to load the Geckodriver");
 				this.getLogger().error(e.getLocalizedMessage());

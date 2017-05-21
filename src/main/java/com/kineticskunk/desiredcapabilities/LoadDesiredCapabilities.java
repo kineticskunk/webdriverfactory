@@ -33,7 +33,7 @@ import com.kineticskunk.utilities.Converter;
 import com.sun.jna.Native;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
+//import com.sun.jna.Native;
 
 interface CLibrary extends Library {
 	public int chmod(String path, int mode);
@@ -98,37 +98,43 @@ public class LoadDesiredCapabilities {
 			this.dc.setBrowserName(browserType);
 			if (this.desiredCapabilitiesJSONObject != null) {
 				Iterator<?> iterator = this.desiredCapabilitiesJSONObject.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Entry<?, ?> entry = (Entry<?, ?>) iterator.next();
+					String key = entry.getKey().toString();
+					String value = entry.getValue().toString();
+					if (!key.equalsIgnoreCase("firefoxprofilepreferences") && !key.toLowerCase().contains("chrome")) {
+						this.dc.setCapability(key, value);
+						logger.info(LOADDESIREDCAPABILITIES, "Loaded desiredCapability " + key + " = " + this.dc.getCapability(key));
+					}
+				}
 				switch (browserType.toLowerCase()) {
 				case "firefox":
-					while (iterator.hasNext()) {
-						Entry<?, ?> entry = (Entry<?, ?>) iterator.next();
-						String key = entry.getKey().toString();
-						String value = entry.getValue().toString();
-						if (key.equalsIgnoreCase("firefoxprofilepreferences")) {
-							JSONObject firefoxprofilePreferences = (JSONObject) this.desiredCapabilitiesJSONObject.get("firefoxprofilepreferences");
-							this.dc.setCapability(FirefoxDriver.PROFILE, this.getFirefoxProfile(firefoxprofilePreferences));
-						} else {
-							this.dc.setCapability(key, value);
-							logger.info(LOADDESIREDCAPABILITIES, "Loaded desiredCapability " + key + " = " + this.dc.getCapability(key));
-						}
-					}
+					
+					JSONObject firefoxprofilePreferences = (JSONObject) this.desiredCapabilitiesJSONObject.get("firefoxprofilepreferences");
+					this.dc.setCapability(FirefoxDriver.PROFILE, this.getFirefoxProfile(firefoxprofilePreferences));
 					this.setDriverExecutable("webdriver.gecko.driver", browserType);
 					break;
 				case "chrome":
-
+					this.dc.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
+					this.dc.setCapability("chromeOptions", getChromeOptions());
+					this.dc.setCapability("chromePreferences", getChromePreferences()); 
+					this.setDriverExecutable("webdriver.chrome.driver", browserType);
 					break;
 				}		
 			} 
 		} catch (Exception ex) {
-			//FileNotFoundException
+			
 		}
 	}
 	
-	
-	
+	public DesiredCapabilities getDesiredCapabilities() {
+		return this.dc;
+	}
+
 	private FirefoxProfile getFirefoxProfile(JSONObject firefoxprofilePreferences) {
 		FirefoxProfile profile = new FirefoxProfile();
 		Iterator<?> profilePreferenceIterator = firefoxprofilePreferences.entrySet().iterator();
+		
 		while (profilePreferenceIterator.hasNext()) {
 			Entry<?, ?> profileEntry = (Entry<?, ?>) profilePreferenceIterator.next();
 			String profilePreferenceKey = profileEntry.getKey().toString();
@@ -144,66 +150,23 @@ public class LoadDesiredCapabilities {
 				logger.info(LOADDESIREDCAPABILITIES, "Loaded FireFox Profile Preference " + profilePreferenceKey + " = " + profile.getStringPreference(profilePreferenceKey, ""));
 			}	
 		}
+		
 		return profile;
 	}
-	
-	private void setDriverExecutable(String driverPropertyName, String browserType) {
-		if (pos.isMac() && System.getProperty("os.arch").contains("64") && (this.browserType.equalsIgnoreCase("chrome"))) {
 
-			File f = new File(this.getClass().getClassLoader().getResource("chromedrivermac64").getPath());
-			this.dc.setCapability("chromeDriverExecutable", f.getAbsolutePath());
-			System.setProperty("webdriver.chrome.driver", f.getAbsolutePath());
-			this.dc.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
-			this.dc.setCapability("chromeOptions", getChromeOptions());
-			this.dc.setCapability("chromePreferences", getChromePreferences()); 
-			this.makeDriverExecutable(f.getAbsolutePath());
+	private void setDriverExecutable(String driverPropertyName, String browserType) throws FileNotFoundException, IOException {
+		File driverExecutable = null;
+
+		if (pos.isMac() && System.getProperty("os.arch").contains("64") && (this.browserType.equalsIgnoreCase("chrome"))) {
+			driverExecutable = new File(this.getClass().getClassLoader().getResource("chromedrivermac64").getPath());
+			this.dc.setCapability("chromeDriverExecutable", driverExecutable.getAbsolutePath());
 		}
 		if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.browserType.equalsIgnoreCase("firefox")) {
-			File f = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
-			System.setProperty("webdriver.gecko.driver", f.getAbsolutePath());
-			this.makeDriverExecutable(f.getAbsolutePath());
+			driverExecutable = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
 		}
-		
-		File f = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
-		System.setProperty("webdriver.gecko.driver", f.getAbsolutePath());
-		this.makeDriverExecutable(f.getAbsolutePath());
-	}
 
-	public void loadSpecificWebDriverProperties(String propertiesFileName) {
-		try {
-
-			if (pos.isMac() && System.getProperty("os.arch").contains("64") && (this.browserType.equalsIgnoreCase("chrome"))) {
-
-				File f = new File(this.getClass().getClassLoader().getResource("chromedrivermac64").getPath());
-				this.dc.setCapability("chromeDriverExecutable", f.getAbsolutePath());
-				System.setProperty("webdriver.chrome.driver", f.getAbsolutePath());
-				this.dc.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
-				this.dc.setCapability("chromeOptions", getChromeOptions());
-				this.dc.setCapability("chromePreferences", getChromePreferences()); 
-				this.makeDriverExecutable(f.getAbsolutePath());
-			}
-			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.browserType.equalsIgnoreCase("firefox")) {
-				File f = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
-				System.setProperty("webdriver.gecko.driver", f.getAbsolutePath());
-				this.makeDriverExecutable(f.getAbsolutePath());
-			}
-
-		} catch (Exception e) {
-			//getLogger().fatal("An error occurred while attempting to load the FireFox browser");
-			//getLogger().error(e.getLocalizedMessage());
-		}
-	}
-
-	public void loadWebDriverProfilePreference(String profilePreferences) {
-		try {
-			SetFireFoxProfile p = new SetFireFoxProfile();
-			//	p.setPreferences(ap.readResourcePropertyFile(profilePreferences));
-			p.setFirefoxProfile();
-			//this.params.put("profilePreferences", p.getFirefoxProfile());
-		} catch (Exception e) {
-			//getLogger().fatal("An error occurred while attempting to load the FireFox browser");
-			//getLogger().error(e.getLocalizedMessage());
-		}
+		System.setProperty(driverPropertyName, driverExecutable.getAbsolutePath());
+		this.makeDriverExecutable(driverExecutable.getAbsolutePath());
 	}
 
 	private void makeDriverExecutable(String driverFile) {

@@ -14,6 +14,7 @@ import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.utilities.Converter;
 
 import java.awt.Toolkit;
@@ -146,7 +147,7 @@ public class DriverFactory {
                 desiredCapabilities.setVersion(desiredBrowserVersion);
             }
 
-            //webdriver = new RemoteWebDriver(seleniumGridURL, desiredCapabilities);
+            webdriver = new RemoteWebDriver(seleniumGridURL, desiredCapabilities);
         } else {
             webdriver = selectedDriverType.getWebDriverObject(desiredCapabilities);
         }
