@@ -11,7 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
+//import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
@@ -93,7 +93,7 @@ public enum DriverType implements DriverSetup {
         public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
             return new OperaDriver(capabilities);
         }
-    },
+  /*  },
     PHANTOMJS {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
             DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
@@ -109,7 +109,7 @@ public enum DriverType implements DriverSetup {
 
         public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
             return new PhantomJSDriver(capabilities);
-        }
+        }*/
     };
     
     private static final Logger logger = LogManager.getLogger(DriverType.class.getName());

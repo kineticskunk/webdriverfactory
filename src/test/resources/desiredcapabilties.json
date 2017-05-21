@@ -1,0 +1,21 @@
+{
+	"acceptSslCerts": true,
+	"version": "any",
+	"platform": "any",
+	"javascriptEnabled": true,
+	"takesScreenshot": true,
+	"handlesAlerts": true,
+	"databaseEnabled": true,
+	"locationContextEnabled": true,
+	"applicationCacheEnabled": true,
+	"browserConnectionEnabled": true,
+	"cssSelectorsEnabled": true,
+	"rotatable": false,
+	"webStorageEnabled": true,
+	"acceptSSLCerts": true,
+	"nativeEvents": true,
+	"unexpectedAlertBehavior": "dismiss",
+	"pageLoadingStrategy": "normal",
+	"elementScrollBehavior": 0,
+	"loggingPrefs": "all"
+}

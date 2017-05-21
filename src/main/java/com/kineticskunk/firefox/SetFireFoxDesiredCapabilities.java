@@ -57,7 +57,12 @@ public class SetFireFoxDesiredCapabilities {
 	 * @param profilePreferences
 	 * @throws IOException
 	 */
-	public void setDesiredCapabilitiesProperties(String profilePreferences) throws IOException {
+	public void setDesiredCapabilitiesProperties(String desiredCapabilies) throws IOException {
+		this.params = ap.readPropertyFile(this.params, desiredCapabilies);
+		
+	}
+	
+	public void setProfileProperties(String profilePreferences) throws IOException {
 		this.params = ap.readPropertyFile(this.params, profilePreferences);
 		
 	}
@@ -76,7 +81,7 @@ public class SetFireFoxDesiredCapabilities {
 					p.layoutOnDisk();
 					logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, "Capability type 'FirefoxDriver.PROFILE' has been set to '" + p.toString() + "'");
 					this.dc.setCapability(FirefoxDriver.PROFILE, p);
-				} else if (key.equalsIgnoreCase("firefox_binary")) {
+				} else if (key.equalsIgnoreCase("firefox_binary") && pos.isWindows()) {
 					this.dc.setCapability(key, new FirefoxBinary(new File(value.toString())));
 				}  else {
 					if (EnumUtils.isValidEnum(desiredCapabilities.class, key)) {

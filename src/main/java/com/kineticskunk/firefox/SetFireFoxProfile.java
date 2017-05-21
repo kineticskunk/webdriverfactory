@@ -92,7 +92,6 @@ public class SetFireFoxProfile {
 				}
 				
 				if (EnumUtils.isValidEnum(profileSetting.class, key.replace(".", "_"))) {
-					 
 					logger.log(Level.INFO, FIREFOXPROFILE, "Preference name = '" + key + "'; Preferance value = '" + value + "'");
 					if (key.equalsIgnoreCase("browser.download.dir")) {
 						this.setBrowserDownloadLocation(value);

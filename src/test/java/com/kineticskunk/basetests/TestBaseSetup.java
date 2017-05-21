@@ -1,7 +1,6 @@
 package com.kineticskunk.basetests;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +16,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import com.kineticskunk.driverfactory.DriverFactory;
+import com.kineticskunk.firefox.SetFireFoxProfile;
 import com.kineticskunk.utilities.ApplicationProperties;
 import com.kineticskunk.utilities.PlatformOperatingSystem;
 
@@ -75,6 +75,7 @@ public class TestBaseSetup {
 			this.getLogger().info("-------------***LAUNCHING MOZILLA FIREFOX***--------------");
 			try {
 				this.loadWebDriverProperties("firefoxdesiredcapabilities.properties");
+				this.loadWebDriverProfilePreference("firefoxprofile.properties");
 			} catch (Exception e) {
 				this.getLogger().fatal("An error occurred while attempting to load the Geckodriver");
 				this.getLogger().error(e.getLocalizedMessage());
@@ -87,6 +88,9 @@ public class TestBaseSetup {
 		
 		try {
 			this.df.setUseProxy(false);
+			this.df.setResizeBrowser(true);
+			this.df.setUseRemoteWebDriver(false);
+			this.df.setBringDriverToFront(true);
 			this.df = new DriverFactory(this.params);
 			this.wd = df.getDriver();
 		} catch (Exception e) {
@@ -98,8 +102,8 @@ public class TestBaseSetup {
 
 	private void loadWebDriverProperties(String propertiesFileName) {
 		try {
-			this.params = ap.readResourcePropertyFile(propertiesFileName);
-			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.params.get("driverType").toString().equalsIgnoreCase("chromedriver")) {
+			this.params = this.ap.readResourcePropertyFile(propertiesFileName);
+			if (pos.isMac() && System.getProperty("os.arch").contains("64") && (this.params.get("driverType").toString()).equalsIgnoreCase("chromedriver")) {
 				this.params = ap.readResourcePropertyFile("chromedesiredcapabilities.properties");
 				File f = new File(this.getClass().getClassLoader().getResource("chromedrivermac64").getPath());
 				this.params.put("chromeDriverExecutable", f.getAbsolutePath());
@@ -111,12 +115,25 @@ public class TestBaseSetup {
 			}
 			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.params.get("driverType").toString().equalsIgnoreCase("geckodriver")) {
 				this.params = ap.readResourcePropertyFile("firefoxdesiredcapabilities.properties");
+				
 				File f = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
 				System.setProperty("webdriver.gecko.driver", f.getAbsolutePath());
 				this.params.put("geckoDriverExecutable", f.getAbsolutePath());
 				this.makeDriverExecutable(f.getAbsolutePath());
 			}
 
+		} catch (Exception e) {
+			getLogger().fatal("An error occurred while attempting to load the FireFox browser");
+			getLogger().error(e.getLocalizedMessage());
+		}
+	}
+	
+	private void loadWebDriverProfilePreference(String profilePreferences) {
+		try {
+			SetFireFoxProfile p = new SetFireFoxProfile();
+			p.setPreferences(ap.readResourcePropertyFile(profilePreferences));
+			p.setFirefoxProfile();
+			this.params.put("profilePreferences", p.getFirefoxProfile());
 		} catch (Exception e) {
 			getLogger().fatal("An error occurred while attempting to load the FireFox browser");
 			getLogger().error(e.getLocalizedMessage());

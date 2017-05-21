@@ -26,7 +26,7 @@ public class ChromeDriverFactoryTestNG extends TestBaseSetup {
 	public void beforeKineticSkunk() throws Exception {
 		this.wd = getDriver();
 		this.wd.manage().deleteAllCookies();
-		this.wd.navigate().to("http://www.kineticskunk.com/");
+		this.wd.navigate().to("https://kineticskunk.com/");
 	}
 	
 	@Test(groups = "KineticSkunk")
