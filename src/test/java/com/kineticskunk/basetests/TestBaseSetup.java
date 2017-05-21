@@ -1,6 +1,9 @@
 package com.kineticskunk.basetests;
 
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterClass;
 import java.io.File;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +43,7 @@ public class TestBaseSetup {
 
 	private static TestBaseSetup tbs;
 
-	public static TestBaseSetup getInstance() {
+	public static TestBaseSetup getInstance() throws UnknownHostException {
 		if (tbs == null ) {
 			synchronized (TestBaseSetup.class) {
 				if (tbs == null) {
@@ -50,8 +53,8 @@ public class TestBaseSetup {
 		}
 		return tbs;
 	}
-
-	public TestBaseSetup() {
+	
+	public TestBaseSetup() throws UnknownHostException{
 		this.df.setUseProxy(false);
 		this.df.setUseRemoteWebDriver(false);
 		this.df.setBringDriverToFront(true);
