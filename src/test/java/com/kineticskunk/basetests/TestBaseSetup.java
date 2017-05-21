@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -18,8 +19,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverfactory.DriverFactory;
 import com.kineticskunk.firefox.SetFireFoxProfile;
+import com.kineticskunk.mongo.WebDriverConfiguration;
 import com.kineticskunk.utilities.ApplicationProperties;
 import com.kineticskunk.utilities.PlatformOperatingSystem;
 
@@ -31,39 +34,36 @@ interface CLibrary extends Library {
 }
 
 public class TestBaseSetup {
-
+	
+	
 	private static final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
 	private static final Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
+	
+	/**
+	 * Constants
+	 */
+	private static final String dc = "desiredCapabilties.json";
+	
+	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
 
 	private WebDriver wd;
 	private ApplicationProperties ap = new ApplicationProperties();
 	private HashMap<String, Object> params = new HashMap<String, Object>();
 	private DriverFactory df =  new DriverFactory();
 	private PlatformOperatingSystem pos = new PlatformOperatingSystem();
-
-	private static TestBaseSetup tbs;
-
-	public static TestBaseSetup getInstance() throws UnknownHostException {
-		if (tbs == null ) {
-			synchronized (TestBaseSetup.class) {
-				if (tbs == null) {
-					tbs = new TestBaseSetup();
-				}
-			}
-		}
-		return tbs;
-	}
 	
-	public TestBaseSetup() throws UnknownHostException{
+	
+	@Parameters({ "browserType" })
+	public TestBaseSetup(String browserType) throws UnknownHostException {
 		this.df.setUseProxy(false);
 		this.df.setUseRemoteWebDriver(false);
 		this.df.setBringDriverToFront(true);
 		this.df.setResizeBrowser(true);
 	}
 
-	@Parameters({ "browserType" })
 	@BeforeClass
 	public void setDriver(String browserType) {
+		DesiredCapabilities desiredCapabilities = this.ldc.createDesiredCapabilities(browserType, dc);
 		switch (browserType.toLowerCase()) {
 		case "chrome":
 			this.getLogger().info("-------------***LAUNCHING GOOGLE CHROME***--------------");

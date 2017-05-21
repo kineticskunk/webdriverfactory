@@ -9,6 +9,10 @@
 	
 	<parameter name="remoteWebDriver" value="false"/>
 	<parameter name="gridURL" value="http://127.0.0.1:4444"/>
+	<parameter name="host" value="localhost"/>
+	<parameter name="port" value="27017"/>
+	<parameter name="dbName" value="WebDriverConfigDB"/>
+	<parameter name="collectionName" value="webDriverCollection"/>
 	
 	<test name="Chrome_Driver">
 	<parameter name="browserType" value="chrome" />
