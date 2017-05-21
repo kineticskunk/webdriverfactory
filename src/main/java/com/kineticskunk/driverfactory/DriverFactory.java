@@ -45,7 +45,12 @@ public class DriverFactory {
     private boolean bringDriverToFront;
     private boolean resizeBrowser;
     
-    public DriverFactory() {
+    private String browserType = null;
+    private String desiredCapabilitiesConfigJSON = null;
+    
+    public DriverFactory(String browserType, String desiredCapabilitiesConfigJSON) {
+    	this.browserType = browserType;
+        this.desiredCapabilitiesConfigJSON = desiredCapabilitiesConfigJSON;
     }
     
     public DriverFactory(HashMap<String, Object> params) {
@@ -91,7 +96,7 @@ public class DriverFactory {
             	proxy.setProxyType(ProxyType.AUTODETECT);
             }
             determineEffectiveDriverType();
-            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.params, proxy);
+            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.browserType, this.desiredCapabilitiesConfigJSON, proxy);
             instantiateWebDriver(desiredCapabilities);
         }
         

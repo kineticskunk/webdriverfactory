@@ -52,14 +52,14 @@ public class LoadDesiredCapabilities {
 	private String browserType = null;
 
 	private PlatformOperatingSystem pos = new PlatformOperatingSystem();
-	private DriverFactory df =  new DriverFactory();
+	private DriverFactory df;
 
 	public LoadDesiredCapabilities() {
 	}
 
-	public LoadDesiredCapabilities(String browserType, String resourceFile) {
+	public LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
 		this.browserType = browserType;
-
+		
 		try {
 			this.df.setUseProxy(false);
 			this.df.setResizeBrowser(true);
@@ -119,6 +119,9 @@ public class LoadDesiredCapabilities {
 					this.dc.setCapability("chromeOptions", getChromeOptions());
 					this.dc.setCapability("chromePreferences", getChromePreferences()); 
 					this.setDriverExecutable("webdriver.chrome.driver", browserType);
+					break;
+				case "ie":
+					System.setProperty("webdriver.ie.driver", browserType);
 					break;
 				}		
 			} 

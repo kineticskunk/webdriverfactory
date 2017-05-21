@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
+import com.kineticskunk.driverfactory.DriverFactory;
 
 public class TestBaseSetup {
 	
@@ -18,17 +19,19 @@ public class TestBaseSetup {
 	private static final Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 	
 	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
+	
+	private DriverFactory df;
 
 	private WebDriver wd;
 	
 	@BeforeClass
-	@Parameters({ "browserType" })
-	public void setDriver(String browserType) {
+	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON" })
+	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON) throws Exception {
 		switch (browserType.toLowerCase()) {
 		case "chrome":
 			this.getLogger().info("-------------***LAUNCHING GOOGLE CHROME***--------------");
 			try {
-				//ldc.loadWebDriverProperties("chromedesiredcapabilities.properties");
+				this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
 			} catch (Exception e) {
 				this.getLogger().debug(TESTBASESETUP, "An error occurred while attempting to load the Chromedriver");
 				this.getLogger().error(e.getLocalizedMessage());
@@ -48,7 +51,7 @@ public class TestBaseSetup {
 			this.getLogger().fatal("Brower '" + browserType + "' is unsupported");
 			break;
 		}
-		
+		this.wd = this.df.getDriver();
 		
 	}
 

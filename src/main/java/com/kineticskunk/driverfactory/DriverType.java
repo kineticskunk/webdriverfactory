@@ -16,84 +16,69 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 
-import com.kineticskunk.chrome.SetChromeDriverDesiredCapabilities;
+import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
-import com.kineticskunk.firefox.SetFireFoxDesiredCapabilities;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.openqa.selenium.remote.CapabilityType.PROXY;
 
 public enum DriverType implements DriverSetup {
 
-    FIREFOX {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws DesiredCapabilityException, IOException {
-        	try {
-        		SetFireFoxDesiredCapabilities dc = new SetFireFoxDesiredCapabilities(params);
-            	dc.setFireFoxDesiredCapabilities();
-            	return addProxySettings(dc.getFireFoxDesiredCapabilities(), proxySettings);
-        	} catch (Exception ex) {
-        		catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities", new String[]{params.toString(), proxySettings.toString()}, ex);
-        		return null;
-        	}
-        }
+	FIREFOX {
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) throws DesiredCapabilityException, IOException {
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, proxySettings);
+		}
 
-        public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-            return new FirefoxDriver(capabilities);
-        }
-    },
-    CHROME {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) throws Exception {
-        	System.setProperty("webdriver.chrome.driver", (new File(params.get("chromeDriverExecutable").toString()).getAbsolutePath()));
-        	SetChromeDriverDesiredCapabilities cddc = new SetChromeDriverDesiredCapabilities(params);
-        	cddc.setDesiredCapabilities();
-            return addProxySettings(cddc.getDesiredCapabilities(), proxySettings);
-        }
+		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
+			return new FirefoxDriver(capabilities);
+		}
+	},
+	CHROME {
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) throws Exception {
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, proxySettings);
+		}
 
-        public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-            return new ChromeDriver(capabilities);
-        }
-    },
-    IE {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params,Proxy proxySettings) {
-        	System.setProperty("webdriver.ie.driver", (new File(params.get("internetExplorerDriverExecutable").toString()).getAbsolutePath()));
-            DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
-            capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
-            capabilities.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, true);
-            capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-            capabilities.setCapability("requireWindowFocus", true);
-            return addProxySettings(capabilities, proxySettings);
-        }
+		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
+			return new ChromeDriver(capabilities);
+		}
+	},
+	IE {
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
 
-        public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-            return new InternetExplorerDriver(capabilities);
-        }
-    },
-    SAFARI {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
-            DesiredCapabilities capabilities = DesiredCapabilities.safari();
-            capabilities.setCapability("safari.cleanSession", true);
-            return addProxySettings(capabilities, proxySettings);
-        }
+			DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
+			capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
+			capabilities.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, true);
+			capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+			capabilities.setCapability("requireWindowFocus", true);
+			return addProxySettings(capabilities, proxySettings);
+		}
 
-        public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-            return new SafariDriver(capabilities);
-        }
-    },
-    OPERA {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
-            DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
-            return addProxySettings(capabilities, proxySettings);
-        }
+		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
+			return new InternetExplorerDriver(capabilities);
+		}
+	},
+	SAFARI {
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
+			DesiredCapabilities capabilities = DesiredCapabilities.safari();
+			capabilities.setCapability("safari.cleanSession", true);
+			return addProxySettings(capabilities, proxySettings);
+		}
 
-        public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-            return new OperaDriver(capabilities);
-        }
-  /*  },
+		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
+			return new SafariDriver(capabilities);
+		}
+	},
+	OPERA {
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
+			DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
+			return addProxySettings(capabilities, proxySettings);
+		}
+
+		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
+			return new OperaDriver(capabilities);
+		}
+		/*  },
     PHANTOMJS {
         public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
             DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
@@ -110,11 +95,11 @@ public enum DriverType implements DriverSetup {
         public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
             return new PhantomJSDriver(capabilities);
         }*/
-    };
-    
-    private static final Logger logger = LogManager.getLogger(DriverType.class.getName());
+	};
+
+	private static final Logger logger = LogManager.getLogger(DriverType.class.getName());
 	private static final Marker DRIVERTYPE = MarkerManager.getMarker("DRIVERTYPE");
-	
+
 	public void catchError(Level level, Marker marker, String methodName,  String params[], Exception ex) {
 		logger.entry();
 		if (logger.isDebugEnabled()) {
@@ -127,24 +112,35 @@ public enum DriverType implements DriverSetup {
 		logger.exit();
 	}
 
-    protected DesiredCapabilities addProxySettings(DesiredCapabilities capabilities, Proxy proxySettings) {
-    	try {
-    		if (null != proxySettings) {
-                capabilities.setCapability(PROXY, proxySettings);
-            }
-    	} catch (Exception ex) {
-    		catchError(Level.FATAL, DRIVERTYPE, "addProxySettings", new String[]{capabilities.toString(), proxySettings.toString()}, ex);
-    	}
-        return capabilities;
-    }
+	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
+		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
+		try {
+			ldc.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
+			ldc.setDesiredCapabilities(browserType);
+			return addProxySettings(ldc.getDesiredCapabilities(), proxySettings);
+		} catch (Exception ex) {
+			catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities: failed to load", new String[]{ldc.getDesiredCapabilities().toString(), proxySettings.toString()}, ex);
+			return null;
+		}
+	}
+	protected DesiredCapabilities addProxySettings(DesiredCapabilities capabilities, Proxy proxySettings) {
+		try {
+			if (null != proxySettings) {
+				capabilities.setCapability(PROXY, proxySettings);
+			}
+		} catch (Exception ex) {
+			catchError(Level.FATAL, DRIVERTYPE, "addProxySettings", new String[]{capabilities.toString(), proxySettings.toString()}, ex);
+		}
+		return capabilities;
+	}
 
-    protected List<String> applyPhantomJSProxySettings(List<String> cliArguments, Proxy proxySettings) {
-        if (null == proxySettings) {
-            cliArguments.add("--proxy-type=none");
-        } else {
-            cliArguments.add("--proxy-type=http");
-            cliArguments.add("--proxy=" + proxySettings.getHttpProxy());
-        }
-        return cliArguments;
-    }
+	protected List<String> applyPhantomJSProxySettings(List<String> cliArguments, Proxy proxySettings) {
+		if (null == proxySettings) {
+			cliArguments.add("--proxy-type=none");
+		} else {
+			cliArguments.add("--proxy-type=http");
+			cliArguments.add("--proxy=" + proxySettings.getHttpProxy());
+		}
+		return cliArguments;
+	}
 }
