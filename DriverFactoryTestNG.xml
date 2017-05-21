@@ -7,18 +7,27 @@
 		<listener class-name="org.uncommons.reportng.JUnitXMLReporter" />
 	</listeners>
 	
-	<parameter name="remoteWebDriver" value="false"/>
+	<!-- <parameter name="remoteWebDriver" value="false"/>
 	<parameter name="gridURL" value="http://127.0.0.1:4444"/>
 	<parameter name="host" value="localhost"/>
 	<parameter name="port" value="27017"/>
 	<parameter name="dbName" value="WebDriverConfigDB"/>
-	<parameter name="collectionName" value="webDriverCollection"/>
+	<parameter name="collectionName" value="webDriverCollection"/> -->
 	
-	<test name="Chrome_Driver">
+	<parameter name="browserType" value="firefox" />
+	<parameter name="desiredCapabilities" value="desiredcapabilties.json" />
+	<test name="LoadDesiredCapabilities">
+		<classes>
+			<class
+				name="com.kineticskunk.auto.webdriverfactory.LoadDesiredCapabilitiesTestNG" />
+		</classes>
+	</test> <!-- Test -->
+	
+	<!-- <test name="Chrome_Driver">
 	<parameter name="browserType" value="chrome" />
 		<classes>
 			<class
 				name="com.kineticskunk.auto.webdriverfactory.ChromeDriverFactoryTestNG" />
 		</classes>
-	</test> <!-- Test -->
+	</test> Test -->
 </suite> <!-- Suite -->
