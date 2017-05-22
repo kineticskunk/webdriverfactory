@@ -17,9 +17,7 @@ public class TestBaseSetup {
 	
 	private static final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
 	private static final Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
-	
-	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
-	
+
 	private DriverFactory df;
 
 	private WebDriver wd;

@@ -109,7 +109,6 @@ public class LoadDesiredCapabilities {
 				}
 				switch (browserType.toLowerCase()) {
 				case "firefox":
-					
 					JSONObject firefoxprofilePreferences = (JSONObject) this.desiredCapabilitiesJSONObject.get("firefoxprofilepreferences");
 					this.dc.setCapability(FirefoxDriver.PROFILE, this.getFirefoxProfile(firefoxprofilePreferences));
 					this.setDriverExecutable("webdriver.gecko.driver", browserType);

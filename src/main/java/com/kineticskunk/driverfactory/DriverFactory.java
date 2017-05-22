@@ -48,6 +48,9 @@ public class DriverFactory {
     private String browserType = null;
     private String desiredCapabilitiesConfigJSON = null;
     
+    public DriverFactory() {
+    }
+    
     public DriverFactory(String browserType, String desiredCapabilitiesConfigJSON) {
     	this.browserType = browserType;
         this.desiredCapabilitiesConfigJSON = desiredCapabilitiesConfigJSON;
