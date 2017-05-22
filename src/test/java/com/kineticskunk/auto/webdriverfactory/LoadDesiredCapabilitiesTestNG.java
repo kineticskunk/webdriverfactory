@@ -1,5 +1,6 @@
 package com.kineticskunk.auto.webdriverfactory;
 
+import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeClass;
@@ -8,12 +9,10 @@ import org.testng.annotations.Test;
 
 import com.kineticskunk.basetests.TestBaseSetup;
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
-import com.kineticskunk.driverfactory.DriverFactory;
 
 public class LoadDesiredCapabilitiesTestNG extends TestBaseSetup {
 	
 	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
-	private DriverFactory df = new DriverFactory();
 	
 	@BeforeClass
 	@Parameters( { "browserType", "desiredCapabilities" } )
@@ -36,7 +35,7 @@ public class LoadDesiredCapabilitiesTestNG extends TestBaseSetup {
 	@AfterGroups(groups = "LoadDesiredCapabilities")
 	@Parameters( { "browserType", "desiredCapabilities" } )
 	public void afterLoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-		//df = new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
+		getDriver().get("https://kineticskunk.com");
 		//df.getDriver
 	}
 	

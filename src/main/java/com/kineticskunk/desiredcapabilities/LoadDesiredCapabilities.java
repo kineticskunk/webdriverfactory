@@ -43,6 +43,9 @@ public class LoadDesiredCapabilities {
 
 	private final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
 	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
+	
+	private static final String CONFIGLOADSETTINGS = "configloadingsetting";
+	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
 
 	private JSONParser parser = new JSONParser();
 	private JSONObject desiredCapabilitiesJSONObject = null;
@@ -58,6 +61,8 @@ public class LoadDesiredCapabilities {
 	}
 
 	public LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+		
+		//TODO add code to handle configloadingsetting
 		this.browserType = browserType;
 		
 		try {
@@ -72,6 +77,16 @@ public class LoadDesiredCapabilities {
 			e.printStackTrace();
 		}
 		//this.wd.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+	}
+	
+	private boolean jsonKeyExists(JSONObject jsonObject, String key) {
+		if (jsonObject.containsKey(key)) {
+			return true; 
+		} else {
+			this.logger.error(LOADDESIREDCAPABILITIES, "JSONObject " + (char)34 + jsonObject.toJSONString() + (char)34 + " object doesn't contain key " + (char)34 + key + (char)34);
+		}
+		
+		return false;
 	}
 
 	public void setDesiredCapabilitiesJSONObject(String desiredCapabilitiesJSONFile) {
@@ -88,6 +103,26 @@ public class LoadDesiredCapabilities {
 			e.printStackTrace();
 		}
 	}
+	
+	public void setCommonDesiredCapabilities() {
+		if (this.jsonKeyExists(desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES)) {
+			JSONObject commondesiredcapabilities = (JSONObject) this.desiredCapabilitiesJSONObject.get(COMMONDESIREDCAPABILITIES);
+			Iterator<?> iterator = commondesiredcapabilities.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry<?, ?> profileEntry = (Entry<?, ?>) iterator.next();
+				String key = profileEntry.getKey().toString();
+				String value = profileEntry.getValue().toString();
+				if (Converter.isBoolean(value)) {
+					this.dc.setCapability(key, Converter.toBoolean(value));
+				} else if (Converter.isNumeric(value)) {
+					this.dc.setCapability(key, Converter.toInteger(value));
+				} else {
+					this.dc.setCapability(key, value);
+				}
+				logger.info(LOADDESIREDCAPABILITIES, "Loaded desiredCapability " + (char)34 + key + (char)34 + " with value " + (char)34 + this.dc.getCapability(key) + (char)34);
+			}
+		}
+	}
 
 	public JSONObject getDesiredCapabilitiesJSONObject() {
 		return this.desiredCapabilitiesJSONObject;
@@ -97,19 +132,21 @@ public class LoadDesiredCapabilities {
 		try {
 			this.dc.setBrowserName(browserType);
 			if (this.desiredCapabilitiesJSONObject != null) {
-				Iterator<?> iterator = this.desiredCapabilitiesJSONObject.entrySet().iterator();
-				while (iterator.hasNext()) {
-					Entry<?, ?> entry = (Entry<?, ?>) iterator.next();
-					String key = entry.getKey().toString();
-					String value = entry.getValue().toString();
-					if (!key.equalsIgnoreCase("firefoxprofilepreferences") && !key.toLowerCase().contains("chrome")) {
-						this.dc.setCapability(key, value);
-						logger.info(LOADDESIREDCAPABILITIES, "Loaded desiredCapability " + key + " = " + this.dc.getCapability(key));
-					}
-				}
+				this.setCommonDesiredCapabilities();
 				switch (browserType.toLowerCase()) {
 				case "firefox":
-					JSONObject firefoxprofilePreferences = (JSONObject) this.desiredCapabilitiesJSONObject.get("firefoxprofilepreferences");
+					
+					JSONObject firefoxprofilePreferences = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
+					/*while (iterator.hasNext()) {
+						Entry<?, ?> entry = (Entry<?, ?>) iterator.next();
+						String key = entry.getKey().toString();
+						String value = entry.getValue().toString();
+						if (!key.equalsIgnoreCase("firefoxprofilepreferences") || !key.toLowerCase().contains("chrome")) {
+							this.dc.setCapability(key, value);
+							logger.info(LOADDESIREDCAPABILITIES, "Loaded desiredCapability " + key + " = " + this.dc.getCapability(key));
+						}
+					}*/
+					
 					this.dc.setCapability(FirefoxDriver.PROFILE, this.getFirefoxProfile(firefoxprofilePreferences));
 					this.setDriverExecutable("webdriver.gecko.driver", browserType);
 					break;

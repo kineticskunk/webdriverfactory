@@ -29,7 +29,7 @@ public class YeboyethuTestNG {
 	@BeforeClass
 	@Parameters({"desiredCapabilites", "profilePreferences", "firebugPreferences"})
 	private void beforeDriverFactoryTestNG(String desiredCapabilites,  String profilePreferences, String firebugPreferences) throws IOException {
-		this.df = new DriverFactory(this.getFireFoxDesiredCapabilitiesParams());
+		//this.df = new DriverFactory(this.getFireFoxDesiredCapabilitiesParams());
 		this.df.setUseProxy(false);
 		this.df.setUseRemoteWebDriver(false);
 	}

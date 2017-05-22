@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
-import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverfactory.DriverFactory;
 
 public class TestBaseSetup {
@@ -25,7 +24,8 @@ public class TestBaseSetup {
 	@BeforeClass
 	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON" })
 	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON) throws Exception {
-		switch (browserType.toLowerCase()) {
+		this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
+		/*switch (browserType.toLowerCase()) {
 		case "chrome":
 			this.getLogger().info("-------------***LAUNCHING GOOGLE CHROME***--------------");
 			try {
@@ -48,7 +48,7 @@ public class TestBaseSetup {
 		default:
 			this.getLogger().fatal("Brower '" + browserType + "' is unsupported");
 			break;
-		}
+		}*/
 		this.wd = this.df.getDriver();
 		
 	}

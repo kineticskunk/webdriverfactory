@@ -34,9 +34,6 @@ public class DriverFactory {
     private WebDriver webdriver;
     private DriverType selectedDriverType;
     private DriverType defaultDriverType;
-    private String browser;
-    private String operatingSystem;
-    private String systemArchitecture;
     private boolean useRemoteWebDriver;
     private boolean proxyEnabled;
     private String proxyHost;
@@ -54,16 +51,8 @@ public class DriverFactory {
     public DriverFactory(String browserType, String desiredCapabilitiesConfigJSON) {
     	this.browserType = browserType;
         this.desiredCapabilitiesConfigJSON = desiredCapabilitiesConfigJSON;
-    }
-    
-    public DriverFactory(HashMap<String, Object> params) {
-    	this.params = params;
-    	this.defaultDriverType = valueOf(this.params.get("browser").toString().toUpperCase());
-    	this.browser = this.params.get("browser").toString();
-    	this.operatingSystem = System.getProperty("os.name").toUpperCase();
-        this.systemArchitecture = System.getProperty("os.arch");
-    	
-    	if (this.proxyEnabled) {
+        
+        if (this.proxyEnabled) {
     		this.proxyHost = this.params.get("proxyHost").toString();
         	this.proxyPort = Converter.toInteger(this.params.get("proxyPort").toString());
         	this.proxyDetails = String.format("%s:%d", this.proxyHost, this.proxyPort);
@@ -126,7 +115,7 @@ public class DriverFactory {
     private void determineEffectiveDriverType() {
         DriverType driverType = defaultDriverType;
         try {
-            driverType = valueOf(this.browser.toUpperCase());
+            driverType = valueOf(this.browserType.toUpperCase());
         } catch (IllegalArgumentException ignored) {
         	logger.catching(ignored);
         	logger.log(Level.FATAL, DRIVEFACTORY, "Unknown driver specified, defaulting to '" + driverType + "'...");
@@ -138,9 +127,9 @@ public class DriverFactory {
     }
 
     private void instantiateWebDriver(DesiredCapabilities desiredCapabilities) throws MalformedURLException {
-    	logger.log(Level.INFO, DRIVEFACTORY, "Current Operating System: " + operatingSystem);
-    	logger.log(Level.INFO, DRIVEFACTORY, "Current Architecture: " + systemArchitecture);
-    	logger.log(Level.INFO, DRIVEFACTORY, "Current Browser Selection: " + selectedDriverType);
+    	logger.log(Level.INFO, DRIVEFACTORY, "Current Operating System: " + System.getProperty("os.name").toUpperCase());
+    	logger.log(Level.INFO, DRIVEFACTORY, "Current Architecture: " + System.getProperty("os.arch"));
+    	logger.log(Level.INFO, DRIVEFACTORY, "Current Browser Selection: " + this.selectedDriverType);
     	
         if (useRemoteWebDriver) {
             URL seleniumGridURL = new URL(this.params.get("gridURL").toString());
