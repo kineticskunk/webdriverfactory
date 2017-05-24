@@ -1,6 +1,8 @@
 {
 	"configloadingsetting": {
-		"loadfirefoxprofilepreferences": true
+		"loadfirefoxprofilepreferences": true,
+		"loadfirebug": true,
+		"useproxy": true
 	},
 	"commondesiredcapabilities": {
 		"acceptSslCerts": true,
@@ -23,8 +25,8 @@
 	},
 	"firefoxdesiredcapabilities": {
 		"marionette": true,
-		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.app/Contents/MacOS/firefox-bin",
-		"version": "53.0.2"
+		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.0.3.app/Contents/MacOS/firefox-bin",
+		"version": "53.0.3"
 	},
 	"firefoxprofilepreferences": {
 		"loggingPrefs": "ALL",
@@ -44,6 +46,18 @@
 		"browser.helperApps.neverAsk.saveToDisk": "text/csv,application/excel,image/png,image/jpeg,text/html,text/plain,application/msword,application/xml,application/zip",
 		"enable.native.events": true
 	},
+	"firefoxextensions": [
+		"extension: firebug@software.joehewitt.com.xpi"
+	],
+	"firebugpreferences": {
+		"extensions.firebug.currentVersion": "2.0.16",
+		"extensions.firebug.console.enableSites": true,
+		"extensions.firebug.script.enableSites": true,
+		"extensions.firebug.defaultPanelName": "HTML",
+		"extensions.firebug.net.enableSites": true,
+		"extensions.firebug.allPagesActivation": "on",
+		"extensions.firebug.cookies.enableSites=": true
+	},
 	"chromeoptionsarguments": {
 		"argument0": "start-maximized",
 		"argument1": "ignore-certificate-errors",
@@ -51,5 +65,23 @@
 	},
 	"chromeperferences": {
 		"profile.password_manager_enabled": false
+	},
+	"proxy": {
+		"httpproxy": "localhost:8080",
+		"sslproxy": "localhost:8080",
+		"ftpproxy": "localhost:8080",
+		"network": {
+			"usenetworkproxy": false,
+			"network.proxy.type": "",
+			"network.proxy.http": "",
+			"network.proxy.http_port": "",
+			"network.proxy.ssl": "",
+			"network.proxy.ssl_port": ""
+		}
+	},
+	"remotewebdriver": {
+		"useremotewebdriver": false,
+		"ipaddress": "0.0.0.0",
+		"port": 4327
 	}
 }

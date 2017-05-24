@@ -4,6 +4,9 @@ import org.testng.annotations.AfterClass;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
+
+import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -13,7 +16,7 @@ import com.kineticskunk.driverfactory.DriverFactory;
 
 public class TestBaseSetup {
 	
-	
+	private static int WAIT = 60;
 	private static final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
 	private static final Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 
@@ -49,6 +52,7 @@ public class TestBaseSetup {
 			this.getLogger().fatal("Brower '" + browserType + "' is unsupported");
 			break;
 		}*/
+		this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
 		this.wd = this.df.getDriver();
 		
 	}

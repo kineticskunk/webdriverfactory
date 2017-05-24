@@ -1,8 +1,6 @@
 package com.kineticskunk.driverfactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;

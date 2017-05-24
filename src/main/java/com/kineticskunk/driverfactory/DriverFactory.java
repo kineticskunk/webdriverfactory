@@ -13,10 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-
-import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.utilities.Converter;
-
 import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.net.URL;
