@@ -11,6 +11,11 @@ interface CLibrary extends Library {
 
 public class DriverExecutable {
 	
+	private static final String GECKODRIVERMAC64 = "geckodriver-v0.16.1-mac64";
+	private static final String GECKODRIVERLINUX64 = "geckodriver-v0.16.1-linux64";
+	private static final String GECKODRIVERWINDOWS64 = "geckodriver-v0.16.1-win64.exe";
+	private static final String GECKODRIVERWINDOWS32 = "geckodriver-v0.16.1-win32.exe";
+	
 	private PlatformOperatingSystem pos = new PlatformOperatingSystem();
 	
 	private String browserType = null;
@@ -23,11 +28,18 @@ public class DriverExecutable {
 	public void setDriverExecutable()  {
 		switch (this.browserType.toLowerCase()) {
 		case "firefox":
-			if (this.pos.isMac() && System.getProperty("os.arch").contains("64") && this.browserType.equalsIgnoreCase("firefox")) {
-				driverExecutable = new File(this.getClass().getClassLoader().getResource("geckodrivermac64").getPath());
-				System.setProperty("webdriver.gecko.driver", this.driverExecutable.getAbsolutePath());
-				//System.setProperty("webdriver.firefox.bin","/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.app/Contents/MacOS/firefox-bin");
+			if (this.pos.isMac() && System.getProperty("os.arch").contains("64")) {
+				this.driverExecutable = new File(this.getClass().getClassLoader().getResource(GECKODRIVERMAC64).getPath());
+			} else if (this.pos.isUnix() && System.getProperty("os.arch").contains("64")) {
+				this.driverExecutable = new File(this.getClass().getClassLoader().getResource(GECKODRIVERLINUX64).getPath());
+			} else if (this.pos.isWindows()) {
+				if (System.getProperty("os.arch").contains("64")) {
+					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(GECKODRIVERWINDOWS64).getPath());
+				} else if (System.getProperty("os.arch").contains("32")) {
+					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(GECKODRIVERWINDOWS32).getPath());
+				}
 			}
+			System.setProperty("webdriver.gecko.driver", this.driverExecutable.getAbsolutePath());
 			break;
 		case "chrome":
 			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.browserType.equalsIgnoreCase("chrome")) {
@@ -38,6 +50,8 @@ public class DriverExecutable {
 		}
 		this.makeDriverExecutable(this.driverExecutable.getAbsolutePath());
 	}
+	
+	//System.setProperty("webdriver.firefox.bin","/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.app/Contents/MacOS/firefox-bin");
 
 	private void makeDriverExecutable(String driverFile) {
 		CLibrary libc = (CLibrary) Native.loadLibrary("c", CLibrary.class);

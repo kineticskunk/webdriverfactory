@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<google.inject.guice>4.1.0</google.inject.guice>
 		<junit.version>4.12</junit.version>
-		<selenium.version>3.3.1</selenium.version>
+		<selenium.version>3.4.0</selenium.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
 		<testng.version>6.9.10</testng.version>
 		<reportng.version>1.1.4</reportng.version>
