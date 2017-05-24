@@ -16,6 +16,11 @@ public class DriverExecutable {
 	private static final String GECKODRIVERWINDOWS64 = "geckodriver-v0.16.1-win64.exe";
 	private static final String GECKODRIVERWINDOWS32 = "geckodriver-v0.16.1-win32.exe";
 	
+	private static final String CHROMEDRIVERMAC64 = "chromedriver-v2.29-mac64";
+	private static final String CHROMEDRIVERLINUX64 = "chromedriver-v2.29-linux64";
+	private static final String CHROMEDRIVERWINDOWS64 = "chromedriver-v2.29-win32.exe";
+	private static final String CHROMEDRIVERWINDOWS32 = "chromedriver-v2.29-win32.exe";
+	
 	private PlatformOperatingSystem pos = new PlatformOperatingSystem();
 	
 	private String browserType = null;
@@ -42,11 +47,22 @@ public class DriverExecutable {
 			System.setProperty("webdriver.gecko.driver", this.driverExecutable.getAbsolutePath());
 			break;
 		case "chrome":
-			if (pos.isMac() && System.getProperty("os.arch").contains("64") && this.browserType.equalsIgnoreCase("chrome")) {
-				driverExecutable = new File(this.getClass().getClassLoader().getResource("chromedrivermac64").getPath());
-				System.setProperty("webdriver.chrome.driver", this.driverExecutable.getAbsolutePath());
+			if (this.pos.isMac() && System.getProperty("os.arch").contains("64")) {
+				driverExecutable = new File(this.getClass().getClassLoader().getResource(CHROMEDRIVERMAC64).getPath());
+				
+			} else if (this.pos.isUnix() && System.getProperty("os.arch").contains("64")) {
+				this.driverExecutable = new File(this.getClass().getClassLoader().getResource(CHROMEDRIVERLINUX64).getPath());
+			} else if (this.pos.isWindows()) {
+				if (System.getProperty("os.arch").contains("64")) {
+					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(CHROMEDRIVERWINDOWS64).getPath());
+				} else if (System.getProperty("os.arch").contains("32")) {
+					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(CHROMEDRIVERWINDOWS32).getPath());
+				}
 			}
+			System.setProperty("webdriver.chrome.driver", this.driverExecutable.getAbsolutePath());
 			break;
+		case "opera":
+			
 		}
 		this.makeDriverExecutable(this.driverExecutable.getAbsolutePath());
 	}
