@@ -4,7 +4,6 @@
 	},
 	"commondesiredcapabilities": {
 		"acceptSslCerts": true,
-		"version": "any",
 		"platform": "any",
 		"javascriptEnabled": true,
 		"takesScreenshot": true,
@@ -20,10 +19,15 @@
 		"nativeEvents": true,
 		"unexpectedAlertBehavior": "dismiss",
 		"pageLoadingStrategy": "normal",
-		"elementScrollBehavior": 0,
-		"loggingPrefs": "all"
+		"elementScrollBehavior": 0
+	},
+	"firefoxdesiredcapabilities": {
+		"marionette": true,
+		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.app/Contents/MacOS/firefox-bin",
+		"version": "53.0.2"
 	},
 	"firefoxprofilepreferences": {
+		"loggingPrefs": "ALL",
 		"always.load.no.focus.lib": true,
 		"assume.untrusted.certificate.issuer": true,
 		"browser.cache.disk.enable": true,

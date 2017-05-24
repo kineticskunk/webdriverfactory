@@ -8,6 +8,7 @@ import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
@@ -18,6 +19,7 @@ import org.openqa.selenium.safari.SafariDriver;
 
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -27,6 +29,8 @@ public enum DriverType implements DriverSetup {
 
 	FIREFOX {
 		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) throws DesiredCapabilityException, IOException {
+			DriverExecutable de = new DriverExecutable(browserType);
+			de.setDriverExecutable();
 			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, proxySettings);
 		}
 
@@ -115,8 +119,7 @@ public enum DriverType implements DriverSetup {
 	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
 		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
 		try {
-			ldc.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
-			ldc.setDesiredCapabilities(browserType);
+			ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
 			return addProxySettings(ldc.getDesiredCapabilities(), proxySettings);
 		} catch (Exception ex) {
 			catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities: failed to load", new String[]{ldc.getDesiredCapabilities().toString(), proxySettings.toString()}, ex);

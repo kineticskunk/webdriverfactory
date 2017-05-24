@@ -15,10 +15,9 @@ public class LoadDesiredCapabilitiesTestNG extends TestBaseSetup {
 	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
 	
 	@BeforeClass
-	@Parameters( { "browserType", "desiredCapabilities" } )
+	@Parameters( { "browserType", "desiredCapabilitiesConfigJSON" } )
 	public void setLoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-		ldc.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
-		ldc.setDesiredCapabilities(browserType);
+		this.ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
 	}
 	
 	@Test(priority = 0, groups = "LoadDesiredCapabilities")
@@ -33,10 +32,8 @@ public class LoadDesiredCapabilitiesTestNG extends TestBaseSetup {
 	}
 	
 	@AfterGroups(groups = "LoadDesiredCapabilities")
-	@Parameters( { "browserType", "desiredCapabilities" } )
-	public void afterLoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+	public void afterLoadDesiredCapabilities() {
 		getDriver().get("https://kineticskunk.com");
-		//df.getDriver
 	}
 	
 	@Test(priority = 0, groups = "DriverFactory")
