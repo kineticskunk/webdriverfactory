@@ -56,7 +56,7 @@ public class LoadDesiredCapabilitiesTestNG {
 			break;
 		}
 		this.wd.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		this.wd.get("https://www.kineticskunk.com");
+		this.wd.get("https://kineticskunk.com");
 	}
 	
 	@Test(priority = 0, groups = "DriverFactory")

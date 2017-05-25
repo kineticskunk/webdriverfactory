@@ -2,7 +2,8 @@
 	"configloadingsetting": {
 		"loadfirefoxprofilepreferences": true,
 		"loadfirebug": true,
-		"useproxy": true
+		"useproxy": true,
+		"networkproxy": false
 	},
 	"commondesiredcapabilities": {
 		"acceptSslCerts": true,
@@ -25,8 +26,8 @@
 	},
 	"firefoxdesiredcapabilities": {
 		"marionette": true,
-		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.0.3.app/Contents/MacOS/firefox-bin",
-		"version": "53.0.3"
+		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_49.app/Contents/MacOS/firefox-bin",
+		"version": "49"
 	},
 	"firefoxprofilepreferences": {
 		"loggingPrefs": "ALL",

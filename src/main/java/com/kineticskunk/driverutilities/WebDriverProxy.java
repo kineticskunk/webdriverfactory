@@ -16,27 +16,20 @@
 
 package com.kineticskunk.driverutilities;
 
-import java.util.Hashtable;
+import java.net.URL;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
-import com.kineticskunk.utilities.Converter;
 
 public class WebDriverProxy {
-	
-	private static final String HTTP_PROXY = "httpProxy";
-	private static final String SSL_PROXY = "sslProxy";
-	private static final String FTP_PROXY = "ftpProxy";
 
 	private Proxy proxy;
-	private Hashtable<String, String> proxyConfig;
 	
 	public WebDriverProxy() {
 		this.proxy = new Proxy();
 	}
 	
-	public WebDriverProxy(Hashtable<String, String> proxyConfig) {
-		this();
-		this.proxyConfig = proxyConfig;
+	public Proxy getProxy() {
+		return this.proxy;
 	}
 	
 	/**
@@ -53,19 +46,15 @@ public class WebDriverProxy {
 	 * Set auto detection configuration URL
 	 * @param url
 	 */
-	public void setAutoconfigUrl(String url) {
-		this.proxy.setProxyAutoconfigUrl(Converter.toURL(url).toString());
+	public void setAutoconfigUrl(URL url) {
+		this.proxy.setProxyAutoconfigUrl(url.toString());
 	}
 	
 	/**
 	 * 
 	 */
-	public void setHTTPProxy() {
-		if (this.proxyConfig.containsKey(HTTP_PROXY)) {
-			this.proxy.setHttpProxy(this.proxyConfig.get(HTTP_PROXY));
-		} else {
-			this.proxy.setHttpProxy("AUTODETECT");
-		}
+	public void setHTTPProxy(String httpProxy) {
+		this.proxy.setHttpProxy(httpProxy);
 	}
 	
 	/**
@@ -73,11 +62,11 @@ public class WebDriverProxy {
 	 * @param sslProxy
 	 */
 	public void setSSLProxy(String sslProxy) {
-		this.proxy.setSslProxy(this.proxyConfig.get(SSL_PROXY));
+		this.proxy.setSslProxy(sslProxy);
 	}
 
 	public void setFTPProxy(String ftpProxy) {
-		this.proxy.setFtpProxy(this.proxyConfig.get(FTP_PROXY));
+		this.proxy.setFtpProxy(ftpProxy);
 	}
 
 	public Proxy getSSLProxy() {
@@ -107,18 +96,6 @@ public class WebDriverProxy {
 		default:
 			return ProxyType.UNSPECIFIED;
 		}
-	}
-	
-	private class WebDriverNetworkProxy {
-		
-		private Hashtable<String, String> networkProxyConfig;
-		
-		private WebDriverNetworkProxy(Hashtable<String, String> networkProxyConfig) {
-			this.networkProxyConfig = networkProxyConfig;
-		}
-		
-		
-		
 	}
 	
 }

@@ -32,7 +32,7 @@ public class DriverFactory {
     private DriverType selectedDriverType;
     private DriverType defaultDriverType;
     private boolean useRemoteWebDriver;
-    private boolean proxyEnabled;
+    private boolean proxyEnabled = false;
     private String proxyHost;
     private Integer proxyPort;
     private String proxyDetails;

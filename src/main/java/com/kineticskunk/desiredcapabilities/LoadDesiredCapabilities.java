@@ -22,6 +22,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.kineticskunk.driverutilities.WebDriverProxy;
 import com.kineticskunk.utilities.Converter;
 
 public class LoadDesiredCapabilities {
@@ -34,17 +35,23 @@ public class LoadDesiredCapabilities {
 	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
 	private static final String LOADFIREFOXPREFERENCES = "loadfirefoxprofilepreferences";
 	private static final String LOADFIREBUG = "loadfirebug";
+	
 	private static final String FIREFOXDESIREDCAPABILITIES = "firefoxdesiredcapabilities";
 	private static final String FIREFOXPROFILEPREFERENCES = "firefoxprofilepreferences";
 
 	private static final String FIREBUG = "firebug@software.joehewitt.com.xpi";
 	private static final String FIREBUGPREFERENCES = "firebugpreferences";
+	
+	private static final String PROXY = "proxy";
+	private static final String HTTPPROXY = "httpproxy";
+	private static final String SSLPROXY = "sslproxy";
+	private static final String FTPPROXY = "ftpproxy";
 
 	private DesiredCapabilities dc = new DesiredCapabilities();
 	private FirefoxProfile ffProfile = new FirefoxProfile();
 	private boolean loadfirefoxprofilepreferences = false;
 	private boolean loadFireBug = false;
-
+	private boolean useProxy = false;
 	private String browserType = null;
 
 	private JSONParser parser = new JSONParser();
@@ -61,6 +68,7 @@ public class LoadDesiredCapabilities {
 			JSONObject configloadingsetting = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
 			this.loadfirefoxprofilepreferences = getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
 			this.loadFireBug = getJSONBooleanValue(configloadingsetting, LOADFIREBUG);
+			this.useProxy = getJSONBooleanValue(configloadingsetting, LOADFIREBUG);
 		}
 
 		//TODO add code to handle configloadingsetting
@@ -92,7 +100,6 @@ public class LoadDesiredCapabilities {
 		} else {
 			this.logger.error(LOADDESIREDCAPABILITIES, "JSONObject " + (char)34 + jsonObject.toJSONString() + (char)34 + " object doesn't contain key " + (char)34 + key + (char)34);
 		}
-
 		return false;
 	}
 
@@ -146,15 +153,16 @@ public class LoadDesiredCapabilities {
 		try {
 			if (this.desiredCapabilitiesJSONObject != null) {
 				this.setDesiredCapabilities(desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
+				this.setSeleniumProxy(useProxy);
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
 					this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, FIREFOXDESIREDCAPABILITIES);
 					this.dc.setBrowserName("firefox");
 					this.loadFirefoxProfile();
 
-
+					break;
 				case "chrome":
-
+					this.dc.setBrowserName("chrome");
 					//this.dc.setCapability("chromeDriverExecutable", driverExecutable.getAbsolutePath());
 					this.dc.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
 					this.dc.setCapability("chromeOptions", getChromeOptions());
@@ -227,10 +235,23 @@ public class LoadDesiredCapabilities {
 		}
 	}
 
-	public FirefoxBinary getFireFoxBinary(JSONObject firefoxprofilePreferences) {
-		File pathToBinary = new File("/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.app/Contents/MacOS/firefox-bin");
-
-		return new FirefoxBinary(pathToBinary);
+	public void setSeleniumProxy(boolean useProxy) {
+		WebDriverProxy proxy = new WebDriverProxy();
+		if (useProxy) {
+			JSONObject proxySettings = (JSONObject) this.desiredCapabilitiesJSONObject.get(PROXY);
+			if (this.jsonKeyExists(proxySettings, HTTPPROXY)) {
+				proxy.setHTTPProxy(proxySettings.get(HTTPPROXY).toString());
+			}
+			if (this.jsonKeyExists(proxySettings, SSLPROXY)) {
+				proxy.setHTTPProxy(proxySettings.get(SSLPROXY).toString());
+			}
+			if (this.jsonKeyExists(proxySettings, FTPPROXY)) {
+				proxy.setHTTPProxy(proxySettings.get(FTPPROXY).toString());
+			}
+		} else {
+			proxy.setAutoDetect(true);
+		}
+		this.dc.setCapability(PROXY, proxy.getProxy());
 	}
 
 	private ChromeOptions getChromeOptions() {
