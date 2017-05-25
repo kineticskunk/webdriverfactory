@@ -248,6 +248,7 @@ public class LoadDesiredCapabilities {
 			if (this.jsonKeyExists(proxySettings, FTPPROXY)) {
 				proxy.setHTTPProxy(proxySettings.get(FTPPROXY).toString());
 			}
+			proxy.setProxyType("MANUAL");
 		} else {
 			proxy.setAutoDetect(true);
 		}

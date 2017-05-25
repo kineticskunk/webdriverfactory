@@ -17,10 +17,21 @@
 package com.kineticskunk.driverutilities;
 
 import java.net.URL;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
 
+import  org.openqa.selenium.WebDriverException;
+import java.net.MalformedURLException;
+
 public class WebDriverProxy {
+	
+	private final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
+	private final Marker WEBDRIVERPROXY = MarkerManager.getMarker("WEBDRIVERPROXY");
 
 	private Proxy proxy;
 	
@@ -37,8 +48,12 @@ public class WebDriverProxy {
 	 * @param autodetect
 	 */
 	public void setAutoDetect(boolean autodetect) {
-		if (this.proxy.isAutodetect() != autodetect) {
-			this.proxy.setAutodetect(autodetect);
+		try {
+			if (this.proxy.isAutodetect() != autodetect) {
+				this.proxy.setAutodetect(autodetect);
+			}
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
 		}
 	}
 	
@@ -46,15 +61,23 @@ public class WebDriverProxy {
 	 * Set auto detection configuration URL
 	 * @param url
 	 */
-	public void setAutoconfigUrl(URL url) {
-		this.proxy.setProxyAutoconfigUrl(url.toString());
+	public void setAutoconfigUrl(URL url) throws MalformedURLException {
+		try {
+			this.proxy.setProxyAutoconfigUrl(url.toString());
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
+		}
 	}
 	
 	/**
 	 * 
 	 */
 	public void setHTTPProxy(String httpProxy) {
-		this.proxy.setHttpProxy(httpProxy);
+		try {
+			this.proxy.setHttpProxy(httpProxy);
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
+		}
 	}
 	
 	/**
@@ -62,39 +85,52 @@ public class WebDriverProxy {
 	 * @param sslProxy
 	 */
 	public void setSSLProxy(String sslProxy) {
-		this.proxy.setSslProxy(sslProxy);
+		try {
+			this.proxy.setSslProxy(sslProxy);
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
+		}
 	}
 
 	public void setFTPProxy(String ftpProxy) {
-		this.proxy.setFtpProxy(ftpProxy);
+		try {
+			this.proxy.setFtpProxy(ftpProxy);
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
+		}
 	}
 
-	public Proxy getSSLProxy() {
-		return this.proxy;
-	}
-	
-	public Proxy getHTTPProxy() {
-		return this.proxy;
-	}
-
-	public ProxyType getProxyType(String proxyType) {
-		switch (proxyType.toUpperCase()) {
-		case "AUTODETECT":
-			return ProxyType.AUTODETECT;
-		case "DIRECT":
-			return ProxyType.DIRECT;
-		case "MANUAL":
-			return ProxyType.MANUAL;
-		case "PAC":
-			return ProxyType.PAC;
-		case "RESERVED_1":
-			return ProxyType.RESERVED_1;
-		case "SYSTEM":
-			return ProxyType.SYSTEM;
-		case "UNSPECIFIED":
-			return ProxyType.UNSPECIFIED;
-		default:
-			return ProxyType.UNSPECIFIED;
+	public void setProxyType(String proxyType) {
+		try {
+			switch (proxyType.toUpperCase()) {
+			case "AUTODETECT":
+				this.proxy.setProxyType(ProxyType.AUTODETECT);
+				break;
+			case "DIRECT":
+				this.proxy.setProxyType(ProxyType.DIRECT);
+				break;
+			case "MANUAL":
+				this.proxy.setProxyType(ProxyType.MANUAL);
+				break;
+			case "PAC":
+				this.proxy.setProxyType(ProxyType.PAC);
+				break;
+			case "RESERVED_1":
+				this.proxy.setProxyType(ProxyType.RESERVED_1);
+				break;
+			case "SYSTEM":
+				this.proxy.setProxyType(ProxyType.SYSTEM);
+				break;
+			case "UNSPECIFIED":
+				this.proxy.setProxyType(ProxyType.UNSPECIFIED);
+				break;
+			default:
+				this.logger.info(WEBDRIVERPROXY, "Proxy type " +  proxyType + " is not supported. Defaulting to ProxyType.AUTODETECT");
+				this.proxy.setProxyType(ProxyType.AUTODETECT);
+				break;
+			}
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
 		}
 	}
 	
