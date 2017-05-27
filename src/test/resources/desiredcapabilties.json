@@ -1,9 +1,10 @@
 {
 	"configloadingsetting": {
 		"loadfirefoxprofilepreferences": true,
-		"loadfirebug": true,
-		"useproxy": true,
-		"networkproxy": false
+		"loadfirebug": false,
+		"loadproxyserver": false,
+		"loadnetworkproxy": false,
+		"loadloggingprefs": true
 	},
 	"commondesiredcapabilities": {
 		"acceptSslCerts": true,
@@ -24,13 +25,38 @@
 		"pageLoadingStrategy": "normal",
 		"elementScrollBehavior": 0
 	},
+	"proxyserver": {
+		"httpproxy": "localhost:8080",
+		"sslproxy": "localhost:8080",
+		"ftpproxy": "localhost:8080",
+		"network": {
+			"usenetworkproxy": false,
+			"network.proxy.type": "",
+			"network.proxy.http": "",
+			"network.proxy.http_port": "",
+			"network.proxy.ssl": "",
+			"network.proxy.ssl_port": ""
+		}
+	},
+	"loggingPrefs": {
+		"browserloglevel": "ALL",
+		"clientloglevel": "ALL",
+		"driverloglevel": "ALL",
+		"performanceloglevel": "ALL",
+		"profileloglevel": "ALL",
+		"serverloglevel": "ALL"
+	},
+	"remotewebdriver": {
+		"useremotewebdriver": false,
+		"ipaddress": "0.0.0.0",
+		"port": 4327
+	},
 	"firefoxdesiredcapabilities": {
 		"marionette": true,
-		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_49.app/Contents/MacOS/firefox-bin",
-		"version": "49"
+		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.0.3.app/Contents/MacOS/firefox-bin",
+		"version": "53.0.3"
 	},
 	"firefoxprofilepreferences": {
-		"loggingPrefs": "ALL",
 		"always.load.no.focus.lib": true,
 		"assume.untrusted.certificate.issuer": true,
 		"browser.cache.disk.enable": true,
@@ -48,7 +74,7 @@
 		"enable.native.events": true
 	},
 	"firefoxextensions": [
-		"extension: firebug@software.joehewitt.com.xpi"
+		"extension: firebug-3.0.0-alpha.14.xpi"
 	],
 	"firebugpreferences": {
 		"extensions.firebug.currentVersion": "2.0.16",
@@ -66,23 +92,5 @@
 	},
 	"chromeperferences": {
 		"profile.password_manager_enabled": false
-	},
-	"proxy": {
-		"httpproxy": "localhost:8080",
-		"sslproxy": "localhost:8080",
-		"ftpproxy": "localhost:8080",
-		"network": {
-			"usenetworkproxy": false,
-			"network.proxy.type": "",
-			"network.proxy.http": "",
-			"network.proxy.http_port": "",
-			"network.proxy.ssl": "",
-			"network.proxy.ssl_port": ""
-		}
-	},
-	"remotewebdriver": {
-		"useremotewebdriver": false,
-		"ipaddress": "0.0.0.0",
-		"port": 4327
 	}
 }

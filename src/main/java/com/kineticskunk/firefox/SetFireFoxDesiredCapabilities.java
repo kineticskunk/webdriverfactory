@@ -311,7 +311,7 @@ public class SetFireFoxDesiredCapabilities {
 	public void setLoggingPrefs(String value) {
 		try {
 			logger.log(Level.INFO, FIREFOXDESIREDCAPABILITIES, capabiltiesType.LOGGING_PREFS.toString(), value);
-			wdlp = new WebDriverLoggingPreferences(value);
+			//wdlp = new WebDriverLoggingPreferences(value);
 			this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
 
 		} catch (Exception ex) {

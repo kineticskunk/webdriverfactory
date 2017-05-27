@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -22,6 +24,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.driverutilities.WebDriverProxy;
 import com.kineticskunk.utilities.Converter;
 
@@ -35,6 +38,7 @@ public class LoadDesiredCapabilities {
 	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
 	private static final String LOADFIREFOXPREFERENCES = "loadfirefoxprofilepreferences";
 	private static final String LOADFIREBUG = "loadfirebug";
+	private static final String LOADPROXYSERVER = "loadproxyserver";
 	
 	private static final String FIREFOXDESIREDCAPABILITIES = "firefoxdesiredcapabilities";
 	private static final String FIREFOXPROFILEPREFERENCES = "firefoxprofilepreferences";
@@ -42,16 +46,23 @@ public class LoadDesiredCapabilities {
 	private static final String FIREBUG = "firebug@software.joehewitt.com.xpi";
 	private static final String FIREBUGPREFERENCES = "firebugpreferences";
 	
-	private static final String PROXY = "proxy";
+	private static final String PROXYSERVER = "proxyserver";
 	private static final String HTTPPROXY = "httpproxy";
 	private static final String SSLPROXY = "sslproxy";
 	private static final String FTPPROXY = "ftpproxy";
-
+	
+	private static final String LOADINGLOGGINFPREFS = "loadloggingprefs";
+	private static final String LOGGINGPREFS = "loggingPrefs";
+	
 	private DesiredCapabilities dc = new DesiredCapabilities();
 	private FirefoxProfile ffProfile = new FirefoxProfile();
+	private WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences();
+	
 	private boolean loadfirefoxprofilepreferences = false;
 	private boolean loadFireBug = false;
-	private boolean useProxy = false;
+	private boolean loadProxyServer = false;
+	private boolean loadloggingprefs = false;
+	
 	private String browserType = null;
 
 	private JSONParser parser = new JSONParser();
@@ -66,9 +77,10 @@ public class LoadDesiredCapabilities {
 
 		if (this.jsonKeyExists(this.desiredCapabilitiesJSONObject, CONFIGLOADSETTINGS)) {
 			JSONObject configloadingsetting = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
-			this.loadfirefoxprofilepreferences = getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
+			this.loadfirefoxprofilepreferences = this.getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
 			this.loadFireBug = getJSONBooleanValue(configloadingsetting, LOADFIREBUG);
-			this.useProxy = getJSONBooleanValue(configloadingsetting, LOADFIREBUG);
+			this.loadProxyServer = getJSONBooleanValue(configloadingsetting, LOADPROXYSERVER);
+			this.loadloggingprefs = this.getJSONBooleanValue(configloadingsetting, LOADINGLOGGINFPREFS);
 		}
 
 		//TODO add code to handle configloadingsetting
@@ -152,8 +164,9 @@ public class LoadDesiredCapabilities {
 	public void setBrowerDesiredCapabilities() {
 		try {
 			if (this.desiredCapabilitiesJSONObject != null) {
-				this.setDesiredCapabilities(desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
-				this.setSeleniumProxy(useProxy);
+				this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
+				this.setSeleniumProxy(this.loadProxyServer);
+				this.setLoggingPrefs(this.loadloggingprefs);
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
 					this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, FIREFOXDESIREDCAPABILITIES);
@@ -238,7 +251,7 @@ public class LoadDesiredCapabilities {
 	public void setSeleniumProxy(boolean useProxy) {
 		WebDriverProxy proxy = new WebDriverProxy();
 		if (useProxy) {
-			JSONObject proxySettings = (JSONObject) this.desiredCapabilitiesJSONObject.get(PROXY);
+			JSONObject proxySettings = (JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVER);
 			if (this.jsonKeyExists(proxySettings, HTTPPROXY)) {
 				proxy.setHTTPProxy(proxySettings.get(HTTPPROXY).toString());
 			}
@@ -250,9 +263,25 @@ public class LoadDesiredCapabilities {
 			}
 			proxy.setProxyType("MANUAL");
 		} else {
-			proxy.setAutoDetect(true);
+			proxy.setProxyType("AUTODETECT");
 		}
-		this.dc.setCapability(PROXY, proxy.getProxy());
+		this.dc.setCapability(CapabilityType.PROXY, proxy.getProxy());
+	}
+	
+	public void setLoggingPrefs(boolean loadLoggingPrefs) {
+		if (loadLoggingPrefs) {
+			this.logger.log(Level.INFO, LOADDESIREDCAPABILITIES, "Loading logging preferences");
+			try {
+				JSONObject loggingPrefs = (JSONObject) this.desiredCapabilitiesJSONObject.get(LOGGINGPREFS);
+				wdlp = new WebDriverLoggingPreferences(loggingPrefs);
+				this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
+			} catch (Exception ex) {
+				logger.catching(ex);
+
+			}
+		} else {
+			this.logger.log(Level.INFO, LOADDESIREDCAPABILITIES, "Loading logging preferences ARE NOT being loaded.");
+		}
 	}
 
 	private ChromeOptions getChromeOptions() {
