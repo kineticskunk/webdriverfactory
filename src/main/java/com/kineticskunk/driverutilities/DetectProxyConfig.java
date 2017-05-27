@@ -25,7 +25,7 @@ public class DetectProxyConfig {
         return proxyAvailable;
     }
 
-    public DetectProxyConfig() {
+    public DetectProxyConfig(String proxyAddress) {
 
         String proxyHost = System.getProperty("http.proxyHost");
         Integer proxyPort = Integer.getInteger(System.getProperty("http.proxyPort"));
@@ -34,7 +34,7 @@ public class DetectProxyConfig {
 
             String useSystemProxy = System.getProperty("java.net.useSystemProxies");
             System.setProperty("java.net.useSystemProxies", "true");
-            Proxy proxy = getProxy();
+            Proxy proxy = getProxy(proxyAddress);
 
             if (null != proxy) {
                 if (null != proxy.address()) {
@@ -61,10 +61,10 @@ public class DetectProxyConfig {
         }
     }
 
-    private Proxy getProxy() {
+    private Proxy getProxy(String proxyAddress) {
         List<Proxy> proxyList = null;
         try {
-            proxyList = ProxySelector.getDefault().select(new URI("http://foo.bar"));
+            proxyList = ProxySelector.getDefault().select(new URI(proxyAddress));
         } catch (Exception ignored) {
         }
         if (null != proxyList) {

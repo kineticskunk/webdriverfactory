@@ -17,6 +17,9 @@ import com.kineticskunk.driverfactory.DriverExecutable;
 
 public class LoadDesiredCapabilitiesTestNG {
 	
+	private static final String testSite = "https://enterprise-demo.orangehrmlive.com/";
+	private static final String testSiteTitle = "OrangeHRM";
+	
 	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
 	private WebDriver wd;
 	private DriverExecutable de;
@@ -56,12 +59,12 @@ public class LoadDesiredCapabilitiesTestNG {
 			break;
 		}
 		this.wd.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		this.wd.get("https://kineticskunk.com");
+		this.wd.get(testSite);
 	}
 	
 	@Test(priority = 0, groups = "DriverFactory")
-	public void verifyFireFoxBrowserOpening() {
-		Assert.assertTrue(this.wd.getTitle().equalsIgnoreCase("home"));
+	public void verifyBrowserOpening() {
+		Assert.assertTrue(this.wd.getTitle().equalsIgnoreCase(testSiteTitle));
 	}
 	
 	@AfterClass()
