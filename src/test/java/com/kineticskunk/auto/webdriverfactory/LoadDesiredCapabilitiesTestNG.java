@@ -28,8 +28,8 @@ public class LoadDesiredCapabilitiesTestNG {
 	private final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
 	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
 	
-	private static final String testSite = "https://www.kineticskunk.com";
-	private static final String testSiteTitle = "home";
+	private static final String testSite = "https://www.google.co.za";
+	private static final String testSiteTitle = "google";
 	
 	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
 	private WebDriver wd;
@@ -49,7 +49,7 @@ public class LoadDesiredCapabilitiesTestNG {
 		Assert.assertTrue(this.ldc.getDesiredCapabilitiesJSONObject() != null);
 	}
 	
-	@Test(priority = 0, groups = "LoadDesiredCapabilities")
+	@Test(priority = 1, groups = "LoadDesiredCapabilities")
 	@Parameters( { "browserType" })
 	public void verifyBrowserType(String browserType) {
 		Assert.assertTrue(this.ldc.getDesiredCapabilities().getBrowserName().equalsIgnoreCase(browserType));
@@ -73,20 +73,26 @@ public class LoadDesiredCapabilitiesTestNG {
 		this.wd.get(testSite);
 	}
 	
-	@Test(priority = 0, groups = "DriverFactory")
+	@Test(priority = 2, groups = "DriverFactory")
 	public void verifyBrowserOpening() {
 		Assert.assertTrue(this.wd.getTitle().equalsIgnoreCase(testSiteTitle));
 	}
 	
 	@AfterClass()
 	public void afterLoadDesiredCapabilitiesTestNG() {
-		LogEntries logEntries = this.wd.manage().logs().get(LogType.BROWSER);
+		LogEntries browserlogEntries = this.wd.manage().logs().get(LogType.BROWSER);
+		LogEntries driverlogEntries = this.wd.manage().logs().get(LogType.DRIVER);
 		
-		
-		for (LogEntry entry : logEntries) {
+		for (LogEntry entry : browserlogEntries) {
            this.logger.info(LOADDESIREDCAPABILITIES, entry.getLevel() + " " + entry.getMessage());
             //do something useful with the data
         }
+		
+		for (LogEntry entry : driverlogEntries) {
+	           this.logger.info(LOADDESIREDCAPABILITIES, entry.getLevel() + " " + entry.getMessage());
+	            //do something useful with the data
+	        }
+		
 		this.wd.close();
 		this.wd.quit();
 	}
