@@ -2,9 +2,14 @@ package com.kineticskunk.auto.webdriverfactory;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.opera.OperaDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -14,11 +19,17 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverfactory.DriverExecutable;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 
 public class LoadDesiredCapabilitiesTestNG {
 	
-	private static final String testSite = "https://enterprise-demo.orangehrmlive.com/";
-	private static final String testSiteTitle = "OrangeHRM";
+	private final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
+	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
+	
+	private static final String testSite = "https://www.kineticskunk.com";
+	private static final String testSiteTitle = "home";
 	
 	private LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
 	private WebDriver wd;
@@ -69,6 +80,13 @@ public class LoadDesiredCapabilitiesTestNG {
 	
 	@AfterClass()
 	public void afterLoadDesiredCapabilitiesTestNG() {
+		LogEntries logEntries = this.wd.manage().logs().get(LogType.BROWSER);
+		
+		
+		for (LogEntry entry : logEntries) {
+           this.logger.info(LOADDESIREDCAPABILITIES, entry.getLevel() + " " + entry.getMessage());
+            //do something useful with the data
+        }
 		this.wd.close();
 		this.wd.quit();
 	}
