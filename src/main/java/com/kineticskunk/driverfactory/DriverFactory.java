@@ -85,7 +85,7 @@ public class DriverFactory {
             	proxy.setProxyType(ProxyType.AUTODETECT);
             }
             determineEffectiveDriverType();
-            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.browserType, this.desiredCapabilitiesConfigJSON, proxy);
+            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.browserType, this.desiredCapabilitiesConfigJSON);
             instantiateWebDriver(desiredCapabilities);
         }
         

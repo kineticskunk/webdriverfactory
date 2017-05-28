@@ -27,10 +27,10 @@ import static org.openqa.selenium.remote.CapabilityType.PROXY;
 public enum DriverType implements DriverSetup {
 
 	FIREFOX {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) throws DesiredCapabilityException, IOException {
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws DesiredCapabilityException, IOException {
 			DriverExecutable de = new DriverExecutable(browserType);
 			de.setDriverExecutable();
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, proxySettings);
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -115,16 +115,23 @@ public enum DriverType implements DriverSetup {
 		logger.exit();
 	}
 
-	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
-		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities();
+	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
 		try {
-			ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
-			return addProxySettings(ldc.getDesiredCapabilities(), proxySettings);
+			this.makeDriverExecutable(browserType);
+			ldc.setBrowerDesiredCapabilities();
+			return ldc.getDesiredCapabilities();
 		} catch (Exception ex) {
-			catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities: failed to load", new String[]{ldc.getDesiredCapabilities().toString(), proxySettings.toString()}, ex);
+			catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities: failed to load", new String[]{ldc.getDesiredCapabilities().toString()}, ex);
 			return null;
 		}
 	}
+	
+	private void makeDriverExecutable(String browserType) {
+		DriverExecutable de = new DriverExecutable(browserType);
+		de.setDriverExecutable();
+	}
+	
 	protected DesiredCapabilities addProxySettings(DesiredCapabilities capabilities, Proxy proxySettings) {
 		try {
 			if (null != proxySettings) {

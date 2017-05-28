@@ -54,7 +54,7 @@ public class LoadDesiredCapabilities {
 	private static final String LOADINGLOGGINFPREFS = "loadloggingprefs";
 	private static final String LOGGINGPREFS = "loggingPrefs";
 	
-	private DesiredCapabilities dc = new DesiredCapabilities();
+	private DesiredCapabilities dc = null;
 	private FirefoxProfile ffProfile = new FirefoxProfile();
 	private WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences();
 	
@@ -72,6 +72,7 @@ public class LoadDesiredCapabilities {
 	}
 
 	public LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+		this();
 		this.browserType = browserType;
 		this.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
 
@@ -97,6 +98,13 @@ public class LoadDesiredCapabilities {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
+	}
+	
+	public  LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
+		this();
+		this.browserType = browserType;
+		this.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
+		this.dc = dc;
 	}
 
 	private Boolean getJSONBooleanValue(JSONObject jsonObject, String key) {
@@ -169,6 +177,7 @@ public class LoadDesiredCapabilities {
 				this.setLoggingPrefs(this.loadloggingprefs);
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
+					dc = DesiredCapabilities.firefox();
 					this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, FIREFOXDESIREDCAPABILITIES);
 					this.dc.setBrowserName("firefox");
 					this.loadFirefoxProfile();

@@ -11,5 +11,5 @@ public interface DriverSetup {
 
     WebDriver getWebDriverObject(DesiredCapabilities desiredCapabilities);
 
-    DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) throws DesiredCapabilityException, IOException, Exception;
+    DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws DesiredCapabilityException, IOException, Exception;
 }

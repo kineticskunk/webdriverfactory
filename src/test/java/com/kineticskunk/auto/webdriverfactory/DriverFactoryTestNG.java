@@ -21,7 +21,7 @@ import org.testng.annotations.BeforeClass;
 import com.kineticskunk.driverfactory.DriverFactory;
 import com.kineticskunk.firefox.SetFireFoxProfile;
 
-public class YeboyethuTestNG {
+public class DriverFactoryTestNG {
 
 	private DriverFactory df =  new DriverFactory();
 	private WebDriver wd;

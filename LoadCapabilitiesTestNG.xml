@@ -23,17 +23,16 @@
 		<parameter name="desiredCapabilitiesConfigJSON" value="desiredcapabilties.json" />
 		<classes>
 			<class
-				name="com.kineticskunk.auto.webdriverfactory.DriverFactoryTestNG" />
+				name="com.kineticskunk.auto.webdriverfactory.LoadDesiredCapabilitiesTestNG" />
 		</classes>
 	</test>
-	
-	<!-- <test name="Load Opera DesiredCapabilities">
+	<test name="Load Opera DesiredCapabilities">
 		<parameter name="browserType" value="opera" />
 		<parameter name="desiredCapabilitiesConfigJSON" value="desiredcapabilties.json" />
 		<classes>
 			<class
-				name="com.kineticskunk.auto.webdriverfactory.DriverFactoryTestNG" />
+				name="com.kineticskunk.auto.webdriverfactory.LoadDesiredCapabilitiesTestNG" />
 		</classes>
-	</test>  -->
+	</test>
 
 </suite> <!-- Suite -->
