@@ -75,19 +75,21 @@
 		"browser.helperApps.alwaysAsk.force": false,
 		"browser.helperApps.neverAsk.openFile": "text/csv,application/excel,image/png,image/jpeg,text/html,text/plain,application/msword,application/xml,application/zip",
 		"browser.helperApps.neverAsk.saveToDisk": "text/csv,application/excel,image/png,image/jpeg,text/html,text/plain,application/msword,application/xml,application/zip",
-		"enable.native.events": true
-	},
-	"firefoxextensions": [
-		"extension: firebug-3.0.0-alpha.14.xpi"
-	],
-	"firebugpreferences": {
-		"extensions.firebug.currentVersion": "2.0.16",
-		"extensions.firebug.console.enableSites": true,
-		"extensions.firebug.script.enableSites": true,
-		"extensions.firebug.defaultPanelName": "HTML",
-		"extensions.firebug.net.enableSites": true,
-		"extensions.firebug.allPagesActivation": "on",
-		"extensions.firebug.cookies.enableSites=": true
+		"enable.native.events": true,
+		"firefoxextensions": [
+			{
+				"extension": "firebug-3.0.0-alpha.14.xpi",
+				"firebugpreferences": {
+					"extensions.firebug.currentVersion": "2.0.16",
+					"extensions.firebug.console.enableSites": true,
+					"extensions.firebug.script.enableSites": true,
+					"extensions.firebug.defaultPanelName": "HTML",
+					"extensions.firebug.net.enableSites": true,
+					"extensions.firebug.allPagesActivation": "on",
+					"extensions.firebug.cookies.enableSites=": true
+				}
+			}
+		]
 	},
 	"chromeoptionsarguments": {
 		"argument0": "start-maximized",

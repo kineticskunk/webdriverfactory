@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import com.kineticskunk.driverfactory.DriverFactory;
+import com.kineticskunk.utilities.Converter;
 
 public class TestBaseSetup {
 	
@@ -24,12 +25,14 @@ public class TestBaseSetup {
 	private WebDriver wd;
 	
 	@BeforeClass
-	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON" })
-	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON) throws Exception {
+	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON", "bringBrowserToFront", "resizeBrowser" })
+	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON, String bringBrowserToFront, String resizeBrowser) throws Exception {
 		try {
 			this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
-			this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
+			this.df.setBringDriverToFront(Converter.toBoolean(bringBrowserToFront));
+			this.df.setResizeBrowser(Converter.toBoolean(resizeBrowser));
 			this.wd = this.df.getDriver();
+			this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			this.logger.fatal(TESTBASESETUP, "Failed to load browser " + (char)34 + browserType + (char)34 + ".");
 			this.logger.fatal(TESTBASESETUP, e.getLocalizedMessage());
@@ -47,7 +50,7 @@ public class TestBaseSetup {
 
 	@AfterClass
 	public void quitDriver() {
-		//wd.quit();
+		wd.quit();
 	}
 
 	public Logger getLogger() {

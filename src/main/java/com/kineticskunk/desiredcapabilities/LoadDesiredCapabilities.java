@@ -83,27 +83,10 @@ public class LoadDesiredCapabilities {
 			this.loadProxyServer = getJSONBooleanValue(configloadingsetting, LOADPROXYSERVER);
 			this.loadloggingprefs = this.getJSONBooleanValue(configloadingsetting, LOADINGLOGGINFPREFS);
 		}
-
-		//TODO add code to handle configloadingsetting
-		//this.browserType = browserType;
-
-		/*try {
-			this.df.setUseProxy(false);
-			this.df.setResizeBrowser(true);
-			this.df.setUseRemoteWebDriver(false);
-			this.df.setBringDriverToFront(true);
-			//this.df = new DriverFactory(this.params);
-			//this.wd = df.getDriver();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 	}
 	
 	public  LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
-		this();
-		this.browserType = browserType;
-		this.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
+		this(browserType, desiredCapabilitiesConfigJSON);
 		this.dc = dc;
 	}
 
