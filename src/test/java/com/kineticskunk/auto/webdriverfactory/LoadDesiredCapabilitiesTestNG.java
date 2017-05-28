@@ -20,7 +20,6 @@ import org.testng.annotations.Test;
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverfactory.DriverExecutable;
 import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 
 public class LoadDesiredCapabilitiesTestNG {

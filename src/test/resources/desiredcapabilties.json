@@ -78,8 +78,8 @@
 		"enable.native.events": true,
 		"firefoxextensions": [
 			{
-				"extension": "firebug-3.0.0-alpha.14.xpi",
-				"firebugpreferences": {
+				"extension": "firebug@software.joehewitt.com.xpi",
+				"preferences": {
 					"extensions.firebug.currentVersion": "2.0.16",
 					"extensions.firebug.console.enableSites": true,
 					"extensions.firebug.script.enableSites": true,
