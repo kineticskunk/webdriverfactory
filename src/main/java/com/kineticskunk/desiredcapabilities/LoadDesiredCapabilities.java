@@ -54,7 +54,7 @@ public class LoadDesiredCapabilities {
 	private static final String LOADINGLOGGINFPREFS = "loadloggingprefs";
 	private static final String LOGGINGPREFS = "loggingPrefs";
 	
-	private DesiredCapabilities dc = null;
+	private DesiredCapabilities dc = new DesiredCapabilities();
 	private FirefoxProfile ffProfile = new FirefoxProfile();
 	private WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences();
 	
@@ -177,7 +177,6 @@ public class LoadDesiredCapabilities {
 				this.setLoggingPrefs(this.loadloggingprefs);
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
-					dc = DesiredCapabilities.firefox();
 					this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, FIREFOXDESIREDCAPABILITIES);
 					this.dc.setBrowserName("firefox");
 					this.loadFirefoxProfile();
@@ -219,7 +218,13 @@ public class LoadDesiredCapabilities {
 					File fireBugXPIFile = new File(this.getClass().getClassLoader().getResource(FIREBUG).getPath());
 					if (fireBugXPIFile.exists()) {
 						this.logger.info(LOADDESIREDCAPABILITIES, "Loading FireFoxBug XPI file " + (char)34 + FIREBUG + (char)34);
-						this.ffProfile.addExtension(fireBugXPIFile);
+						try {
+							this.ffProfile.addExtension(fireBugXPIFile);
+						} catch (IOException e) {
+							this.logger.fatal(LOADDESIREDCAPABILITIES, "Failed to load the FireBug extension " + (char)34 + fireBugXPIFile + (char)34 + ".");
+							this.logger.fatal(LOADDESIREDCAPABILITIES, e.getLocalizedMessage());
+							this.logger.fatal(LOADDESIREDCAPABILITIES, e.getStackTrace());
+						}
 						this.loadFireFoxProfilePreferences(this.desiredCapabilitiesJSONObject, FIREBUGPREFERENCES);
 					} else {
 						this.logger.error(LOADDESIREDCAPABILITIES, "FireFoxBug XPI file " + (char)34 + FIREBUG + (char)34 + " does not exist");

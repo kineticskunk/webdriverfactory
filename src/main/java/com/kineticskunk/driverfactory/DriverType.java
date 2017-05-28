@@ -11,7 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
-//import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
@@ -20,17 +20,16 @@ import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.openqa.selenium.remote.CapabilityType.PROXY;
 
 public enum DriverType implements DriverSetup {
 
 	FIREFOX {
 		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws DesiredCapabilityException, IOException {
-			DriverExecutable de = new DriverExecutable(browserType);
-			de.setDriverExecutable();
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
+			DesiredCapabilities dc = DesiredCapabilities.firefox();
+			
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -38,8 +37,9 @@ public enum DriverType implements DriverSetup {
 		}
 	},
 	CHROME {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) throws Exception {
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, proxySettings);
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws Exception {
+			DesiredCapabilities dc = DesiredCapabilities.chrome();
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -47,14 +47,13 @@ public enum DriverType implements DriverSetup {
 		}
 	},
 	IE {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
-
-			DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
-			capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
-			capabilities.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, true);
-			capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-			capabilities.setCapability("requireWindowFocus", true);
-			return addProxySettings(capabilities, proxySettings);
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+			DesiredCapabilities dc = DesiredCapabilities.internetExplorer();
+			dc.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
+			dc.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, true);
+			dc.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+			dc.setCapability("requireWindowFocus", true);
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -62,10 +61,10 @@ public enum DriverType implements DriverSetup {
 		}
 	},
 	SAFARI {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
-			DesiredCapabilities capabilities = DesiredCapabilities.safari();
-			capabilities.setCapability("safari.cleanSession", true);
-			return addProxySettings(capabilities, proxySettings);
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+			DesiredCapabilities dc = DesiredCapabilities.safari();
+			dc.setCapability("safari.cleanSession", true);
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
@@ -73,31 +72,31 @@ public enum DriverType implements DriverSetup {
 		}
 	},
 	OPERA {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, Proxy proxySettings) {
-			DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
-			return addProxySettings(capabilities, proxySettings);
+		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+			DesiredCapabilities dc = DesiredCapabilities.operaBlink();
+			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			return new OperaDriver(capabilities);
 		}
-		/*  },
+	},
     PHANTOMJS {
-        public DesiredCapabilities getDesiredCapabilities(HashMap<String, Object> params, Proxy proxySettings) {
-            DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+        public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+            DesiredCapabilities dc = DesiredCapabilities.phantomjs();
             final List<String> cliArguments = new ArrayList<String>();
             cliArguments.add("--web-security=false");
             cliArguments.add("--ssl-protocol=any");
             cliArguments.add("--ignore-ssl-errors=true");
-            capabilities.setCapability("phantomjs.cli.args", applyPhantomJSProxySettings(cliArguments, proxySettings));
-            capabilities.setCapability("takesScreenshot", true);
+           // dc.setCapability("phantomjs.cli.args", this.applyPhantomJSProxySettings(cliArguments, proxySettings));
+            dc.setCapability("takesScreenshot", true);
 
-            return capabilities;
+            return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
         }
 
         public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
             return new PhantomJSDriver(capabilities);
-        }*/
+        }
 	};
 
 	private static final Logger logger = LogManager.getLogger(DriverType.class.getName());
@@ -115,8 +114,8 @@ public enum DriverType implements DriverSetup {
 		logger.exit();
 	}
 
-	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
+	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
+		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
 		try {
 			this.makeDriverExecutable(browserType);
 			ldc.setBrowerDesiredCapabilities();
@@ -132,17 +131,6 @@ public enum DriverType implements DriverSetup {
 		de.setDriverExecutable();
 	}
 	
-	protected DesiredCapabilities addProxySettings(DesiredCapabilities capabilities, Proxy proxySettings) {
-		try {
-			if (null != proxySettings) {
-				capabilities.setCapability(PROXY, proxySettings);
-			}
-		} catch (Exception ex) {
-			catchError(Level.FATAL, DRIVERTYPE, "addProxySettings", new String[]{capabilities.toString(), proxySettings.toString()}, ex);
-		}
-		return capabilities;
-	}
-
 	protected List<String> applyPhantomJSProxySettings(List<String> cliArguments, Proxy proxySettings) {
 		if (null == proxySettings) {
 			cliArguments.add("--proxy-type=none");
