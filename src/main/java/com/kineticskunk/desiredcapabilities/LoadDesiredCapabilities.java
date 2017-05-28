@@ -19,7 +19,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -37,12 +37,11 @@ public class LoadDesiredCapabilities {
 
 	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
 	private static final String LOADFIREFOXPREFERENCES = "loadfirefoxprofilepreferences";
-	private static final String LOADFIREBUG = "loadfirebug";
 	private static final String LOADPROXYSERVER = "loadproxyserver";
 	
 	private static final String FIREFOXDESIREDCAPABILITIES = "firefoxdesiredcapabilities";
 	private static final String FIREFOXPROFILEPREFERENCES = "firefoxprofilepreferences";
-
+	
 	private static final String PROXYSERVER = "proxyserver";
 	private static final String HTTPPROXY = "httpproxy";
 	private static final String SSLPROXY = "sslproxy";
@@ -161,6 +160,8 @@ public class LoadDesiredCapabilities {
 							JSONObject preferences = (JSONObject) this.desiredCapabilitiesJSONObject.get(FIREFOXPROFILEPREFERENCES);
 							LoadFireFoxProfilePreferences lfpp = new LoadFireFoxProfilePreferences(preferences);
 							lfpp.loadFireFoxExtensionsAndExtensionPreferences();
+							lfpp.layoutOnDisk();
+							this.dc.setCapability(FirefoxDriver.PROFILE, lfpp.getFirefoxProfile());
 						}
 					}
 					break;
