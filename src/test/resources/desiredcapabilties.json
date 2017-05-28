@@ -6,6 +6,10 @@
 		"loadnetworkproxy": false,
 		"loadloggingprefs": true
 	},
+	"browserdisplaysettings": {
+		"bringtofront": true,
+		"resize": true
+	},
 	"commondesiredcapabilities": {
 		"acceptSslCerts": true,
 		"platform": "any",

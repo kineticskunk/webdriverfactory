@@ -17,44 +17,24 @@ import com.kineticskunk.driverfactory.DriverFactory;
 public class TestBaseSetup {
 	
 	private static int WAIT = 60;
-	private static final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
-	private static final Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
+	private Logger logger = LogManager.getLogger(Thread.currentThread().getName());
+	private Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 
 	private DriverFactory df;
-
 	private WebDriver wd;
 	
 	@BeforeClass
 	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON" })
 	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON) throws Exception {
-		this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
-		/*switch (browserType.toLowerCase()) {
-		case "chrome":
-			this.getLogger().info("-------------***LAUNCHING GOOGLE CHROME***--------------");
-			try {
-				this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
-			} catch (Exception e) {
-				this.getLogger().debug(TESTBASESETUP, "An error occurred while attempting to load the Chromedriver");
-				this.getLogger().error(e.getLocalizedMessage());
-			}
-			break;
-		case "firefox":
-			this.getLogger().info("-------------***LAUNCHING MOZILLA FIREFOX***--------------");
-			try {
-				//ldc.loadWebDriverProperties("firefoxdesiredcapabilities.properties");
-				//ldc.loadWebDriverProfilePreference("firefoxprofile.properties");
-			} catch (Exception e) {
-				this.getLogger().fatal("An error occurred while attempting to load the Geckodriver");
-				this.getLogger().error(e.getLocalizedMessage());
-			}
-			break;
-		default:
-			this.getLogger().fatal("Brower '" + browserType + "' is unsupported");
-			break;
-		}*/
-		this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
-		this.wd = this.df.getDriver();
-		
+		try {
+			this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
+			this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
+			this.wd = this.df.getDriver();
+		} catch (Exception e) {
+			this.logger.fatal(TESTBASESETUP, "Failed to load browser " + (char)34 + browserType + (char)34 + ".");
+			this.logger.fatal(TESTBASESETUP, e.getLocalizedMessage());
+			this.logger.fatal(TESTBASESETUP, e.getStackTrace());
+		}
 	}
 
 	public WebDriver getDriver() {

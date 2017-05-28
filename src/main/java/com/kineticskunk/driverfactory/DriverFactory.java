@@ -46,6 +46,7 @@ public class DriverFactory {
     }
     
     public DriverFactory(String browserType, String desiredCapabilitiesConfigJSON) {
+    	this();
     	this.browserType = browserType;
         this.desiredCapabilitiesConfigJSON = desiredCapabilitiesConfigJSON;
         
