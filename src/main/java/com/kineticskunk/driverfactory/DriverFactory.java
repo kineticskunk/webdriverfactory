@@ -8,9 +8,7 @@ import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Platform;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import com.kineticskunk.utilities.Converter;
@@ -18,9 +16,7 @@ import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-
 import static com.kineticskunk.driverfactory.DriverType.valueOf;
-import static org.openqa.selenium.Proxy.ProxyType.MANUAL;
 
 public class DriverFactory {
 	
@@ -32,10 +28,6 @@ public class DriverFactory {
     private DriverType selectedDriverType;
     private DriverType defaultDriverType;
     private boolean useRemoteWebDriver;
-    private boolean proxyEnabled = false;
-    private String proxyHost;
-    private Integer proxyPort;
-    private String proxyDetails;
     private boolean bringDriverToFront;
     private boolean resizeBrowser;
     
@@ -49,18 +41,6 @@ public class DriverFactory {
     	this();
     	this.browserType = browserType;
         this.desiredCapabilitiesConfigJSON = desiredCapabilitiesConfigJSON;
-        
-        if (this.proxyEnabled) {
-    		this.proxyHost = this.params.get("proxyHost").toString();
-        	this.proxyPort = Converter.toInteger(this.params.get("proxyPort").toString());
-        	this.proxyDetails = String.format("%s:%d", this.proxyHost, this.proxyPort);
-    	} else {
-    		this.proxyDetails = "AUTODETECT";
-    	}
-    }
-    
-    public void setUseProxy(boolean proxyEnabled) {
-    	this.proxyEnabled = proxyEnabled;
     }
     
     public void setUseRemoteWebDriver(boolean useRemoteWebDriver) {
@@ -77,14 +57,6 @@ public class DriverFactory {
     
     public WebDriver getDriver() throws Exception {
         if (null == webdriver) {
-            Proxy proxy = new Proxy();
-            if (this.proxyEnabled) {
-                proxy.setProxyType(MANUAL);
-                proxy.setHttpProxy(proxyDetails);
-                proxy.setSslProxy(proxyDetails);
-            } else {
-            	proxy.setProxyType(ProxyType.AUTODETECT);
-            }
             determineEffectiveDriverType();
             DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.browserType, this.desiredCapabilitiesConfigJSON);
             instantiateWebDriver(desiredCapabilities);

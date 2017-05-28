@@ -20,8 +20,6 @@ import org.testng.annotations.Test;
 import com.kineticskunk.basetests.TestBaseSetup;
 
 public class DriverFactoryTestNG extends TestBaseSetup {
-
-	private WebDriver wd;
 	
 	@BeforeClass
 	@Parameters({ "url" })
