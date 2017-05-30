@@ -19,8 +19,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
+import com.kineticskunk.driverutilities.PlatformOperatingSystem;
 import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
-import com.kineticskunk.ini.PlatformOperatingSystem;
 import com.kineticskunk.utilities.ApplicationProperties;
 import com.kineticskunk.utilities.Converter;
 

@@ -1,8 +1,9 @@
 package com.kineticskunk.driverfactory;
 
+import com.kineticskunk.driverutilities.PlatformOperatingSystem;
+
 import java.io.File;
 import com.sun.jna.Native;
-import com.kineticskunk.utilities.PlatformOperatingSystem;
 import com.sun.jna.Library;
 
 interface CLibrary extends Library {

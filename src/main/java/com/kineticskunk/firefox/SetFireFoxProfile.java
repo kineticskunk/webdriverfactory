@@ -11,11 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
+import com.kineticskunk.driverutilities.PlatformOperatingSystem;
 import com.kineticskunk.utilities.ApplicationProperties;
-import com.kineticskunk.utilities.PlatformOperatingSystem;
 
 public class SetFireFoxProfile {
 

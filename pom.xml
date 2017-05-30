@@ -11,14 +11,19 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
+		<selenium.version>3.4.0</selenium.version>
+		<eclipse.m2e.lifecycle.mapping.version>1.0.0</eclipse.m2e.lifecycle.mapping.version>
+		<maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<google.inject.guice>4.1.0</google.inject.guice>
+		<google.guava.version>21.0</google.guava.version>
+		<plexus.container.default.version>1.7.1</plexus.container.default.version>
+		<googlecode.json.simple.version>1.1.1</googlecode.json.simple.version>
 		<junit.version>4.12</junit.version>
-		<selenium.version>3.4.0</selenium.version>
 		<commons.lang3.version>3.4</commons.lang3.version>
-		<testng.version>6.9.10</testng.version>
+		<testng.version>6.11</testng.version>
 		<reportng.version>1.1.4</reportng.version>
-		<utilities.version>0.0.1.1-SNAPSHOT</utilities.version>
+		<kineticskunk.auto.utilities.version>0.0.1.1-SNAPSHOT</kineticskunk.auto.utilities.version>
 		<phantomjs.driver.version>1.4.3</phantomjs.driver.version>
 	</properties>
 
@@ -60,7 +65,7 @@
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
 				<artifactId>lifecycle-mapping</artifactId>
-				<version>1.0.0</version>
+				<version>${eclipse.m2e.lifecycle.mapping.version}</version>
 				<configuration>
 					<lifecycleMappingMetadata>
 						<pluginExecutions>
@@ -168,7 +173,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
+				<version>${maven.surefire.plugin.version}</version>
 				<executions>
 					<execution>
 						<phase>test</phase>
@@ -222,10 +227,15 @@
 	</build>
 
 	<dependencies>
+	<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-container-default</artifactId>
-			<version>1.7.1</version>
+			<version>${plexus.container.default.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.collections</groupId>
@@ -242,17 +252,12 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>21.0</version>
+			<version>${google.guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.kineticskunk.auto</groupId>
 			<artifactId>utilities</artifactId>
-			<version>${utilities.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.kineticskunk.auto</groupId>
-			<artifactId>logging</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${kineticskunk.auto.utilities.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -285,7 +290,7 @@
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
+			<version>${googlecode.json.simple.version}</version>
 		</dependency>
 	</dependencies>
 </project>
