@@ -12,11 +12,12 @@ import org.apache.logging.log4j.MarkerManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.firefox.FirefoxProfile;
+
 import com.kineticskunk.utilities.Converter;
 
 public class LoadFireFoxProfilePreferences {
 	
-	private final Logger logger = LogManager.getLogger(SetFireFoxProfile.class.getName());
+	private final Logger logger = LogManager.getLogger(LoadFireFoxProfilePreferences.class.getName());
 	private final Marker LOADFIREFOXPROFILEPREFERENCES = MarkerManager.getMarker("LOADFIREFOXPROFILEPREFERENCES");
 	
 	private static final String FIREFOXEXTENSIONS = "firefoxextensions";
@@ -35,6 +36,10 @@ public class LoadFireFoxProfilePreferences {
 		this.loadPreferences(this.profilePreferences);
 	}
 	
+	public void setEnableNativeEvents(boolean enableNativeEvents) {
+		this.profile.setEnableNativeEvents(enableNativeEvents);
+	}
+	
 	public void setAcceptUntrustedCertificates(boolean acceptUntrustedCertificates) {
 		this.profile.setAcceptUntrustedCertificates(acceptUntrustedCertificates);
 	}
@@ -45,10 +50,6 @@ public class LoadFireFoxProfilePreferences {
 	
 	public void setAlwaysLoadNoFocusLib(boolean loadNoFocusLib) {
 		this.profile.setAlwaysLoadNoFocusLib(loadNoFocusLib);
-	}
-	
-	public void setEnableNativeEvents(boolean enableNativeEvents) {
-		this.profile.setEnableNativeEvents(enableNativeEvents);
 	}
 	
 	public void layoutOnDisk() {

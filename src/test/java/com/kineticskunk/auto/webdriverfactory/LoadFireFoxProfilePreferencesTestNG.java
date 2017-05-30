@@ -1,5 +1,6 @@
 package com.kineticskunk.auto.webdriverfactory;
 
+import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,9 +9,10 @@ import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.junit.Assert;
 
 import com.kineticskunk.firefox.LoadFireFoxProfilePreferences;
 
@@ -19,7 +21,7 @@ public class LoadFireFoxProfilePreferencesTestNG {
 	private static final String FIREFOXPROFILEPREFERENCES = "firefoxprofilepreferences";
 	
 	private LoadFireFoxProfilePreferences lfpp;
-	
+	private FirefoxProfile profile = new FirefoxProfile();
 	private JSONParser parser = new JSONParser();
 	
 	private JSONObject desiredCapabilitiesJSONObject;
@@ -32,11 +34,14 @@ public class LoadFireFoxProfilePreferencesTestNG {
 		this.fireFoxProfilePreferences = (JSONObject) this.desiredCapabilitiesJSONObject.get(FIREFOXPROFILEPREFERENCES);
 		this.lfpp = new LoadFireFoxProfilePreferences(this.fireFoxProfilePreferences);
 		this.lfpp.loadFireFoxExtensionsAndExtensionPreferences();
+		this.lfpp.setEnableNativeEvents(true);
+		this.profile = this.lfpp.getFirefoxProfile();
+		System.out.println(this.profile.toString());
 	}
 	
 	@Test(priority = 0)
 	public void verifyLoadedExtenstions() {
-		
+		Assert.assertTrue(this.profile.areNativeEventsEnabled());
 	}
 
 }

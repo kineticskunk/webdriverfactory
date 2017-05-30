@@ -30,7 +30,7 @@ import com.kineticskunk.utilities.Converter;
 
 public class LoadDesiredCapabilities {
 
-	private final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
+	private final Logger logger = LogManager.getLogger(LoadDesiredCapabilities.class.getName());
 	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
 
 	private static final String CONFIGLOADSETTINGS = "configloadingsetting";
@@ -78,7 +78,7 @@ public class LoadDesiredCapabilities {
 		}
 	}
 	
-	public  LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
+	public LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
 		this(browserType, desiredCapabilitiesConfigJSON);
 		this.dc = dc;
 	}
@@ -159,15 +159,19 @@ public class LoadDesiredCapabilities {
 						if (this.jsonKeyExists(this.desiredCapabilitiesJSONObject, FIREFOXPROFILEPREFERENCES)) {
 							JSONObject preferences = (JSONObject) this.desiredCapabilitiesJSONObject.get(FIREFOXPROFILEPREFERENCES);
 							LoadFireFoxProfilePreferences lfpp = new LoadFireFoxProfilePreferences(preferences);
+							lfpp.setAcceptUntrustedCertificates(true);
+							lfpp.setAssumeUntrustedCertificateIssuer(false);
 							lfpp.loadFireFoxExtensionsAndExtensionPreferences();
-							lfpp.layoutOnDisk();
 							this.dc.setCapability(FirefoxDriver.PROFILE, lfpp.getFirefoxProfile());
 						}
+					} else {
+						this.logger.info(LOADDESIREDCAPABILITIES, "Firefox profile " + (char)34 + FIREFOXDESIREDCAPABILITIES + (char)34 + " does not exist in " + (char)34 + this.desiredCapabilitiesJSONObject.toJSONString() + (char)34);
 					}
 					break;
 				case "chrome":
 					this.dc.setBrowserName("chrome");
 					//this.dc.setCapability("chromeDriverExecutable", driverExecutable.getAbsolutePath());
+					this.dc.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 					this.dc.setCapability("chrome.switches", Arrays.asList("--no-default-browser-check"));
 					this.dc.setCapability("chromeOptions", getChromeOptions());
 					this.dc.setCapability("chromePreferences", getChromePreferences()); 
@@ -176,7 +180,6 @@ public class LoadDesiredCapabilities {
 					this.dc.setBrowserName("opera");
 					break;
 				case "ie":
-
 					this.dc.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 					System.setProperty("webdriver.ie.driver", browserType);
 					break;

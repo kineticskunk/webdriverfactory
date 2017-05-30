@@ -20,11 +20,12 @@ import org.testng.annotations.Test;
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverfactory.DriverExecutable;
 import org.openqa.selenium.logging.LogEntries;
+
 import org.openqa.selenium.logging.LogType;
 
 public class LoadDesiredCapabilitiesTestNG {
 	
-	private final Logger logger = LogManager.getLogger(Thread.currentThread().getName());
+	private final Logger logger = LogManager.getLogger(LoadDesiredCapabilitiesTestNG.class.getName());
 	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
 	
 	private static final String testSite = "https://www.google.co.za";
