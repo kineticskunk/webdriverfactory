@@ -1,15 +1,34 @@
 package com.kineticskunk.desiredcapabilities;
 
+/*
+	Copyright [2016 - 2017] [KineticSkunk Information Technology Solutions]
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
-import org.apache.logging.log4j.Level;
+//import org.apache.logging.log4j.Level;
+//import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -17,9 +36,11 @@ import org.apache.logging.log4j.MarkerManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -46,6 +67,7 @@ public class LoadDesiredCapabilities {
 	private static final String HTTPPROXY = "httpproxy";
 	private static final String SSLPROXY = "sslproxy";
 	private static final String FTPPROXY = "ftpproxy";
+	private static final String AUTOCONFIGURL = "autoconfigurl";
 	
 	private static final String LOADINGLOGGINFPREFS = "loadloggingprefs";
 	private static final String LOGGINGPREFS = "loggingPrefs";
@@ -161,12 +183,18 @@ public class LoadDesiredCapabilities {
 							LoadFireFoxProfilePreferences lfpp = new LoadFireFoxProfilePreferences(preferences);
 							lfpp.setAcceptUntrustedCertificates(true);
 							lfpp.setAssumeUntrustedCertificateIssuer(false);
-							lfpp.loadFireFoxExtensionsAndExtensionPreferences();
+							//lfpp.loadFireFoxExtensionsAndExtensionPreferences();
 							this.dc.setCapability(FirefoxDriver.PROFILE, lfpp.getFirefoxProfile());
 						}
 					} else {
 						this.logger.info(LOADDESIREDCAPABILITIES, "Firefox profile " + (char)34 + FIREFOXDESIREDCAPABILITIES + (char)34 + " does not exist in " + (char)34 + this.desiredCapabilitiesJSONObject.toJSONString() + (char)34);
 					}
+					FirefoxOptions ffOptions = new FirefoxOptions();
+					ffOptions.addPreference("--log", "trace");
+					//ffOptions.addPreference("network.proxy.http", "localhost");
+					//ffOptions.addPreference("network.proxy.http_port", "8080");
+					ffOptions.setLegacy(false);
+					this.dc.setCapability("moz:firefoxOptions", ffOptions);
 					break;
 				case "chrome":
 					this.dc.setBrowserName("chrome");
@@ -207,16 +235,20 @@ public class LoadDesiredCapabilities {
 			if (this.jsonKeyExists(proxySettings, FTPPROXY)) {
 				proxy.setHTTPProxy(proxySettings.get(FTPPROXY).toString());
 			}
+			if (this.jsonKeyExists(proxySettings, AUTOCONFIGURL)) {
+				//proxy.setAutoconfigUrl(proxySettings.get(AUTOCONFIGURL).toString());
+			}
 			proxy.setProxyType("MANUAL");
 		} else {
-			proxy.setProxyType("AUTODETECT");
+			proxy.setAutoDetect(true);;
 		}
 		this.dc.setCapability(CapabilityType.PROXY, proxy.getProxy());
+		proxy.logProxySettings();
 	}
 	
 	public void setLoggingPrefs(boolean loadLoggingPrefs) {
 		if (loadLoggingPrefs) {
-			this.logger.log(Level.INFO, LOADDESIREDCAPABILITIES, "Loading logging preferences");
+			this.logger.info(LOADDESIREDCAPABILITIES, "Loading logging preferences");
 			try {
 				JSONObject loggingPrefs = (JSONObject) this.desiredCapabilitiesJSONObject.get(LOGGINGPREFS);
 				wdlp = new WebDriverLoggingPreferences(loggingPrefs);
@@ -226,7 +258,7 @@ public class LoadDesiredCapabilities {
 
 			}
 		} else {
-			this.logger.log(Level.INFO, LOADDESIREDCAPABILITIES, "Loading logging preferences ARE NOT being loaded.");
+			this.logger.info(LOADDESIREDCAPABILITIES, "Loading logging preferences ARE NOT being loaded.");
 		}
 	}
 

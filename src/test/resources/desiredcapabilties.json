@@ -1,8 +1,9 @@
 {
 	"configloadingsetting": {
 		"loadfirefoxprofilepreferences": true,
+		"loadfirefoxextensions": false,
 		"loadfirebug": false,
-		"loadproxyserver": false,
+		"loadproxyserver": true,
 		"loadnetworkproxy": false,
 		"loadloggingprefs": true
 	},
@@ -31,8 +32,9 @@
 	},
 	"proxyserver": {
 		"httpproxy": "localhost:8080",
-		"sslproxy": "localhost:8080",
+		"sslproxy": "localhos:8080",
 		"ftpproxy": "localhost:8080",
+		"autoconfigurl": "null",
 		"network": {
 			"usenetworkproxy": false,
 			"network.proxy.type": "",
@@ -57,8 +59,8 @@
 	},
 	"firefoxdesiredcapabilities": {
 		"marionette": true,
-		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/Firefox_53.0.3.app/Contents/MacOS/firefox-bin",
-		"version": "53.0.3"
+		"firefox_binary": "/Users/yodaqua/ks-test-automation/firefox-lib/FirefoxNightly.app/Contents/MacOS/firefox-bin",
+		"version": "55.0a1"
 	},
 	"firefoxprofilepreferences": {
 		"always.load.no.focus.lib": true,

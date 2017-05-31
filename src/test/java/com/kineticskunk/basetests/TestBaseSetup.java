@@ -1,7 +1,27 @@
 package com.kineticskunk.basetests;
 
+/*
+	Copyright [2016 - 2017] [KineticSkunk Information Technology Solutions]
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 import org.testng.annotations.AfterClass;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 
@@ -18,7 +38,7 @@ import com.kineticskunk.utilities.Converter;
 public class TestBaseSetup {
 	
 	private static int WAIT = 60;
-	private Logger logger = LogManager.getLogger(Thread.currentThread().getName());
+	private Logger logger = LogManager.getLogger(TestBaseSetup.class.getName());
 	private Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 
 	private DriverFactory df;
@@ -33,10 +53,10 @@ public class TestBaseSetup {
 			this.df.setResizeBrowser(Converter.toBoolean(resizeBrowser));
 			this.wd = this.df.getDriver();
 			this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
-		} catch (Exception e) {
+		} catch (WebDriverException e) {
 			this.logger.fatal(TESTBASESETUP, "Failed to load browser " + (char)34 + browserType + (char)34 + ".");
-			this.logger.fatal(TESTBASESETUP, e.getLocalizedMessage());
-			this.logger.fatal(TESTBASESETUP, e.getStackTrace());
+			this.logger.fatal(TESTBASESETUP, "Localized message = " + (char)34 + e.getLocalizedMessage() + (char)34 + ".");
+			this.logger.debug(TESTBASESETUP, "Cause = " + (char)34 + e.getCause().getMessage() + (char)34 + ".");
 		}
 	}
 
@@ -50,7 +70,19 @@ public class TestBaseSetup {
 
 	@AfterClass
 	public void quitDriver() {
-		wd.quit();
+		LogEntries browserlogEntries = this.getDriver().manage().logs().get(LogType.BROWSER);
+		LogEntries driverlogEntries = this.getDriver().manage().logs().get(LogType.DRIVER);
+		
+		for (LogEntry entry : browserlogEntries) {
+           this.logger.info(TESTBASESETUP, entry.getLevel() + "BROWSER: " + entry.getMessage());
+            //do something useful with the data
+        }
+		
+		for (LogEntry entry : driverlogEntries) {
+	           this.logger.info(TESTBASESETUP, entry.getLevel() + "DRIVER " + entry.getMessage());
+	            //do something useful with the data
+	        }
+	//	wd.quit();
 	}
 
 	public Logger getLogger() {

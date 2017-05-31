@@ -3,6 +3,14 @@ package com.kineticskunk.driverfactory;
 import com.kineticskunk.driverutilities.PlatformOperatingSystem;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+
 import com.sun.jna.Native;
 import com.sun.jna.Library;
 
@@ -11,33 +19,36 @@ interface CLibrary extends Library {
 }
 
 public class DriverExecutable {
-	
+
+	private final Logger logger = LogManager.getLogger(DriverExecutable.class.getName());
+	private final Marker DRIVEREXECTABLE = MarkerManager.getMarker("DRIVEREXECTABLE");
+
 	private static final String GECKODRIVERMAC64 = "geckodriver-v0.16.1-mac64";
 	private static final String GECKODRIVERLINUX64 = "geckodriver-v0.16.1-linux64";
 	private static final String GECKODRIVERWINDOWS64 = "geckodriver-v0.16.1-win64.exe";
 	private static final String GECKODRIVERWINDOWS32 = "geckodriver-v0.16.1-win32.exe";
-	
+
 	private static final String CHROMEDRIVERMAC64 = "chromedriver-v2.29-mac64";
 	private static final String CHROMEDRIVERLINUX64 = "chromedriver-v2.29-linux64";
 	private static final String CHROMEDRIVERWINDOWS64 = "chromedriver-v2.29-win32.exe";
 	private static final String CHROMEDRIVERWINDOWS32 = "chromedriver-v2.29-win32.exe";
-	
+
 	private static final String OPERADRIVERMAC64 = "operadriver-v2.27-mac64";
 	private static final String OPERADRIVERLINUX64 = "operadriver-v2.27-linux64";
 	private static final String OPERADRIVERLINUX32 = "operadriver-v2.27-linux32";
 	private static final String OPERADRIVERWINDOWS64 = "operadriver-v2.27-win64.exe";
 	private static final String OPERADRIVERWINDOWS32 = "operadriver-v2.27-win32.exe";
-	
+
 	private PlatformOperatingSystem pos = new PlatformOperatingSystem();
-	
+
 	private String browserType = null;
 	private File driverExecutable = null;
-	
+
 	public DriverExecutable(String browserType) {
 		this.browserType = browserType;
 	}
-	
-	public void setDriverExecutable()  {
+
+	public void setDriverExecutable() throws FileNotFoundException, IOException  {
 		switch (this.browserType.toLowerCase()) {
 		case "firefox":
 			if (this.pos.isMac() && System.getProperty("os.arch").contains("64")) {
@@ -51,6 +62,7 @@ public class DriverExecutable {
 					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(GECKODRIVERWINDOWS32).getPath());
 				}
 			}
+			this.logger.info(DRIVEREXECTABLE, "Setting webdriver.gecko.driver to " + (char)34 + this.driverExecutable.getAbsolutePath() + (char)34 +".");
 			System.setProperty("webdriver.gecko.driver", this.driverExecutable.getAbsolutePath());
 			break;
 		case "chrome":
@@ -65,6 +77,7 @@ public class DriverExecutable {
 					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(CHROMEDRIVERWINDOWS32).getPath());
 				}
 			}
+			this.logger.info(DRIVEREXECTABLE, "Setting webdriver.chrome.driver to " + (char)34 + this.driverExecutable.getAbsolutePath() + (char)34 +".");
 			System.setProperty("webdriver.chrome.driver", this.driverExecutable.getAbsolutePath());
 			break;
 		case "opera":
@@ -83,12 +96,13 @@ public class DriverExecutable {
 					this.driverExecutable = new File(this.getClass().getClassLoader().getResource(OPERADRIVERWINDOWS32).getPath());
 				}
 			}
+			this.logger.info(DRIVEREXECTABLE, "Setting webdriver.opera.driver to " + (char)34 + this.driverExecutable.getAbsolutePath() + (char)34 +".");
 			System.setProperty("webdriver.opera.driver", this.driverExecutable.getAbsolutePath());
 			break;
 		}
 		this.makeDriverExecutable(this.driverExecutable.getAbsolutePath());
 	}
-	
+
 	private void makeDriverExecutable(String driverFile) {
 		CLibrary libc = (CLibrary) Native.loadLibrary("c", CLibrary.class);
 		libc.chmod(driverFile, 0755);

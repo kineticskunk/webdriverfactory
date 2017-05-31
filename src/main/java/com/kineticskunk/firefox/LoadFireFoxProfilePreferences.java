@@ -36,10 +36,6 @@ public class LoadFireFoxProfilePreferences {
 		this.loadPreferences(this.profilePreferences);
 	}
 	
-	public void setEnableNativeEvents(boolean enableNativeEvents) {
-		this.profile.setEnableNativeEvents(enableNativeEvents);
-	}
-	
 	public void setAcceptUntrustedCertificates(boolean acceptUntrustedCertificates) {
 		this.profile.setAcceptUntrustedCertificates(acceptUntrustedCertificates);
 	}

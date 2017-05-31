@@ -1,5 +1,7 @@
 package com.kineticskunk.auto.webdriverfactory;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +39,7 @@ public class LoadDesiredCapabilitiesTestNG {
 	
 	@BeforeClass
 	@Parameters( { "browserType", "desiredCapabilitiesConfigJSON" } )
-	public void setLoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
+	public void setLoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws FileNotFoundException, IOException {
 		this.ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON);
 		this.ldc.setBrowerDesiredCapabilities();
 		this.de = new DriverExecutable(browserType);

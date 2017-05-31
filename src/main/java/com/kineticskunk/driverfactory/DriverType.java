@@ -19,6 +19,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
 import com.kineticskunk.driverutilities.DesiredCapabilityException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,7 @@ public enum DriverType implements DriverSetup {
 		}
 	}
 	
-	private void makeDriverExecutable(String browserType) {
+	private void makeDriverExecutable(String browserType) throws FileNotFoundException, IOException {
 		DriverExecutable de = new DriverExecutable(browserType);
 		de.setDriverExecutable();
 	}
