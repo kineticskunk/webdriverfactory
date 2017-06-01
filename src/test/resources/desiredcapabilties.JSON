@@ -1,12 +1,8 @@
 {
 	"configloadingsetting": {
-		"useproxy": true,
-		"usesocksproxy": false,
-		"usenetworkproxy": false,
 		"loadfirefoxprofilepreferences": true,
 		"loadfirefoxextensions": false,
 		"loadfirebug": false,
-		"loadproxyserver": true,
 		"loadnetworkproxy": false,
 		"loadloggingprefs": true
 	},
@@ -33,15 +29,23 @@
 		"pageLoadingStrategy": "normal",
 		"elementScrollBehavior": 0
 	},
-	"proxyserver": {
+	"proxyserverconfiguration": {
+		"useproxy": true,
+		"usesocksproxy": false,
+		"usenetworkproxy": false,
+		"useautoconfigurl": false,
 		"autodetect": false,
 		"autoconfigurl": "",
-		"httpproxy": "localhost:8080",
-		"sslproxy": "localhos:8080",
-		"ftpproxy": "localhost:8080",
-		"socksproxy": "",
-		"socksusername": "",
-		"sockspassword": "",
+		"proxy": {
+			"httpproxy": "localhost:8080",
+			"sslproxy": "localhos:8080",
+			"ftpproxy": "localhost:8080"
+		},
+		"socks": {
+			"socksproxy": "",
+			"socksusername": "",
+			"sockspassword": ""
+		},
 		"network": {
 			"network.proxy.type": "",
 			"network.proxy.http": "",

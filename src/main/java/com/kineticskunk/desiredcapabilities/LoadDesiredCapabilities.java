@@ -56,17 +56,11 @@ public class LoadDesiredCapabilities {
 	private static final String CONFIGLOADSETTINGS = "configloadingsetting";
 
 	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
+	private static final String PROXYSERVERCONFIGURATION = "proxyserverconfiguration";
 	private static final String LOADFIREFOXPREFERENCES = "loadfirefoxprofilepreferences";
-	private static final String LOADPROXYSERVER = "loadproxyserver";
 	
 	private static final String FIREFOXDESIREDCAPABILITIES = "firefoxdesiredcapabilities";
 	private static final String FIREFOXPROFILEPREFERENCES = "firefoxprofilepreferences";
-	
-	private static final String PROXYSERVER = "proxyserver";
-	private static final String HTTPPROXY = "httpproxy";
-	private static final String SSLPROXY = "sslproxy";
-	private static final String FTPPROXY = "ftpproxy";
-	private static final String AUTOCONFIGURL = "autoconfigurl";
 	
 	private static final String LOADINGLOGGINFPREFS = "loadloggingprefs";
 	private static final String LOGGINGPREFS = "loggingPrefs";
@@ -75,7 +69,6 @@ public class LoadDesiredCapabilities {
 	private WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences();
 	
 	private boolean loadfirefoxprofilepreferences = false;
-	private boolean loadProxyServer = false;
 	private boolean loadloggingprefs = false;
 	
 	private String browserType = null;
@@ -94,7 +87,7 @@ public class LoadDesiredCapabilities {
 		if (this.jsonKeyExists(this.desiredCapabilitiesJSONObject, CONFIGLOADSETTINGS)) {
 			JSONObject configloadingsetting = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
 			this.loadfirefoxprofilepreferences = this.getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
-			this.loadProxyServer = getJSONBooleanValue(configloadingsetting, LOADPROXYSERVER);
+			
 			this.loadloggingprefs = this.getJSONBooleanValue(configloadingsetting, LOADINGLOGGINFPREFS);
 		}
 	}
@@ -170,7 +163,8 @@ public class LoadDesiredCapabilities {
 		try {
 			if (this.desiredCapabilitiesJSONObject != null) {
 				this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
-				//this.setSeleniumProxy(this.loadProxyServer);
+				WebDriverProxy wdp = new WebDriverProxy((JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVERCONFIGURATION));
+				this.dc.setCapability(CapabilityType.PROXY, wdp.getProxy());
 				this.setLoggingPrefs(this.loadloggingprefs);
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":

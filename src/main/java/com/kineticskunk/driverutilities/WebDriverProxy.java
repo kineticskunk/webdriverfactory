@@ -23,6 +23,10 @@ import org.apache.logging.log4j.MarkerManager;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
+import org.openqa.selenium.remote.CapabilityType;
+
+import com.kineticskunk.utilities.Converter;
+
 import  org.openqa.selenium.WebDriverException;
 
 public class WebDriverProxy {
@@ -30,20 +34,102 @@ public class WebDriverProxy {
 	private final Logger logger = LogManager.getLogger(WebDriverProxy.class.getName());
 	private final Marker WEBDRIVERPROXY = MarkerManager.getMarker("WEBDRIVERPROXY");
 	
+	private static final String USEPROXY = "useproxy";
+	private static final String USESOCKSPROXY = "httpproxy";
+	private static final String USENETWORKPROXY = "usenetworkproxy";
+	private static final String USEAUTOCONFIGURL = "useautoconfigurl";
+	private static final String USEAUTODETECT = "autodetect";
+	
+	private static final String PROXY = "proxy";
+	private static final String HTTPPROXY = "httpproxy";
+	private static final String SSLPROXY = "sslproxy";
+	private static final String FTPPROXY = "ftpproxy";
+	
+	private static final String SOCKS = "socks";
+	private static final String SOCKSPROXY = "socksproxy";
+	private static final String SOCKSUSERNAME = "socksusername";
+	private static final String SOCKSPASSWORD = "sockspassword";
+	
+	private static final String AUTOCONFIGURL = "autoconfigurl";
+	
+	private Proxy proxy = new Proxy();
+	
 	private JSONObject proxyPreferences = new JSONObject();
-	private Proxy proxy;
+	
+	private boolean useProxy = false;
+	private boolean useSocksProxy = false;
+	private boolean useNetworkProxy = false;
+	private boolean useAutoConfigURLl = false;
+	private boolean useAutoDetect = false;
 	
 	public WebDriverProxy() {
-		this.proxy = new Proxy();
 	}
 	
 	public WebDriverProxy(JSONObject proxyPreferences) {
 		this();
 		this.proxyPreferences = proxyPreferences;
+		this.useProxy = Converter.toBoolean(this.proxyPreferences.get(USEPROXY));
+		this.useSocksProxy = Converter.toBoolean(this.proxyPreferences.get(USESOCKSPROXY));
+		this.useNetworkProxy = Converter.toBoolean(this.proxyPreferences.get(USENETWORKPROXY));
+		this.useAutoConfigURLl = Converter.toBoolean(this.proxyPreferences.get(USEAUTOCONFIGURL));
+		this.useAutoDetect = Converter.toBoolean(this.proxyPreferences.get(USEAUTODETECT));
 	}
 	
 	public Proxy getProxy() {
 		return this.proxy;
+	}
+	
+	public void setProxy(String whichProxy) {
+		switch (whichProxy.toUpperCase()) {
+		case "PROXY":
+			this.setProxyType("MANUAL");
+			if (this.proxyPreferences.containsKey(PROXY)) {
+				JSONObject thisProxy = (JSONObject) this.proxyPreferences.get(PROXY);
+				if (thisProxy.containsKey(HTTPPROXY)) {
+					this.proxy.setHttpProxy(thisProxy.get(HTTPPROXY).toString());
+				}
+				if (thisProxy.containsKey(SSLPROXY)) {
+					this.proxy.setSslProxy(thisProxy.get(SSLPROXY).toString());
+				}
+				if (thisProxy.containsKey(FTPPROXY)) {
+					this.proxy.setFtpProxy(thisProxy.get(FTPPROXY).toString());
+				}
+			} else {
+				this.setProxyType("AUTODETECT");
+			}
+			break;
+		case "SOCKS":
+			if (this.proxyPreferences.containsKey(SOCKS)) {
+				JSONObject thisProxy = (JSONObject) this.proxyPreferences.get(SOCKS);
+				if (thisProxy.containsKey(SOCKSPROXY)) {
+					this.proxy.setHttpProxy(thisProxy.get(SOCKSPROXY).toString());
+				}
+				if (thisProxy.containsKey(SOCKSUSERNAME)) {
+					this.proxy.setSslProxy(thisProxy.get(SOCKSUSERNAME).toString());
+				}
+				if (thisProxy.containsKey(SOCKSPASSWORD)) {
+					this.proxy.setFtpProxy(thisProxy.get(SOCKSPASSWORD).toString());
+				}
+			} else {
+				this.setProxyType("AUTODETECT");
+			}
+			break;
+		case "AUTODETECT":
+			this.setProxyType("AUTODETECT");
+			break;
+		case "AUTOCONFIGURL":
+			if (this.proxyPreferences.containsKey(AUTOCONFIGURL)) {
+				this.proxy.setProxyAutoconfigUrl(this.proxyPreferences.get(AUTOCONFIGURL).toString());
+			} else {
+				this.setProxyType("AUTODETECT");
+			}
+			break;
+		case "NETWORK":
+			
+			break;
+		}
+		
+		this.logProxySettings();
 	}
 	
 	/**
