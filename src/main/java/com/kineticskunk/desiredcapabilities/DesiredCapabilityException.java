@@ -1,4 +1,4 @@
-package com.kineticskunk.driverutilities;
+package com.kineticskunk.desiredcapabilities;
 
 public class DesiredCapabilityException extends Exception {
 	

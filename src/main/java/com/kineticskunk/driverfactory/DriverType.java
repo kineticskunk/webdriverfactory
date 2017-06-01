@@ -16,8 +16,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 
+import com.kineticskunk.desiredcapabilities.DesiredCapabilityException;
 import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
-import com.kineticskunk.driverutilities.DesiredCapabilityException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

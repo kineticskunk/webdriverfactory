@@ -4,7 +4,7 @@ import java.io.IOException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import com.kineticskunk.driverutilities.DesiredCapabilityException;
+import com.kineticskunk.desiredcapabilities.DesiredCapabilityException;
 
 public interface DriverSetup {
 

@@ -1,4 +1,4 @@
-package com.kineticskunk.firefox;
+package com.kineticskunk.desiredcapabilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,11 +14,10 @@ import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
 import com.kineticskunk.driverutilities.PlatformOperatingSystem;
-import com.kineticskunk.utilities.ApplicationProperties;
 
-public class SetFireFoxProfile {
+public class LoadFireFoxProfile {
 
-	private static final Logger logger = LogManager.getLogger(SetFireFoxProfile.class.getName());
+	private static final Logger logger = LogManager.getLogger(LoadFireFoxProfile.class.getName());
 	private static final Marker FIREFOXPROFILE = MarkerManager.getMarker("FIREFOXPROFILE");
 
 	private static final String DEFAULT_WIN_DOWNLOAD_DIRECTORY = System.getProperty("user.home") + "\\downloads\\";
@@ -26,23 +25,20 @@ public class SetFireFoxProfile {
 
 	private FirefoxProfile profile;
 	private PlatformOperatingSystem pos;
-	private ApplicationProperties ap;
 	private HashMap<String, Object> params;
 	
-	public SetFireFoxProfile() {
+	public LoadFireFoxProfile() {
 		this.profile = new FirefoxProfile();
 		this.pos = new PlatformOperatingSystem();
-		this.ap = ApplicationProperties.getInstance();
-		this.ap.getProperties().clear();
 		this.params = new HashMap<String, Object>();
 	}
 	
-	public SetFireFoxProfile(HashMap<String, Object> params) {
+	public LoadFireFoxProfile(HashMap<String, Object> params) {
 		this();
 		this.params = params;
 	}
 	
-	public SetFireFoxProfile(HashMap<String, Object> params, FirefoxProfile profile) {
+	public LoadFireFoxProfile(HashMap<String, Object> params, FirefoxProfile profile) {
 		this();
 		this.params = params;
 		this.profile = profile;
@@ -57,7 +53,7 @@ public class SetFireFoxProfile {
 	}
 	
 	public void setPreferences(String profilePreferences) throws IOException {
-		this.params = this.ap.readPropertyFile(this.params, profilePreferences);	
+		//this.params = this.ap.readPropertyFile(this.params, profilePreferences);	
 	}
 	
 	public void setPreferences(HashMap<String, Object> preferences) throws IOException {
@@ -149,14 +145,21 @@ public class SetFireFoxProfile {
 		browser_helperApps_alwaysAsk_force,
 		browser_helperApps_neverAsk_openFile,
 		browser_helperApps_neverAsk_saveToDisk,
-		enable_native_events,
-		extensions_firebug_currentVersion,
-		extensions_firebug_console_enableSites,
-		extensions_firebug_script_enableSites,
-		extensions_firebug_defaultPanelName,
-		extensions_firebug_net_enableSites,
-		extensions_firebug_allPagesActivation,
-		extensions_firebug_cookies_enableSites;
+		enable_native_events
+	}
+	
+	static class FireFoxExtensions {
+		
+		private enum fireBugPreferences {
+			extensions_firebug_currentVersion,
+			extensions_firebug_console_enableSites,
+			extensions_firebug_script_enableSites,
+			extensions_firebug_defaultPanelName,
+			extensions_firebug_net_enableSites,
+			extensions_firebug_allPagesActivation,
+			extensions_firebug_cookies_enableSites;
+		}
+		
 	}
 	
 }

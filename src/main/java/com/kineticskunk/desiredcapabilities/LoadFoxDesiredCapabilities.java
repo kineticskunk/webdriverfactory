@@ -1,4 +1,4 @@
-package com.kineticskunk.firefox;
+package com.kineticskunk.desiredcapabilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,15 +18,14 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import com.kineticskunk.driverutilities.DesiredCapabilityException;
 import com.kineticskunk.driverutilities.PlatformOperatingSystem;
 import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.utilities.ApplicationProperties;
 import com.kineticskunk.utilities.Converter;
 
-public class SetFireFoxDesiredCapabilities {
+public class LoadFoxDesiredCapabilities {
 
-	private static final Logger logger = LogManager.getLogger(SetFireFoxDesiredCapabilities.class.getName());
+	private static final Logger logger = LogManager.getLogger(LoadFoxDesiredCapabilities.class.getName());
 	private static final Marker FIREFOXDESIREDCAPABILITIES = MarkerManager.getMarker("FIREFOXDESIREDCAPABILITIES");
 
 	private static final String USE_HOST_PLATFORM = "use_host_platform";
@@ -38,7 +37,7 @@ public class SetFireFoxDesiredCapabilities {
 	private ApplicationProperties ap;
 	private HashMap<String, Object> params;
 
-	public SetFireFoxDesiredCapabilities() {
+	public LoadFoxDesiredCapabilities() {
 		this.dc = new DesiredCapabilities();
 		this.pos = new PlatformOperatingSystem();
 		this.ap = ApplicationProperties.getInstance();
@@ -46,7 +45,7 @@ public class SetFireFoxDesiredCapabilities {
 		this.params = new HashMap<String, Object>();
 	}
 
-	public SetFireFoxDesiredCapabilities(HashMap<String, Object> params) throws DesiredCapabilityException {
+	public LoadFoxDesiredCapabilities(HashMap<String, Object> params) throws DesiredCapabilityException {
 		this();
 		this.params = params;
 	}

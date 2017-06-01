@@ -1,7 +1,5 @@
 package com.kineticskunk.driverfactory;
 
-import com.kineticskunk.driverutilities.PlatformOperatingSystem;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +10,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import com.sun.jna.Native;
+import com.kineticskunk.driverutilities.PlatformOperatingSystem;
 import com.sun.jna.Library;
 
 interface CLibrary extends Library {

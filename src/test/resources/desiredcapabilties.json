@@ -1,5 +1,8 @@
 {
 	"configloadingsetting": {
+		"useproxy": true,
+		"usesocksproxy": false,
+		"usenetworkproxy": false,
 		"loadfirefoxprofilepreferences": true,
 		"loadfirefoxextensions": false,
 		"loadfirebug": false,
@@ -31,12 +34,15 @@
 		"elementScrollBehavior": 0
 	},
 	"proxyserver": {
+		"autodetect": false,
+		"autoconfigurl": "",
 		"httpproxy": "localhost:8080",
 		"sslproxy": "localhos:8080",
 		"ftpproxy": "localhost:8080",
-		"autoconfigurl": "null",
+		"socksproxy": "",
+		"socksusername": "",
+		"sockspassword": "",
 		"network": {
-			"usenetworkproxy": false,
 			"network.proxy.type": "",
 			"network.proxy.http": "",
 			"network.proxy.http_port": "",

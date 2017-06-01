@@ -1,10 +1,11 @@
-package com.kineticskunk.firefox;
+package com.kineticskunk.desiredcapabilities;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -72,19 +73,42 @@ public class LoadFireFoxProfilePreferences {
 			Entry<?, ?> profileEntry = (Entry<?, ?>) prefsIterator.next();
 			String key = profileEntry.getKey().toString();
 			String value = profileEntry.getValue().toString();
-			if (!key.equalsIgnoreCase(FIREFOXEXTENSIONS)) {
-				if (Converter.isBoolean(value)) {
-					this.profile.setPreference(key, Boolean.parseBoolean(value));
-					this.logger.info(LOADFIREFOXPROFILEPREFERENCES, "Loaded FireFox Profile Preference " + key + " = " + this.profile.getBooleanPreference(key, false));
-				} else if (Converter.isNumeric(value)) {
-					this.profile.setPreference(key, Converter.toInteger(value));
-					this.logger.info(LOADFIREFOXPROFILEPREFERENCES, "Loaded FireFox Profile Preference " + key + " = " + this.profile.getIntegerPreference(key, 0));
-				} else {
-					this.profile.setPreference(key, value);
-					this.logger.info(LOADFIREFOXPROFILEPREFERENCES, "Loaded FireFox Profile Preference " + key + " = " + this.profile.getStringPreference(key, ""));
+			if (EnumUtils.isValidEnum(profileSetting.class, key.replace(".", "_"))) {
+				if (!key.equalsIgnoreCase(FIREFOXEXTENSIONS)) {
+					if (Converter.isBoolean(value)) {
+						this.profile.setPreference(key, Boolean.parseBoolean(value));
+						this.logger.info(LOADFIREFOXPROFILEPREFERENCES, "Loaded FireFox Profile Preference " + key + " = " + this.profile.getBooleanPreference(key, false));
+					} else if (Converter.isNumeric(value)) {
+						this.profile.setPreference(key, Converter.toInteger(value));
+						this.logger.info(LOADFIREFOXPROFILEPREFERENCES, "Loaded FireFox Profile Preference " + key + " = " + this.profile.getIntegerPreference(key, 0));
+					} else {
+						this.profile.setPreference(key, value);
+						this.logger.info(LOADFIREFOXPROFILEPREFERENCES, "Loaded FireFox Profile Preference " + key + " = " + this.profile.getStringPreference(key, ""));
+					}
 				}
+			} else {
+				this.logger.debug(LOADFIREFOXPROFILEPREFERENCES, "Profile preference " + (char)34 + key + (char)34 + " is not supported or is invalid");
 			}
 		}
+	}
+	
+	private enum profileSetting {
+		accept_untrusted_certificates,
+		always_load_no_focus_lib,
+		assume_untrusted_certificate_issuer,
+		browser_cache_disk_enable,
+		browser_download_dir,
+		browser_download_folderList,
+		browser_download_manager_alertOnEXEOpen,
+		browser_download_manager_closeWhenDone,
+		browser_download_manager_focusWhenStarting,
+		browser_download_manager_showAlertOnComplete,
+		browser_download_manager_showWhenStarting,
+		browser_download_manager_useWindow,
+		browser_helperApps_alwaysAsk_force,
+		browser_helperApps_neverAsk_openFile,
+		browser_helperApps_neverAsk_saveToDisk,
+		enable_native_events
 	}
 
 }

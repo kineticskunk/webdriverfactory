@@ -46,7 +46,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.kineticskunk.driverutilities.WebDriverLoggingPreferences;
 import com.kineticskunk.driverutilities.WebDriverProxy;
-import com.kineticskunk.firefox.LoadFireFoxProfilePreferences;
 import com.kineticskunk.utilities.Converter;
 
 public class LoadDesiredCapabilities {
@@ -171,7 +170,7 @@ public class LoadDesiredCapabilities {
 		try {
 			if (this.desiredCapabilitiesJSONObject != null) {
 				this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
-				this.setSeleniumProxy(this.loadProxyServer);
+				//this.setSeleniumProxy(this.loadProxyServer);
 				this.setLoggingPrefs(this.loadloggingprefs);
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
@@ -222,29 +221,7 @@ public class LoadDesiredCapabilities {
 		return this.dc;
 	}
 
-	public void setSeleniumProxy(boolean useProxy) {
-		WebDriverProxy proxy = new WebDriverProxy();
-		if (useProxy) {
-			JSONObject proxySettings = (JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVER);
-			if (this.jsonKeyExists(proxySettings, HTTPPROXY)) {
-				proxy.setHTTPProxy(proxySettings.get(HTTPPROXY).toString());
-			}
-			if (this.jsonKeyExists(proxySettings, SSLPROXY)) {
-				proxy.setHTTPProxy(proxySettings.get(SSLPROXY).toString());
-			}
-			if (this.jsonKeyExists(proxySettings, FTPPROXY)) {
-				proxy.setHTTPProxy(proxySettings.get(FTPPROXY).toString());
-			}
-			if (this.jsonKeyExists(proxySettings, AUTOCONFIGURL)) {
-				//proxy.setAutoconfigUrl(proxySettings.get(AUTOCONFIGURL).toString());
-			}
-			proxy.setProxyType("MANUAL");
-		} else {
-			proxy.setAutoDetect(true);;
-		}
-		this.dc.setCapability(CapabilityType.PROXY, proxy.getProxy());
-		proxy.logProxySettings();
-	}
+	
 	
 	public void setLoggingPrefs(boolean loadLoggingPrefs) {
 		if (loadLoggingPrefs) {
