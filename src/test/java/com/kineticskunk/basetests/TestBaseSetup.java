@@ -70,22 +70,7 @@ public class TestBaseSetup {
 
 	@AfterClass
 	public void quitDriver() {
-		LogEntries browserlogEntries = this.getDriver().manage().logs().get(LogType.BROWSER);
-		LogEntries driverlogEntries = this.getDriver().manage().logs().get(LogType.DRIVER);
-		
-		for (LogEntry entry : browserlogEntries) {
-           this.logger.info(TESTBASESETUP, entry.getLevel() + "BROWSER: " + entry.getMessage());
-            //do something useful with the data
-        }
-		
-		for (LogEntry entry : driverlogEntries) {
-	           this.logger.info(TESTBASESETUP, entry.getLevel() + "DRIVER " + entry.getMessage());
-	            //do something useful with the data
-	        }
-	//	wd.quit();
+		wd.quit();
 	}
 
-	public Logger getLogger() {
-		return logger;
-	}
 }

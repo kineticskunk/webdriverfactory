@@ -14,7 +14,7 @@ package com.kineticskunk.desiredcapabilities;
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,21 +56,22 @@ public class LoadDesiredCapabilities {
 	private static final String CONFIGLOADSETTINGS = "configloadingsetting";
 
 	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
-	private static final String PROXYSERVERCONFIGURATION = "proxyserverconfiguration";
 	private static final String LOADFIREFOXPREFERENCES = "loadfirefoxprofilepreferences";
-	
+
 	private static final String FIREFOXDESIREDCAPABILITIES = "firefoxdesiredcapabilities";
 	private static final String FIREFOXPROFILEPREFERENCES = "firefoxprofilepreferences";
-	
+
 	private static final String LOADINGLOGGINFPREFS = "loadloggingprefs";
 	private static final String LOGGINGPREFS = "loggingPrefs";
 	
+	private static final String PROXYSERVERCONFIGURATION = "proxyserverconfiguration";
+
 	private DesiredCapabilities dc = new DesiredCapabilities();
 	private WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences();
-	
+
 	private boolean loadfirefoxprofilepreferences = false;
 	private boolean loadloggingprefs = false;
-	
+
 	private String browserType = null;
 
 	private JSONParser parser = new JSONParser();
@@ -87,11 +88,10 @@ public class LoadDesiredCapabilities {
 		if (this.jsonKeyExists(this.desiredCapabilitiesJSONObject, CONFIGLOADSETTINGS)) {
 			JSONObject configloadingsetting = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
 			this.loadfirefoxprofilepreferences = this.getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
-			
 			this.loadloggingprefs = this.getJSONBooleanValue(configloadingsetting, LOADINGLOGGINFPREFS);
 		}
 	}
-	
+
 	public LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
 		this(browserType, desiredCapabilitiesConfigJSON);
 		this.dc = dc;
@@ -163,9 +163,12 @@ public class LoadDesiredCapabilities {
 		try {
 			if (this.desiredCapabilitiesJSONObject != null) {
 				this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
-				WebDriverProxy wdp = new WebDriverProxy((JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVERCONFIGURATION));
-				this.dc.setCapability(CapabilityType.PROXY, wdp.getProxy());
-				this.setLoggingPrefs(this.loadloggingprefs);
+				//WebDriverProxy wdp = new WebDriverProxy((JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVERCONFIGURATION));
+				//wdp.setProxy();
+				//this.dc.setCapability(CapabilityType.PROXY, wdp.getProxy());
+				if (this.loadloggingprefs) {
+					this.setLoggingPrefs();
+				}
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
 					this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, FIREFOXDESIREDCAPABILITIES);
@@ -182,12 +185,12 @@ public class LoadDesiredCapabilities {
 					} else {
 						this.logger.info(LOADDESIREDCAPABILITIES, "Firefox profile " + (char)34 + FIREFOXDESIREDCAPABILITIES + (char)34 + " does not exist in " + (char)34 + this.desiredCapabilitiesJSONObject.toJSONString() + (char)34);
 					}
-					FirefoxOptions ffOptions = new FirefoxOptions();
-					ffOptions.addPreference("--log", "trace");
+					//FirefoxOptions ffOptions = new FirefoxOptions();
+					//	ffOptions.addPreference("--log", "trace");
 					//ffOptions.addPreference("network.proxy.http", "localhost");
 					//ffOptions.addPreference("network.proxy.http_port", "8080");
-					ffOptions.setLegacy(false);
-					this.dc.setCapability("moz:firefoxOptions", ffOptions);
+					//ffOptions.setLegacy(false);
+					//this.dc.setCapability("moz:firefoxOptions", ffOptions);
 					break;
 				case "chrome":
 					this.dc.setBrowserName("chrome");
@@ -209,27 +212,26 @@ public class LoadDesiredCapabilities {
 		} catch (Exception ex) {
 
 		}
+		if (this.loadloggingprefs) {
+			this.wdlp.getLoggingPreferences();
+		}
 	}
 
 	public DesiredCapabilities getDesiredCapabilities() {
 		return this.dc;
 	}
 
-	
-	
-	public void setLoggingPrefs(boolean loadLoggingPrefs) {
-		if (loadLoggingPrefs) {
-			this.logger.info(LOADDESIREDCAPABILITIES, "Loading logging preferences");
-			try {
-				JSONObject loggingPrefs = (JSONObject) this.desiredCapabilitiesJSONObject.get(LOGGINGPREFS);
-				wdlp = new WebDriverLoggingPreferences(loggingPrefs);
-				this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
-			} catch (Exception ex) {
-				logger.catching(ex);
 
-			}
-		} else {
-			this.logger.info(LOADDESIREDCAPABILITIES, "Loading logging preferences ARE NOT being loaded.");
+
+	public void setLoggingPrefs() {
+		this.logger.info(LOADDESIREDCAPABILITIES, "Loading logging preferences");
+		try {
+			JSONObject loggingPrefs = (JSONObject) this.desiredCapabilitiesJSONObject.get(LOGGINGPREFS);
+			this.wdlp = new WebDriverLoggingPreferences(loggingPrefs);
+			this.dc.setCapability(CapabilityType.LOGGING_PREFS, wdlp.getLoggingPreferences());
+		} catch (Exception ex) {
+			logger.catching(ex);
+
 		}
 	}
 

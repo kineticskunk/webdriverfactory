@@ -82,20 +82,6 @@ public class LoadDesiredCapabilitiesTestNG {
 	
 	@AfterClass()
 	public void afterLoadDesiredCapabilitiesTestNG() {
-		LogEntries browserlogEntries = this.wd.manage().logs().get(LogType.BROWSER);
-		LogEntries driverlogEntries = this.wd.manage().logs().get(LogType.DRIVER);
-		
-		for (LogEntry entry : browserlogEntries) {
-           this.logger.info(LOADDESIREDCAPABILITIES, entry.getLevel() + " " + entry.getMessage());
-            //do something useful with the data
-        }
-		
-		for (LogEntry entry : driverlogEntries) {
-	           this.logger.info(LOADDESIREDCAPABILITIES, entry.getLevel() + " " + entry.getMessage());
-	            //do something useful with the data
-	        }
-		
-		this.wd.close();
 		this.wd.quit();
 	}
 }

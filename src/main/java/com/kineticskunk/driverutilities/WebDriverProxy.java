@@ -23,11 +23,10 @@ import org.apache.logging.log4j.MarkerManager;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
-import org.openqa.selenium.remote.CapabilityType;
 
 import com.kineticskunk.utilities.Converter;
 
-import  org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebDriverException;
 
 public class WebDriverProxy {
 	
@@ -35,8 +34,7 @@ public class WebDriverProxy {
 	private final Marker WEBDRIVERPROXY = MarkerManager.getMarker("WEBDRIVERPROXY");
 	
 	private static final String USEPROXY = "useproxy";
-	private static final String USESOCKSPROXY = "httpproxy";
-	private static final String USENETWORKPROXY = "usenetworkproxy";
+	private static final String USESOCKSPROXY = "usesocksproxy";
 	private static final String USEAUTOCONFIGURL = "useautoconfigurl";
 	private static final String USEAUTODETECT = "autodetect";
 	
@@ -53,13 +51,11 @@ public class WebDriverProxy {
 	private static final String AUTOCONFIGURL = "autoconfigurl";
 	
 	private Proxy proxy = new Proxy();
-	
 	private JSONObject proxyPreferences = new JSONObject();
 	
 	private boolean useProxy = false;
 	private boolean useSocksProxy = false;
-	private boolean useNetworkProxy = false;
-	private boolean useAutoConfigURLl = false;
+	private boolean useAutoConfigURL = false;
 	private boolean useAutoDetect = false;
 	
 	public WebDriverProxy() {
@@ -70,8 +66,7 @@ public class WebDriverProxy {
 		this.proxyPreferences = proxyPreferences;
 		this.useProxy = Converter.toBoolean(this.proxyPreferences.get(USEPROXY));
 		this.useSocksProxy = Converter.toBoolean(this.proxyPreferences.get(USESOCKSPROXY));
-		this.useNetworkProxy = Converter.toBoolean(this.proxyPreferences.get(USENETWORKPROXY));
-		this.useAutoConfigURLl = Converter.toBoolean(this.proxyPreferences.get(USEAUTOCONFIGURL));
+		this.useAutoConfigURL = Converter.toBoolean(this.proxyPreferences.get(USEAUTOCONFIGURL));
 		this.useAutoDetect = Converter.toBoolean(this.proxyPreferences.get(USEAUTODETECT));
 	}
 	
@@ -79,87 +74,62 @@ public class WebDriverProxy {
 		return this.proxy;
 	}
 	
-	public void setProxy(String whichProxy) {
-		switch (whichProxy.toUpperCase()) {
-		case "PROXY":
-			this.setProxyType("MANUAL");
-			if (this.proxyPreferences.containsKey(PROXY)) {
-				JSONObject thisProxy = (JSONObject) this.proxyPreferences.get(PROXY);
-				if (thisProxy.containsKey(HTTPPROXY)) {
-					this.proxy.setHttpProxy(thisProxy.get(HTTPPROXY).toString());
+	public void setProxy() {
+		try {
+			if (this.useProxy) {
+				if (this.proxyPreferences.containsKey(PROXY)) {
+					this.setProxyType("MANUAL");
+					JSONObject thisProxy = (JSONObject) this.proxyPreferences.get(PROXY);
+					if (thisProxy.containsKey(HTTPPROXY)) {
+						this.proxy.setHttpProxy(thisProxy.get(HTTPPROXY).toString());
+					}
+					if (thisProxy.containsKey(SSLPROXY)) {
+						this.proxy.setSslProxy(thisProxy.get(SSLPROXY).toString());
+					}
+					if (thisProxy.containsKey(FTPPROXY)) {
+						this.proxy.setFtpProxy(thisProxy.get(FTPPROXY).toString());
+					}
+				} else {
+					this.setProxyType("AUTODETECT");
 				}
-				if (thisProxy.containsKey(SSLPROXY)) {
-					this.proxy.setSslProxy(thisProxy.get(SSLPROXY).toString());
-				}
-				if (thisProxy.containsKey(FTPPROXY)) {
-					this.proxy.setFtpProxy(thisProxy.get(FTPPROXY).toString());
-				}
-			} else {
-				this.setProxyType("AUTODETECT");
 			}
-			break;
-		case "SOCKS":
-			if (this.proxyPreferences.containsKey(SOCKS)) {
-				JSONObject thisProxy = (JSONObject) this.proxyPreferences.get(SOCKS);
-				if (thisProxy.containsKey(SOCKSPROXY)) {
-					this.proxy.setHttpProxy(thisProxy.get(SOCKSPROXY).toString());
-				}
-				if (thisProxy.containsKey(SOCKSUSERNAME)) {
-					this.proxy.setSslProxy(thisProxy.get(SOCKSUSERNAME).toString());
-				}
-				if (thisProxy.containsKey(SOCKSPASSWORD)) {
-					this.proxy.setFtpProxy(thisProxy.get(SOCKSPASSWORD).toString());
-				}
-			} else {
-				this.setProxyType("AUTODETECT");
-			}
-			break;
-		case "AUTODETECT":
-			this.setProxyType("AUTODETECT");
-			break;
-		case "AUTOCONFIGURL":
-			if (this.proxyPreferences.containsKey(AUTOCONFIGURL)) {
-				this.proxy.setProxyAutoconfigUrl(this.proxyPreferences.get(AUTOCONFIGURL).toString());
-			} else {
-				this.setProxyType("AUTODETECT");
-			}
-			break;
-		case "NETWORK":
 			
-			break;
+			if (this.useSocksProxy) {
+				this.setProxyType("MANUAL");
+				if (this.proxyPreferences.containsKey(SOCKS)) {
+					JSONObject thisProxy = (JSONObject) this.proxyPreferences.get(SOCKS);
+					if (thisProxy.containsKey(SOCKSPROXY)) {
+						this.proxy.setHttpProxy(thisProxy.get(SOCKSPROXY).toString());
+					}
+					if (thisProxy.containsKey(SOCKSUSERNAME)) {
+						this.proxy.setSslProxy(thisProxy.get(SOCKSUSERNAME).toString());
+					}
+					if (thisProxy.containsKey(SOCKSPASSWORD)) {
+						this.proxy.setFtpProxy(thisProxy.get(SOCKSPASSWORD).toString());
+					}
+				} else {
+					this.setProxyType("AUTODETECT");
+				}
+			}
+			
+			if (this.useAutoConfigURL) {
+				if (this.proxyPreferences.containsKey(AUTOCONFIGURL)) {
+					this.proxy.setProxyType(ProxyType.PAC);
+					this.proxy.setProxyAutoconfigUrl(this.proxyPreferences.get(AUTOCONFIGURL).toString());
+				} else {
+					this.setProxyType("AUTODETECT");
+				}
+			}
+			
+			if (this.useAutoDetect) {
+				this.setProxyType("AUTODETECT");
+			}
+		} catch (WebDriverException wde) {
+			this.logger.error(WEBDRIVERPROXY, "Failed to set proxy server.");
+			this.logger.error(WEBDRIVERPROXY, "Localized message = " + wde.getLocalizedMessage());
+			this.logger.error(WEBDRIVERPROXY, "Cause = " + wde.getCause().getMessage());
 		}
 		
-		this.logProxySettings();
-	}
-	
-	/**
-	 * Set proxy auto detection to true or false
-	 * @param autodetect
-	 */
-	public void setAutoDetect(boolean autodetect) {
-		this.logger.info(WEBDRIVERPROXY, "Setting autodetect to " + (char)34 + autodetect + (char)34 +".");
-		try {
-			this.proxy.setAutodetect(autodetect);
-		} catch (WebDriverException wde) {
-			this.logger.error(WEBDRIVERPROXY, "Failed to set autodetect to " + (char)34 + autodetect + (char)34 +".");
-			this.logger.error(WEBDRIVERPROXY, "Localized message = " + wde.getLocalizedMessage());
-			this.logger.error(WEBDRIVERPROXY, "Cause = " + wde.getCause().getMessage());
-		}
-	}
-	
-	/**
-	 * Set auto detection configuration URL
-	 * @param url
-	 */
-	public void setAutoconfigUrl(String url) {
-		this.logger.info(WEBDRIVERPROXY, "Setting AutoconfigUrl to " + (char)34 + url + (char)34 +".");
-		try {
-			this.proxy.setProxyAutoconfigUrl(url);
-		} catch (WebDriverException wde) {
-			this.logger.error(WEBDRIVERPROXY, "Failed to set AutoconfigUrl to " + (char)34 + url + (char)34 +".");
-			this.logger.error(WEBDRIVERPROXY, "Localized message = " + wde.getLocalizedMessage());
-			this.logger.error(WEBDRIVERPROXY, "Cause = " + wde.getCause().getMessage());
-		}
 	}
 	
 	public void setProxyServer(String serverType, String server, String port) {
@@ -181,8 +151,8 @@ public class WebDriverProxy {
 				break;
 			default:
 				this.logger.error(WEBDRIVERPROXY, "Proxy server type " + (char)34 + serverType + (char)34 + " is not supported.");
-				this.setAutoDetect(true);
-				this.setProxyType("AUTODETECT");
+				this.proxy.setAutodetect(true);
+				this.proxy.setProxyType(ProxyType.AUTODETECT);
 				break;
 			}
 		} catch (WebDriverException wde) {

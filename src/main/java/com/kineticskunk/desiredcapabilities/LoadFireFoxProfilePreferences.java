@@ -108,7 +108,12 @@ public class LoadFireFoxProfilePreferences {
 		browser_helperApps_alwaysAsk_force,
 		browser_helperApps_neverAsk_openFile,
 		browser_helperApps_neverAsk_saveToDisk,
-		enable_native_events
+		enable_native_events,
+		network_proxy_type,
+		network_proxy_http,
+		network_proxy_http_port,
+		network_proxy_ssl,
+		network_proxy_ssl_port
 	}
 
 }
