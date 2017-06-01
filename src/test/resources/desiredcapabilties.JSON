@@ -1,7 +1,8 @@
 {
 	"configloadingsetting": {
+		"loadproxy": false,
 		"loadfirefoxprofilepreferences": true,
-		"loadfirefoxextensions": false,
+		"loadfirefoxextensions": true,
 		"loadfirebug": false,
 		"loadnetworkproxy": false,
 		"loadloggingprefs": true
@@ -88,9 +89,9 @@
 		"network.proxy.ssl_port": 8080,
 		"firefoxextensions": [
 			{
-				"extension": "firebug@software.joehewitt.com.xpi",
+				"extension": "firebug-3.0.0-alpha.14.xpi",
 				"preferences": {
-					"extensions.firebug.currentVersion": "2.0.16",
+					"extensions.firebug.currentVersion": "3.0.0-alpha.14",
 					"extensions.firebug.console.enableSites": true,
 					"extensions.firebug.script.enableSites": true,
 					"extensions.firebug.defaultPanelName": "HTML",

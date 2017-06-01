@@ -70,7 +70,7 @@ public class TestBaseSetup {
 
 	@AfterClass
 	public void quitDriver() {
-		wd.quit();
+	//	wd.quit();
 	}
 
 }

@@ -54,7 +54,8 @@ public class LoadDesiredCapabilities {
 	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
 
 	private static final String CONFIGLOADSETTINGS = "configloadingsetting";
-
+	private static final String LOADPROXY = "loadproxy";
+	
 	private static final String COMMONDESIREDCAPABILITIES = "commondesiredcapabilities";
 	private static final String LOADFIREFOXPREFERENCES = "loadfirefoxprofilepreferences";
 
@@ -68,7 +69,8 @@ public class LoadDesiredCapabilities {
 
 	private DesiredCapabilities dc = new DesiredCapabilities();
 	private WebDriverLoggingPreferences wdlp = new WebDriverLoggingPreferences();
-
+	
+	private boolean loadProxy = false;
 	private boolean loadfirefoxprofilepreferences = false;
 	private boolean loadloggingprefs = false;
 
@@ -84,17 +86,20 @@ public class LoadDesiredCapabilities {
 		this();
 		this.browserType = browserType;
 		this.setDesiredCapabilitiesJSONObject(desiredCapabilitiesConfigJSON);
-
-		if (this.jsonKeyExists(this.desiredCapabilitiesJSONObject, CONFIGLOADSETTINGS)) {
-			JSONObject configloadingsetting = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
-			this.loadfirefoxprofilepreferences = this.getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
-			this.loadloggingprefs = this.getJSONBooleanValue(configloadingsetting, LOADINGLOGGINFPREFS);
-		}
 	}
 
 	public LoadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
 		this(browserType, desiredCapabilitiesConfigJSON);
 		this.dc = dc;
+	}
+	
+	private void loadConfigLoadingSettings() {
+		if (this.jsonKeyExists(this.desiredCapabilitiesJSONObject, CONFIGLOADSETTINGS)) {
+			JSONObject configloadingsetting = (JSONObject) this.desiredCapabilitiesJSONObject.get(CONFIGLOADSETTINGS);
+			this.loadProxy = this.getJSONBooleanValue(configloadingsetting, LOADPROXY);
+			this.loadfirefoxprofilepreferences = this.getJSONBooleanValue(configloadingsetting, LOADFIREFOXPREFERENCES);
+			this.loadloggingprefs = this.getJSONBooleanValue(configloadingsetting, LOADINGLOGGINFPREFS);
+		}
 	}
 
 	private Boolean getJSONBooleanValue(JSONObject jsonObject, String key) {
@@ -117,14 +122,17 @@ public class LoadDesiredCapabilities {
 		try {
 			this.desiredCapabilitiesJSONObject = (JSONObject) this.parser.parse(new FileReader(new File(this.getClass().getClassLoader().getResource(desiredCapabilitiesConfigJSON).getPath())));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error(LOADDESIREDCAPABILITIES, "Resources file " + (char)34 + desiredCapabilitiesConfigJSON + (char)34 + " does not exist.");
+			this.logger.debug(LOADDESIREDCAPABILITIES, "Localized message = " + e.getLocalizedMessage());
+			this.logger.debug(LOADDESIREDCAPABILITIES, "Cause = " + e.getCause().getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error(LOADDESIREDCAPABILITIES, "Resources file " + (char)34 + desiredCapabilitiesConfigJSON + (char)34 + " caused an IO error.");
+			this.logger.debug(LOADDESIREDCAPABILITIES, "Localized message = " + e.getLocalizedMessage());
+			this.logger.debug(LOADDESIREDCAPABILITIES, "Cause = " + e.getCause().getMessage());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error(LOADDESIREDCAPABILITIES, "Resources file " + (char)34 + desiredCapabilitiesConfigJSON + (char)34 + " could not be parsed as a JSON file.");
+			this.logger.debug(LOADDESIREDCAPABILITIES, "Localized message = " + e.getLocalizedMessage());
+			this.logger.debug(LOADDESIREDCAPABILITIES, "Cause = " + e.getCause().getMessage());
 		}
 	}
 
@@ -162,12 +170,20 @@ public class LoadDesiredCapabilities {
 	public void setBrowerDesiredCapabilities() {
 		try {
 			if (this.desiredCapabilitiesJSONObject != null) {
+				this.loadConfigLoadingSettings();
 				this.setDesiredCapabilities(this.desiredCapabilitiesJSONObject, COMMONDESIREDCAPABILITIES);
-				//WebDriverProxy wdp = new WebDriverProxy((JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVERCONFIGURATION));
-				//wdp.setProxy();
-				//this.dc.setCapability(CapabilityType.PROXY, wdp.getProxy());
+				if (this.loadProxy) {
+					WebDriverProxy wdp = new WebDriverProxy((JSONObject) this.desiredCapabilitiesJSONObject.get(PROXYSERVERCONFIGURATION));
+					wdp.setProxy();
+					this.dc.setCapability(CapabilityType.PROXY, wdp.getProxy());
+				} else {
+					this.logger.info(LOADDESIREDCAPABILITIES, "No proxy will be loaded for this test run.");
+				}
+				
 				if (this.loadloggingprefs) {
 					this.setLoggingPrefs();
+				} else {
+					this.logger.info(LOADDESIREDCAPABILITIES, "No Logging Prefereces will be loaded for this test run.");
 				}
 				switch (this.browserType.toLowerCase()) {
 				case "firefox":
@@ -185,12 +201,6 @@ public class LoadDesiredCapabilities {
 					} else {
 						this.logger.info(LOADDESIREDCAPABILITIES, "Firefox profile " + (char)34 + FIREFOXDESIREDCAPABILITIES + (char)34 + " does not exist in " + (char)34 + this.desiredCapabilitiesJSONObject.toJSONString() + (char)34);
 					}
-					//FirefoxOptions ffOptions = new FirefoxOptions();
-					//	ffOptions.addPreference("--log", "trace");
-					//ffOptions.addPreference("network.proxy.http", "localhost");
-					//ffOptions.addPreference("network.proxy.http_port", "8080");
-					//ffOptions.setLegacy(false);
-					//this.dc.setCapability("moz:firefoxOptions", ffOptions);
 					break;
 				case "chrome":
 					this.dc.setBrowserName("chrome");

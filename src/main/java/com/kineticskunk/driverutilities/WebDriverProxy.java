@@ -14,7 +14,7 @@ package com.kineticskunk.driverutilities;
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,38 +29,38 @@ import com.kineticskunk.utilities.Converter;
 import org.openqa.selenium.WebDriverException;
 
 public class WebDriverProxy {
-	
+
 	private final Logger logger = LogManager.getLogger(WebDriverProxy.class.getName());
 	private final Marker WEBDRIVERPROXY = MarkerManager.getMarker("WEBDRIVERPROXY");
-	
+
 	private static final String USEPROXY = "useproxy";
 	private static final String USESOCKSPROXY = "usesocksproxy";
 	private static final String USEAUTOCONFIGURL = "useautoconfigurl";
 	private static final String USEAUTODETECT = "autodetect";
-	
+
 	private static final String PROXY = "proxy";
 	private static final String HTTPPROXY = "httpproxy";
 	private static final String SSLPROXY = "sslproxy";
 	private static final String FTPPROXY = "ftpproxy";
-	
+
 	private static final String SOCKS = "socks";
 	private static final String SOCKSPROXY = "socksproxy";
 	private static final String SOCKSUSERNAME = "socksusername";
 	private static final String SOCKSPASSWORD = "sockspassword";
-	
+
 	private static final String AUTOCONFIGURL = "autoconfigurl";
-	
+
 	private Proxy proxy = new Proxy();
 	private JSONObject proxyPreferences = new JSONObject();
-	
+
 	private boolean useProxy = false;
 	private boolean useSocksProxy = false;
 	private boolean useAutoConfigURL = false;
 	private boolean useAutoDetect = false;
-	
+
 	public WebDriverProxy() {
 	}
-	
+
 	public WebDriverProxy(JSONObject proxyPreferences) {
 		this();
 		this.proxyPreferences = proxyPreferences;
@@ -69,11 +69,11 @@ public class WebDriverProxy {
 		this.useAutoConfigURL = Converter.toBoolean(this.proxyPreferences.get(USEAUTOCONFIGURL));
 		this.useAutoDetect = Converter.toBoolean(this.proxyPreferences.get(USEAUTODETECT));
 	}
-	
+
 	public Proxy getProxy() {
 		return this.proxy;
 	}
-	
+
 	public void setProxy() {
 		try {
 			if (this.useProxy) {
@@ -93,7 +93,6 @@ public class WebDriverProxy {
 					this.setProxyType("AUTODETECT");
 				}
 			}
-			
 			if (this.useSocksProxy) {
 				this.setProxyType("MANUAL");
 				if (this.proxyPreferences.containsKey(SOCKS)) {
@@ -111,7 +110,6 @@ public class WebDriverProxy {
 					this.setProxyType("AUTODETECT");
 				}
 			}
-			
 			if (this.useAutoConfigURL) {
 				if (this.proxyPreferences.containsKey(AUTOCONFIGURL)) {
 					this.proxy.setProxyType(ProxyType.PAC);
@@ -120,7 +118,6 @@ public class WebDriverProxy {
 					this.setProxyType("AUTODETECT");
 				}
 			}
-			
 			if (this.useAutoDetect) {
 				this.setProxyType("AUTODETECT");
 			}
@@ -129,9 +126,9 @@ public class WebDriverProxy {
 			this.logger.error(WEBDRIVERPROXY, "Localized message = " + wde.getLocalizedMessage());
 			this.logger.error(WEBDRIVERPROXY, "Cause = " + wde.getCause().getMessage());
 		}
-		
+
 	}
-	
+
 	public void setProxyServer(String serverType, String server, String port) {
 		this.logger.info(WEBDRIVERPROXY, "Setting " + (char)34 + serverType + (char)34 + " to " + (char)34 + server + ":" + port + (char)34 +".");
 		String proxyURL = server + ":" + port;
@@ -160,9 +157,9 @@ public class WebDriverProxy {
 			this.logger.error(WEBDRIVERPROXY, "Localized message = " + wde.getLocalizedMessage());
 			this.logger.error(WEBDRIVERPROXY, "Cause = " + wde.getCause().getMessage());
 		}
-		
+
 	}
-	
+
 	public void logProxySettings() {
 		this.logger.info(WEBDRIVERPROXY, "AutoconfigUrl has been set to " + (char)34 + this.proxy.getProxyAutoconfigUrl() + (char)34 +".");
 		this.logger.info(WEBDRIVERPROXY, "NoProxy has been set to " + (char)34 + this.proxy.getNoProxy() + (char)34 +".");
@@ -209,5 +206,5 @@ public class WebDriverProxy {
 			this.logger.error(WEBDRIVERPROXY, wde.getLocalizedMessage());
 		}
 	}
-	
+
 }
