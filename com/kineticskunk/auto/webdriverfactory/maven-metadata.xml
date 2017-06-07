@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.kineticskunk.auto</groupId>
+  <artifactId>webdriverfactory</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.2.1.2-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20170607105521</lastUpdated>
+  </versioning>
+</metadata>
