@@ -2,7 +2,7 @@
 	"configloadingsetting": {
 		"loadproxy": false,
 		"loadfirefoxprofilepreferences": true,
-		"loadfirefoxextensions": true,
+		"loadfirefoxextensions": false,
 		"loadfirebug": false,
 		"loadnetworkproxy": false,
 		"loadloggingprefs": true
@@ -97,7 +97,7 @@
 					"extensions.firebug.defaultPanelName": "HTML",
 					"extensions.firebug.net.enableSites": true,
 					"extensions.firebug.allPagesActivation": "on",
-					"extensions.firebug.cookies.enableSites=": true
+					"extensions.firebug.cookies.enableSites": true
 				}
 			}
 		]

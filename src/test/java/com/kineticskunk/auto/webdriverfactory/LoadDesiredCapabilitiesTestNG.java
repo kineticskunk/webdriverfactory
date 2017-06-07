@@ -82,6 +82,6 @@ public class LoadDesiredCapabilitiesTestNG {
 	
 	@AfterClass()
 	public void afterLoadDesiredCapabilitiesTestNG() {
-		this.wd.quit();
+		//this.wd.quit();
 	}
 }

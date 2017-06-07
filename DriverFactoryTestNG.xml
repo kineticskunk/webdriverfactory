@@ -23,7 +23,7 @@
 		<parameter name="desiredCapabilitiesConfigJSON" value="desiredcapabilties.json" />
 		<classes>
 			<class
-				name="com.kineticskunk.auto.webdriverfactory.LoadDesiredCapabilitiesTestNG" />
+				name="com.kineticskunk.auto.webdriverfactory.DriverFactoryTestNG" />
 		</classes>
 	</test>
 

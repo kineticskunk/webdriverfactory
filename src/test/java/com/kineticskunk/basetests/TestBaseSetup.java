@@ -49,14 +49,14 @@ public class TestBaseSetup {
 	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON, String bringBrowserToFront, String resizeBrowser) throws Exception {
 		try {
 			this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
-			this.df.setBringDriverToFront(Converter.toBoolean(bringBrowserToFront));
-			this.df.setResizeBrowser(Converter.toBoolean(resizeBrowser));
+			//this.df.setBringDriverToFront(Converter.toBoolean(bringBrowserToFront));
+			//this.df.setResizeBrowser(Converter.toBoolean(resizeBrowser));
 			this.wd = this.df.getDriver();
 			this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
 		} catch (WebDriverException e) {
 			this.logger.fatal(TESTBASESETUP, "Failed to load browser " + (char)34 + browserType + (char)34 + ".");
 			this.logger.fatal(TESTBASESETUP, "Localized message = " + (char)34 + e.getLocalizedMessage() + (char)34 + ".");
-			this.logger.debug(TESTBASESETUP, "Cause = " + (char)34 + e.getCause().getMessage() + (char)34 + ".");
+			this.logger.debug(TESTBASESETUP, "Cause = " + (char)34 + e.getCause() + (char)34 + ".");
 		}
 	}
 
@@ -70,7 +70,7 @@ public class TestBaseSetup {
 
 	@AfterClass
 	public void quitDriver() {
-	//	wd.quit();
+		wd.quit();
 	}
 
 }

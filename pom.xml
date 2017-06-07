@@ -13,7 +13,7 @@
 	<properties>
 		<selenium.version>3.4.0</selenium.version>
 		<eclipse.m2e.lifecycle.mapping.version>1.0.0</eclipse.m2e.lifecycle.mapping.version>
-		<maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
+		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<google.inject.guice>4.1.0</google.inject.guice>
 		<google.guava.version>21.0</google.guava.version>
@@ -27,6 +27,32 @@
 		<phantomjs.driver.version>1.4.3</phantomjs.driver.version>
 	</properties>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>yodaqua</id>
+			<url>https:/github.com/kineticskunk/webdriverfactory/mvn-repo/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>internal.repo</id>
+			<name>Temporary Staging Repository</name>
+			<url>file://${project.build.directory}/mvn-repo</url>
+		</repository>
+	</distributionManagement>
+
+	<scm>
+		<url>https://github.com/kineticskunk/webdriverfactory.git</url>
+		<connection>scm:git:git@github.com:kineticskunk/webdriverfactory.git</connection>
+		<developerConnection>scm:git:git@github.com:kineticskunk/webdriverfactory.git</developerConnection>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>yodaqua</id>
+			<name>Donovan Mulder</name>
+			<email>donovan.mulder@kineticskunk.com</email>
+		</developer>
+	</developers>
+
 	<build>
 		<resources>
 			<resource>
@@ -35,6 +61,40 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.12</version>
+				<configuration>
+					<!-- git commit message -->
+					<message>Maven artifacts for ${project.version}</message>
+					<!-- disable webpage processing -->
+					<noJekyll>true</noJekyll>
+					<!-- matches distribution management repository url above -->
+					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+					<!-- remote branch name -->
+					<branch>refs/heads/mvn-repo</branch>
+					<!-- If you remove this then the old artifact will be removed and new 
+						one will replace. But with the merge tag you can just release by changing 
+						the version -->
+					<merge>true</merge>
+					<includes>
+						<include>**/*</include>
+					</includes>
+					<!-- github repo name -->
+					<repositoryName>webdriverfactory</repositoryName>
+					<!-- github username -->
+					<repositoryOwner>kineticskunk</repositoryOwner>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -186,7 +246,7 @@
 					<dependency>
 						<groupId>org.apache.maven.surefire</groupId>
 						<artifactId>surefire-testng</artifactId>
-						<version>2.19.1</version>
+						<version>${maven.surefire.plugin.version}</version>
 					</dependency>
 				</dependencies>
 				<configuration>
@@ -227,7 +287,7 @@
 	</build>
 
 	<dependencies>
-	<dependency>
+		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>${selenium.version}</version>
