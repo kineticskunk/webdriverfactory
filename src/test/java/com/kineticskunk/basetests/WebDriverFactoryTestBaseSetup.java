@@ -35,10 +35,10 @@ import org.apache.logging.log4j.MarkerManager;
 import com.kineticskunk.driverfactory.DriverFactory;
 import com.kineticskunk.utilities.Converter;
 
-public class TestBaseSetup {
+public class WebDriverFactoryTestBaseSetup {
 	
 	private static int WAIT = 60;
-	private Logger logger = LogManager.getLogger(TestBaseSetup.class.getName());
+	private Logger logger = LogManager.getLogger(WebDriverFactoryTestBaseSetup.class.getName());
 	private Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 
 	private DriverFactory df;

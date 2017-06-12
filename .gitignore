@@ -55,3 +55,4 @@ buildNumber.properties
 *.html
 *.log.gz
 test-output/
+/bin/

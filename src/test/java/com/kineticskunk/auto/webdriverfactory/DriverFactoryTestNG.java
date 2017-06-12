@@ -29,9 +29,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import com.kineticskunk.basetests.TestBaseSetup;
+import com.kineticskunk.basetests.WebDriverFactoryTestBaseSetup;
 
-public class DriverFactoryTestNG extends TestBaseSetup {
+public class DriverFactoryTestNG extends WebDriverFactoryTestBaseSetup {
 	
 	private final Logger logger = LogManager.getLogger(DriverFactoryTestNG.class.getName());
 	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
