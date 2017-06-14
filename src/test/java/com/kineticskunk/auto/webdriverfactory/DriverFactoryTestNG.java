@@ -16,13 +16,6 @@ package com.kineticskunk.auto.webdriverfactory;
 	limitations under the License.
 */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -32,9 +25,6 @@ import org.testng.annotations.Test;
 import com.kineticskunk.basetests.WebDriverFactoryTestBaseSetup;
 
 public class DriverFactoryTestNG extends WebDriverFactoryTestBaseSetup {
-	
-	private final Logger logger = LogManager.getLogger(DriverFactoryTestNG.class.getName());
-	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
 	
 	@BeforeClass
 	@Parameters({ "url" })

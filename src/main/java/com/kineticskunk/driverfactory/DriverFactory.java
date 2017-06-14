@@ -37,8 +37,8 @@ import static com.kineticskunk.driverfactory.DriverType.valueOf;
 
 public class DriverFactory {
 	
-	private static final Logger logger = LogManager.getLogger(DriverFactory.class.getName());
-	private static final Marker DRIVEFACTORY = MarkerManager.getMarker("DRIVEFACTORY");
+	private final Logger logger = LogManager.getLogger(DriverFactory.class.getName());
+	private final Marker DRIVEFACTORY = MarkerManager.getMarker("DRIVEFACTORY");
 	
 	private HashMap<String, Object> params;
     private WebDriver webdriver;
@@ -47,17 +47,16 @@ public class DriverFactory {
     private boolean useRemoteWebDriver;
     private boolean bringDriverToFront;
     private boolean resizeBrowser;
-    
-    private String browserType = null;
-    private String desiredCapabilitiesConfigJSON = null;
+   
+    private DesiredCapabilities dc;
     
     public DriverFactory() {
+    	this.logger.log(Level.INFO, DRIVEFACTORY, "In " + DriverFactory.class.getName());
     }
     
-    public DriverFactory(String browserType, String desiredCapabilitiesConfigJSON) {
+    public DriverFactory(DesiredCapabilities dc) {
     	this();
-    	this.browserType = browserType;
-        this.desiredCapabilitiesConfigJSON = desiredCapabilitiesConfigJSON;
+    	this.dc = dc; 
     }
     
     public void setUseRemoteWebDriver(boolean useRemoteWebDriver) {
@@ -75,7 +74,7 @@ public class DriverFactory {
     public WebDriver getDriver() throws Exception {
         if (null == webdriver) {
             determineEffectiveDriverType();
-            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.browserType, this.desiredCapabilitiesConfigJSON);
+            DesiredCapabilities desiredCapabilities = selectedDriverType.getDesiredCapabilities(this.dc);
             instantiateWebDriver(desiredCapabilities);
         }
         
@@ -102,7 +101,7 @@ public class DriverFactory {
     private void determineEffectiveDriverType() {
         DriverType driverType = defaultDriverType;
         try {
-            driverType = valueOf(this.browserType.toUpperCase());
+            driverType = valueOf(this.dc.getBrowserName().toUpperCase());
         } catch (IllegalArgumentException ignored) {
         	logger.catching(ignored);
         	logger.log(Level.FATAL, DRIVEFACTORY, "Unknown driver specified, defaulting to '" + driverType + "'...");

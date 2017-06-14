@@ -2,7 +2,7 @@ package com.kineticskunk.auto.webdriverfactory;
 
 import org.testng.annotations.Test;
 
-import com.kineticskunk.desiredcapabilities.LoadFireFoxProfilePreferences;
+import com.kineticskunk.auto.desiredcapabilities.LoadFireFoxProfilePreferences;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +15,6 @@ import org.json.simple.parser.ParseException;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
-import org.junit.Assert;
 
 public class LoadFireFoxProfilePreferencesTestNG {
 	

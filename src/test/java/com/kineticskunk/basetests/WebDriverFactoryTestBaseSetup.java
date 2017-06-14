@@ -19,9 +19,7 @@ package com.kineticskunk.basetests;
 import org.testng.annotations.AfterClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 
@@ -32,8 +30,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import com.kineticskunk.driverfactory.DriverExecutable;
 import com.kineticskunk.driverfactory.DriverFactory;
-import com.kineticskunk.utilities.Converter;
 
 public class WebDriverFactoryTestBaseSetup {
 	
@@ -42,15 +40,18 @@ public class WebDriverFactoryTestBaseSetup {
 	private Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 
 	private DriverFactory df;
+	private DriverExecutable de; 
 	private WebDriver wd;
 	
 	@BeforeClass
 	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON", "bringBrowserToFront", "resizeBrowser" })
 	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON, String bringBrowserToFront, String resizeBrowser) throws Exception {
 		try {
-			this.df =  new DriverFactory(browserType, desiredCapabilitiesConfigJSON);
-			//this.df.setBringDriverToFront(Converter.toBoolean(bringBrowserToFront));
-			//this.df.setResizeBrowser(Converter.toBoolean(resizeBrowser));
+			de = new DriverExecutable(browserType);
+			de.setDriverExecutable();
+			DesiredCapabilities dc = new DesiredCapabilities();
+			dc.setBrowserName(browserType);
+			this.df =  new DriverFactory(dc);
 			this.wd = this.df.getDriver();
 			this.wd.manage().timeouts().implicitlyWait(WAIT, TimeUnit.SECONDS);
 		} catch (WebDriverException e) {

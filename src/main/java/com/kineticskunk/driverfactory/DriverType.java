@@ -1,135 +1,111 @@
 package com.kineticskunk.driverfactory;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 
-import com.kineticskunk.desiredcapabilities.DesiredCapabilityException;
-import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
+import com.kineticskunk.auto.desiredcapabilities.DesiredCapabilityException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public enum DriverType implements DriverSetup {
 
 	FIREFOX {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws DesiredCapabilityException, IOException {
-			DesiredCapabilities dc = DesiredCapabilities.firefox();
-			
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
+		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) throws DesiredCapabilityException, IOException {
+			return DesiredCapabilities.firefox().merge(desiredCapabilities);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-			return new FirefoxDriver(capabilities);
+			try {
+				return new FirefoxDriver(capabilities);
+			} catch (WebDriverException e) {
+				this.catchError(DRIVERTYPE, "FireFox", e);
+				return null;
+			}
 		}
 	},
 	CHROME {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws Exception {
-			DesiredCapabilities dc = DesiredCapabilities.chrome();
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
+		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) throws Exception {
+			return DesiredCapabilities.chrome().merge(desiredCapabilities);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-			return new ChromeDriver(capabilities);
+			try {
+				return new ChromeDriver(capabilities);
+			} catch (WebDriverException e) {
+				this.catchError(DRIVERTYPE, "Chrome", e);
+				return null;
+			}
 		}
 	},
 	IE {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-			DesiredCapabilities dc = DesiredCapabilities.internetExplorer();
-			dc.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
-			dc.setCapability(InternetExplorerDriver.ENABLE_PERSISTENT_HOVERING, true);
-			dc.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-			dc.setCapability("requireWindowFocus", true);
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
+		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) {
+			return DesiredCapabilities.internetExplorer().merge(desiredCapabilities);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-			return new InternetExplorerDriver(capabilities);
+			try {
+				return new InternetExplorerDriver(capabilities);
+			} catch (WebDriverException e) {
+				this.catchError(DRIVERTYPE, "Internet Explorer", e);
+				return null;
+			}
 		}
 	},
 	SAFARI {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-			DesiredCapabilities dc = DesiredCapabilities.safari();
-			dc.setCapability("safari.cleanSession", true);
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
+		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) {
+			return DesiredCapabilities.safari().merge(desiredCapabilities);
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-			return new SafariDriver(capabilities);
+			try {
+				return new SafariDriver(capabilities);
+			} catch (WebDriverException e) {
+				this.catchError(DRIVERTYPE, "Safari", e);
+				return null;
+			}
 		}
 	},
 	OPERA {
-		public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-			DesiredCapabilities dc = DesiredCapabilities.operaBlink();
-			return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
+		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) {
+			try {
+				return DesiredCapabilities.operaBlink().merge(desiredCapabilities);
+			} catch (WebDriverException e) {
+				this.catchError(DRIVERTYPE, "Opera", e);
+				return null;
+			}
 		}
 
 		public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-			return new OperaDriver(capabilities);
+			try {
+				return new OperaDriver(capabilities);
+			} catch (WebDriverException e) {
+				this.catchError(DRIVERTYPE, "Opera", e);
+				return null;
+			}
 		}
-	},
-    PHANTOMJS {
-        public DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) {
-            DesiredCapabilities dc = DesiredCapabilities.phantomjs();
-            final List<String> cliArguments = new ArrayList<String>();
-            cliArguments.add("--web-security=false");
-            cliArguments.add("--ssl-protocol=any");
-            cliArguments.add("--ignore-ssl-errors=true");
-           // dc.setCapability("phantomjs.cli.args", this.applyPhantomJSProxySettings(cliArguments, proxySettings));
-            dc.setCapability("takesScreenshot", true);
-
-            return this.loadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
-        }
-
-        public WebDriver getWebDriverObject(DesiredCapabilities capabilities) {
-            return new PhantomJSDriver(capabilities);
-        }
 	};
 
-	private static final Logger logger = LogManager.getLogger(DriverType.class.getName());
-	private static final Marker DRIVERTYPE = MarkerManager.getMarker("DRIVERTYPE");
+	private final static Logger logger = LogManager.getLogger(DriverType.class.getName());
+	private final static Marker DRIVERTYPE = MarkerManager.getMarker("DRIVERTYPE");
 
-	public void catchError(Level level, Marker marker, String methodName,  String params[], Exception ex) {
+	public void catchError(Marker marker, String driverName, WebDriverException e) {
 		logger.entry();
-		if (logger.isDebugEnabled()) {
-			logger.log(level, marker, "RUN {} USING {}", methodName, params);
-			logger.log(level, marker, "Cause = " + ex.getCause());
-			logger.log(level, marker, "Message = " + ex.getMessage());
-			logger.log(level, marker, "Local Message = " + ex.getLocalizedMessage());
-			logger.catching(level, ex);
-		}
+		logger.error(marker, "Failed to load driver " + driverName);
+		logger.debug(marker, "Localized message = " + e.getLocalizedMessage());
+		logger.debug(marker, "Cause = " + e.getCause().getMessage());
 		logger.exit();
-	}
-
-	public DesiredCapabilities loadDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON, DesiredCapabilities dc) {
-		LoadDesiredCapabilities ldc = new LoadDesiredCapabilities(browserType, desiredCapabilitiesConfigJSON, dc);
-		try {
-			this.makeDriverExecutable(browserType);
-			ldc.setBrowerDesiredCapabilities();
-			return ldc.getDesiredCapabilities();
-		} catch (Exception ex) {
-			catchError(Level.FATAL, DRIVERTYPE, "getDesiredCapabilities: failed to load", new String[]{ldc.getDesiredCapabilities().toString()}, ex);
-			return null;
-		}
-	}
-	
-	private void makeDriverExecutable(String browserType) throws FileNotFoundException, IOException {
-		DriverExecutable de = new DriverExecutable(browserType);
-		de.setDriverExecutable();
 	}
 	
 	protected List<String> applyPhantomJSProxySettings(List<String> cliArguments, Proxy proxySettings) {

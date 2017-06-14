@@ -4,11 +4,9 @@ import java.io.IOException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import com.kineticskunk.desiredcapabilities.DesiredCapabilityException;
-
 public interface DriverSetup {
 
     WebDriver getWebDriverObject(DesiredCapabilities desiredCapabilities);
 
-    DesiredCapabilities getDesiredCapabilities(String browserType, String desiredCapabilitiesConfigJSON) throws DesiredCapabilityException, IOException, Exception;
+    DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) throws IOException, Exception;
 }

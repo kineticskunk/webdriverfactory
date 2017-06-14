@@ -4,14 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.opera.OperaDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -19,16 +14,11 @@ import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import com.kineticskunk.desiredcapabilities.LoadDesiredCapabilities;
-import com.kineticskunk.driverfactory.DriverExecutable;
-import org.openqa.selenium.logging.LogEntries;
 
-import org.openqa.selenium.logging.LogType;
+import com.kineticskunk.auto.desiredcapabilities.LoadDesiredCapabilities;
+import com.kineticskunk.driverfactory.DriverExecutable;
 
 public class LoadDesiredCapabilitiesTestNG {
-	
-	private final Logger logger = LogManager.getLogger(LoadDesiredCapabilitiesTestNG.class.getName());
-	private final Marker LOADDESIREDCAPABILITIES = MarkerManager.getMarker("LOADDESIREDCAPABILITIES");
 	
 	private static final String testSite = "https://www.google.co.za";
 	private static final String testSiteTitle = "google";
