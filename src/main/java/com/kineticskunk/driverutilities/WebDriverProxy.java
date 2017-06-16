@@ -24,7 +24,7 @@ import org.json.simple.JSONObject;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
 
-import com.kineticskunk.utilities.Converter;
+import com.kineticskunk.auto.conversion.Converter;
 
 import org.openqa.selenium.WebDriverException;
 

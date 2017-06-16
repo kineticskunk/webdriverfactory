@@ -27,11 +27,15 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.kineticskunk.utilities.Converter;
+
+import com.kineticskunk.auto.conversion.Converter;
+
+//import com.kineticskunk.utilities.Converter;
 import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+
 
 import static com.kineticskunk.driverfactory.DriverType.valueOf;
 
@@ -87,6 +91,7 @@ public class DriverFactory {
         
         if (this.resizeBrowser) {
         	java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        	
     		this.webdriver.manage().window().setSize(new Dimension(Converter.toInteger(screenSize.getWidth()), Converter.toInteger(screenSize.getHeight())));
         }
         return this.webdriver;

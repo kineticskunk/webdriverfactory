@@ -14,15 +14,13 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 
-import com.kineticskunk.auto.desiredcapabilities.DesiredCapabilityException;
-
 import java.io.IOException;
 import java.util.List;
 
 public enum DriverType implements DriverSetup {
 
 	FIREFOX {
-		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) throws DesiredCapabilityException, IOException {
+		public DesiredCapabilities getDesiredCapabilities(DesiredCapabilities desiredCapabilities) throws IOException {
 			return DesiredCapabilities.firefox().merge(desiredCapabilities);
 		}
 

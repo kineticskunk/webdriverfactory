@@ -17,7 +17,6 @@ package com.kineticskunk.auto.webdriverfactory;
 */
 
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -38,8 +37,4 @@ public class DriverFactoryTestNG extends WebDriverFactoryTestBaseSetup {
 		Assert.assertTrue(getDriver().getTitle().equalsIgnoreCase(browserTitle));
 	}
 	
-	@AfterClass
-	public void afterFireFoxDriverFactoryTestNG() {
-		
-	}
 }
