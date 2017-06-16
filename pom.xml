@@ -47,6 +47,17 @@
 		<connection>scm:git:git@github.com:kineticskunk/maven-dependencies.git</connection>
 		<developerConnection>scm:git:git@github.com:kineticskunk/maven-dependencies.git</developerConnection>
 	</scm>
+	
+	<repositories>
+		<repository>
+			<id>maven-dependencies</id>
+			<url>https://raw.github.com/kineticskunk/maven-dependencies/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<developers>
 		<developer>
@@ -55,6 +66,7 @@
 			<email>donovan.mulder@kineticskunk.com</email>
 		</developer>
 	</developers>
+	
 	<build>
 		<resources>
 			<resource>
