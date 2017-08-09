@@ -29,8 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-
-import com.kineticskunk.driverfactory.DriverExecutable;
 import com.kineticskunk.driverfactory.DriverFactory;
 
 public class WebDriverFactoryTestBaseSetup {
@@ -40,15 +38,12 @@ public class WebDriverFactoryTestBaseSetup {
 	private Marker TESTBASESETUP = MarkerManager.getMarker("TESTBASESETUP");
 
 	private DriverFactory df;
-	private DriverExecutable de; 
 	private WebDriver wd;
 	
 	@BeforeClass
 	@Parameters({ "browserType", "desiredCapabilitiesConfigJSON", "bringBrowserToFront", "resizeBrowser" })
 	public void setDriver(String browserType, String desiredCapabilitiesConfigJSON, String bringBrowserToFront, String resizeBrowser) throws Exception {
 		try {
-			de = new DriverExecutable(browserType);
-			de.setDriverExecutable();
 			DesiredCapabilities dc = new DesiredCapabilities();
 			dc.setBrowserName(browserType);
 			this.df =  new DriverFactory(dc);

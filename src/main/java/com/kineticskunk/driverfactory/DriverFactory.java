@@ -23,20 +23,15 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import com.kineticskunk.auto.conversion.Converter;
-
-//import com.kineticskunk.utilities.Converter;
 import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
-
+import com.kineticskunk.auto.conversion.Converter;
 import static com.kineticskunk.driverfactory.DriverType.valueOf;
 
 public class DriverFactory {
@@ -44,11 +39,11 @@ public class DriverFactory {
 	private final Logger logger = LogManager.getLogger(DriverFactory.class.getName());
 	private final Marker DRIVEFACTORY = MarkerManager.getMarker("DRIVEFACTORY");
 	
-	private HashMap<String, Object> params;
     private WebDriver webdriver;
     private DriverType selectedDriverType;
     private DriverType defaultDriverType;
     private boolean useRemoteWebDriver;
+    private String remoteDriverURL;
     private boolean bringDriverToFront;
     private boolean resizeBrowser;
    
@@ -63,8 +58,11 @@ public class DriverFactory {
     	this.dc = dc; 
     }
     
-    public void setUseRemoteWebDriver(boolean useRemoteWebDriver) {
+    public DriverFactory(DesiredCapabilities dc, boolean useRemoteWebDriver, String remoteDriverURL) {
+    	this();
+    	this.dc = dc;
     	this.useRemoteWebDriver = useRemoteWebDriver;
+    	this.remoteDriverURL = remoteDriverURL;
     }
     
     public void setBringDriverToFront(boolean bringDriverToFront) {
@@ -111,7 +109,7 @@ public class DriverFactory {
         	logger.catching(ignored);
         	logger.log(Level.FATAL, DRIVEFACTORY, "Unknown driver specified, defaulting to '" + driverType + "'...");
         } catch (NullPointerException ignored) {
-        	driverType  = DriverType.FIREFOX;
+        	driverType = DriverType.FIREFOX;
         	logger.log(Level.DEBUG, DRIVEFACTORY, "No driver specified, defaulting to '" + driverType + "'...");
         }
         this.selectedDriverType = driverType;
@@ -123,21 +121,9 @@ public class DriverFactory {
     	logger.log(Level.INFO, DRIVEFACTORY, "Current Browser Selection: " + this.selectedDriverType);
     	
         if (useRemoteWebDriver) {
-            URL seleniumGridURL = new URL(this.params.get("gridURL").toString());
-            String desiredBrowserVersion = this.params.get("desiredBrowserVersion").toString();
-            String desiredPlatform =  this.params.get("desiredPlatform").toString();
-
-            if (null != desiredPlatform && !desiredPlatform.isEmpty()) {
-                desiredCapabilities.setPlatform(Platform.valueOf(desiredPlatform.toUpperCase()));
-            }
-
-            if (null != desiredBrowserVersion && !desiredBrowserVersion.isEmpty()) {
-                desiredCapabilities.setVersion(desiredBrowserVersion);
-            }
-
-            webdriver = new RemoteWebDriver(seleniumGridURL, desiredCapabilities);
+            this.webdriver = new RemoteWebDriver(new URL(this.remoteDriverURL), desiredCapabilities);
         } else {
-            webdriver = selectedDriverType.getWebDriverObject(desiredCapabilities);
+            this.webdriver = this.selectedDriverType.getWebDriverObject(desiredCapabilities);
         }
     }
 }
